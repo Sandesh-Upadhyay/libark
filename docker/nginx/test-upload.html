@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nginx プロキシ経由 S3 アップロードテスト</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input[type="file"] {
+            margin: 10px 0;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 Nginx プロキシ経由 S3 アップロードテスト</h1>
+
+    <div class="container info">
+        <h3>📋 テスト手順</h3>
+        <ol>
+            <li>ファイルを選択</li>
+            <li>「プリサインURL取得」ボタンをクリック</li>
+            <li>「ファイルアップロード」ボタンをクリック</li>
+        </ol>
+        <p><strong>注意:</strong> このテストはNginxプロキシ（http://localhost/s3/）経由でZenko CloudServerにアクセスします。</p>
+    </div>
+
+    <div class="container">
+        <h3>📁 ファイル選択</h3>
+        <input type="file" id="fileInput" accept="image/*">
+        <div id="fileInfo"></div>
+    </div>
+
+    <div class="container">
+        <h3>🔗 プリサインURL取得</h3>
+        <button onclick="getPresignedUrl()">プリサインURL取得</button>
+        <div id="presignedUrlResult"></div>
+    </div>
+
+    <div class="container">
+        <h3>⬆️ ファイルアップロード</h3>
+        <button onclick="uploadFile()" id="uploadBtn" disabled>ファイルアップロード</button>
+        <div id="uploadResult"></div>
+    </div>
+
+    <script>
+        let selectedFile = null;
+        let presignedUrl = null;
+
+        // ファイル選択時の処理
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            selectedFile = e.target.files[0];
+            const fileInfo = document.getElementById('fileInfo');
+
+            if (selectedFile) {
+                fileInfo.innerHTML = `
+                    <div class="container info">
+                        <strong>選択されたファイル:</strong><br>
+                        名前: ${selectedFile.name}<br>
+                        サイズ: ${(selectedFile.size / 1024).toFixed(2)} KB<br>
+                        タイプ: ${selectedFile.type}
+                    </div>
+                `;
+            } else {
+                fileInfo.innerHTML = '';
+            }
+        });
+
+        // プリサインURL取得
+        async function getPresignedUrl() {
+            if (!selectedFile) {
+                alert('まずファイルを選択してください');
+                return;
+            }
+
+            const resultDiv = document.getElementById('presignedUrlResult');
+            resultDiv.innerHTML = '<p>プリサインURL取得中...</p>';
+
+            try {
+                // GraphQL mutation for presigned URL
+                const mutation = `
+                    mutation GeneratePresignedUpload($input: PresignedUploadInput!) {
+                        generatePresignedUpload(input: $input) {
+                            uploadUrl
+                            formData
+                        }
+                    }
+                `;
+
+                const variables = {
+                    input: {
+                        filename: selectedFile.name,
+                        contentType: selectedFile.type,
+                        size: selectedFile.size
+                    }
+                };
+
+                const response = await fetch('/graphql', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: mutation,
+                        variables: variables
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.errors) {
+                    throw new Error(data.errors[0].message);
+                }
+
+                presignedUrl = data.data.generatePresignedUpload.uploadUrl;
+
+                resultDiv.innerHTML = `
+                    <div class="container success">
+                        <strong>✅ プリサインURL取得成功!</strong><br>
+                        <pre>${presignedUrl}</pre>
+                    </div>
+                `;
+
+                document.getElementById('uploadBtn').disabled = false;
+
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="container error">
+                        <strong>❌ プリサインURL取得失敗:</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+                console.error('Error:', error);
+            }
+        }
+
+        // ファイルアップロード
+        async function uploadFile() {
+            if (!selectedFile || !presignedUrl) {
+                alert('ファイルとプリサインURLが必要です');
+                return;
+            }
+
+            const resultDiv = document.getElementById('uploadResult');
+            resultDiv.innerHTML = '<p>ファイルアップロード中...</p>';
+
+            try {
+                const response = await fetch(presignedUrl, {
+                    method: 'PUT',
+                    body: selectedFile,
+                    headers: {
+                        'Content-Type': selectedFile.type
+                    }
+                });
+
+                if (response.ok) {
+                    const etag = response.headers.get('ETag');
+                    resultDiv.innerHTML = `
+                        <div class="container success">
+                            <strong>🎉 アップロード成功!</strong><br>
+                            ステータス: ${response.status} ${response.statusText}<br>
+                            ETag: ${etag}<br>
+                            <strong>✅ Nginxプロキシ経由でのアップロードが正常に動作しています！</strong>
+                        </div>
+                    `;
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="container error">
+                        <strong>❌ アップロード失敗:</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+                console.error('Upload error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,2357 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`📜 GraphQL 契約テスト（SDLスナップショット） > SDLがスナップショットと一致する（typeDefs 文字列ベース） 1`] = `
+"#graphql
+  # 基本型定義（スカラー型、列挙型、ページネーション）
+  # 🎯 基本型定義 - スカラー型と基本的な列挙型
+# GraphQLスキーマの基盤となる型定義
+
+# ================================
+# スカラー型定義
+# ================================
+scalar DateTime
+scalar Upload
+scalar UUID
+scalar JSON
+scalar Decimal
+
+# ================================
+# キャッシュコントロール
+# ================================
+enum CacheControlScope {
+  PUBLIC
+  PRIVATE
+}
+
+directive @cacheControl(
+  maxAge: Int
+  scope: CacheControlScope
+  inheritMaxAge: Boolean
+) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
+
+# ================================
+# 基本列挙型
+# ================================
+
+enum PostVisibility {
+  PUBLIC
+  PRIVATE
+  FOLLOWERS_ONLY
+  PAID
+}
+
+enum MediaType {
+  POST
+  AVATAR
+  COVER
+  OGP
+}
+
+enum MediaVariantType {
+  THUMB
+  MEDIUM
+  LARGE
+  BLUR
+  OGP
+}
+
+# S3 Gateway専用ステータス
+enum MediaStatus {
+  PROCESSING
+  READY
+  FAILED
+}
+
+enum UploadProgressStatus {
+  UPLOADING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum UploadSessionStatus {
+  CREATED
+  UPLOADING
+  UPLOADED
+  COMPLETED
+  FAILED
+  EXPIRED
+}
+
+enum NotificationType {
+  LIKE
+  COMMENT
+  FOLLOW
+  POST_PROCESSING_COMPLETED
+  POST_PROCESSING_FAILED
+  COMMENT_PROCESSING_COMPLETED
+  COMMENT_PROCESSING_FAILED
+  AVATAR_PROCESSING_COMPLETED
+  AVATAR_PROCESSING_FAILED
+  WALLET_DEPOSIT_COMPLETED
+  WALLET_WITHDRAWAL_COMPLETED
+  WALLET_WITHDRAWAL_FAILED
+  P2P_TRADE_CREATED
+  P2P_TRADE_MATCHED
+  P2P_PAYMENT_SENT
+  P2P_TRADE_COMPLETED
+  P2P_TRADE_CANCELLED
+  P2P_TRADE_TIMEOUT
+}
+
+# ================================
+# ページネーション型
+# ================================
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+# ================================
+# 基本メディア型定義
+# ================================
+
+# メディア基本型
+type Media {
+  id: UUID!
+  filename: String!
+  s3Key: String!
+  mimeType: String!
+  fileSize: Int!
+  width: Int
+  height: Int
+  type: MediaType!
+  status: MediaStatus!
+  url: String
+  thumbnailUrl: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  variants: [MediaVariant!]!
+  user: User
+  post: Post
+}
+
+# メディアバリアント型
+type MediaVariant {
+  id: UUID!
+  type: MediaVariantType!
+  s3Key: String!
+  width: Int
+  height: Int
+  fileSize: Int
+  quality: Int
+  url: String
+  createdAt: DateTime!
+  media: Media!
+}
+
+
+  # GraphQL操作定義（Query、Mutation、Subscription）- 最初に定義
+  # 🎯 GraphQL操作定義
+# クエリ、ミューテーション、サブスクリプションの定義
+
+# ================================
+# クエリ
+# ================================
+type Query {
+  # 認証
+  me: User @cacheControl(maxAge: 0)
+
+  # ユーザー
+  user(id: UUID!): User
+  userByUsername(username: String!): User
+  users(first: Int = 20, after: String, search: String): UserConnection!
+
+  # 管理者用ユーザー管理
+  adminUsers(first: Int = 20, after: String, search: String): AdminUserConnection!
+  adminUser(id: UUID!): AdminUserDetail
+
+  # フォロー関係
+  followers(userId: UUID!, first: Int = 20, after: String): FollowConnection!
+  following(userId: UUID!, first: Int = 20, after: String): FollowConnection!
+  isFollowing(userId: UUID!): Boolean!
+
+  # タイムライン
+  timeline(type: TimelineType = FOLLOWING, first: Int = 20, after: String): TimelineConnection!
+    @cacheControl(maxAge: 0)
+
+  # 投稿
+  post(id: UUID!, includeProcessing: Boolean = false): Post
+  posts(
+    first: Int = 20
+    after: String
+    userId: UUID
+    visibility: PostVisibility
+    includeProcessing: Boolean = false
+  ): PostConnection! @cacheControl(maxAge: 0)
+
+  # ユーザーがいいねした投稿
+  likedPosts(first: Int = 20, after: String, userId: UUID!): PostConnection!
+    @cacheControl(maxAge: 0)
+
+  # メディアを含む投稿
+  mediaPosts(first: Int = 20, after: String, userId: UUID): PostConnection! @cacheControl(maxAge: 0)
+
+  # コメント
+  comment(id: UUID!, includeProcessing: Boolean = false): Comment
+  comments(
+    postId: UUID!
+    first: Int = 50
+    after: String
+    includeProcessing: Boolean = false
+  ): [Comment!]!
+
+  # 通知
+  notifications(
+    first: Int = 20
+    after: String
+    isRead: Boolean
+    type: NotificationType
+  ): [Notification!]! @cacheControl(maxAge: 0)
+  unreadNotificationsCount: Int! @cacheControl(maxAge: 0)
+
+  # メディア
+  media(id: UUID!): Media
+  myMedia(first: Int = 20, after: String): [Media!]! @cacheControl(maxAge: 0)
+
+  # ユーザー設定
+  mySettings: UserSettings @cacheControl(maxAge: 0)
+
+  # メッセージ機能
+  conversations(
+    first: Int = 20
+    after: String
+    includeArchived: Boolean = false
+  ): ConversationConnection! @cacheControl(maxAge: 0)
+  conversation(id: UUID!): Conversation @cacheControl(maxAge: 0)
+  messageStats: MessageStats! @cacheControl(maxAge: 0)
+  searchMessages(
+    query: String!
+    conversationId: UUID
+    first: Int = 20
+    after: String
+  ): MessageConnection! @cacheControl(maxAge: 0)
+
+  # 管理者機能
+  systemStats: SystemStats!
+
+  # キャッシュ統計情報（開発環境のみ）
+  authCacheStats: CacheStats!
+
+  # レート制限統計情報（開発環境のみ）
+  rateLimitStats: RateLimitStats!
+
+  # ウォレット機能
+  myWallet: Wallet @cacheControl(maxAge: 0)
+  myWalletTransactions(first: Int = 20, after: String): [WalletTransaction!]!
+    @cacheControl(maxAge: 0)
+  myUserWallets: [UserWallet!]! @cacheControl(maxAge: 0)
+  myDepositRequests: [DepositRequest!]! @cacheControl(maxAge: 0)
+  myWithdrawalRequests: [WithdrawalRequest!]! @cacheControl(maxAge: 0)
+  getExchangeRate(currency: String!): Float!
+  getSupportedCurrencies: [String!]!
+}
+
+# ================================
+# ミューテーション
+# ================================
+type Mutation {
+  # 認証
+  login(input: LoginInput!): AuthPayload!
+  register(input: RegisterInput!): AuthPayload!
+  logout: LogoutPayload!
+
+  # 投稿
+  createPost(input: PostCreateInput!): Post!
+  updatePost(id: UUID!, input: PostUpdateInput!): Post!
+  deletePost(id: UUID!): Boolean!
+
+  # Paid投稿機能
+  purchasePost(input: PurchasePostInput!): PostPurchase!
+  updatePostToPaid(input: UpdatePostToPaidInput!): Post!
+
+  # いいね
+  toggleLike(postId: UUID!): Post!
+  toggleCommentLike(commentId: UUID!): Comment!
+
+  # コメント
+  createComment(input: CommentCreateInput!): Comment!
+  deleteComment(id: UUID!): Boolean!
+
+  # プロフィール
+  updateProfile(input: ProfileUpdateInput!): User!
+
+  # フォロー
+  followUser(userId: UUID!): FollowPayload!
+  unfollowUser(userId: UUID!): UnfollowPayload!
+
+  # ユーザー設定
+  updateUserSettings(input: UserSettingsUpdateInput!): UserSettings!
+  changePassword(input: ChangePasswordInput!): UserUpdatePayload!
+  updateEmail(input: UpdateEmailInput!): UserUpdatePayload!
+
+  # 管理者用ユーザー管理
+  adminUpdateUser(input: AdminUpdateUserInput!): AdminUpdateUserPayload!
+  adminDeleteUser(userId: UUID!): AdminDeleteUserPayload!
+  adminChangeUserPassword(input: AdminChangeUserPasswordInput!): AdminChangeUserPasswordPayload!
+
+  # 管理者用システム管理
+  resetDatabase: AdminResetResult!
+
+  # 通知
+  markNotificationAsRead(id: UUID!): Notification!
+  markNotificationsAsRead(ids: [UUID!]!): [Notification!]!
+  markAllNotificationsAsRead: Int!
+  createTestNotification(userId: UUID!, message: String): Notification!
+
+  # メディア
+  deleteMedia(id: UUID!): Boolean!
+
+  # 管理者機能
+  resetPosts: AdminResetResult!
+  resetPostsAndMedia: AdminResetResult!
+  getSystemStats: SystemStats!
+
+  # キャッシュ管理（開発環境のみ）
+  invalidateUserCache(userId: UUID!): Boolean!
+
+  # ウォレット機能
+  createDepositRequest(input: CreateDepositRequestInput!): DepositRequest!
+  createWithdrawalRequest(input: CreateWithdrawalRequestInput!): WithdrawalRequest!
+  registerUserWallet(input: RegisterUserWalletInput!): UserWallet!
+
+  # メッセージ機能
+  sendMessage(input: SendMessageInput!): SendMessagePayload!
+  createConversation(input: CreateConversationInput!): CreateConversationPayload!
+  markAsRead(input: MarkAsReadInput!): MarkAsReadPayload!
+  updateConversation(input: UpdateConversationInput!): UpdateConversationPayload!
+  addParticipant(input: AddParticipantInput!): AddParticipantPayload!
+  removeParticipant(input: RemoveParticipantInput!): RemoveParticipantPayload!
+  muteConversation(input: MuteConversationInput!): MuteConversationPayload!
+  deleteMessage(input: DeleteMessageInput!): DeleteMessagePayload!
+  hideMessage(input: HideMessageInput!): HideMessagePayload!
+}
+
+# ================================
+# サブスクリプション
+# ================================
+type Subscription {
+  # 通知
+  notificationAdded(userId: UUID!): Notification
+  notificationCountUpdated(userId: UUID!): Int
+
+  # 投稿
+  postAdded: Post!
+  postUpdated(postId: UUID!): Post!
+  postProcessingCompleted(postId: UUID!): Post!
+  allPostsProcessingUpdated: Post!
+
+  # コメント
+  commentAdded(postId: UUID!): Comment!
+
+  # いいね
+  likeToggled(postId: UUID!): Post!
+
+  # メディア（Media V2）
+  uploadProgress(mediaId: UUID!): UploadProgressUpdate!
+
+  # ウォレット機能
+  walletBalanceUpdated(userId: UUID!): Wallet!
+  walletTransactionAdded(userId: UUID!): WalletTransaction!
+  depositRequestUpdated(userId: UUID!): DepositRequest!
+  withdrawalRequestUpdated(userId: UUID!): WithdrawalRequest!
+
+  # メッセージ機能
+  messageAdded(conversationId: UUID!): Message!
+  messageRead(conversationId: UUID!): MessageRead!
+  messageDeleted(conversationId: UUID!): Message!
+  messageHidden(conversationId: UUID!): Message!
+  conversationUpdated(userId: UUID!): Conversation!
+  participantAdded(conversationId: UUID!): ConversationParticipant!
+  participantRemoved(conversationId: UUID!): ConversationParticipant!
+}
+
+
+  # ユーザー関連スキーマ
+  # 🎯 ユーザー関連スキーマ定義
+# ユーザー、認証、設定に関する型定義
+
+# ================================
+# ユーザー型
+# ================================
+type User @cacheControl(maxAge: 300) {
+  id: UUID!
+  username: String!
+  email: String! @cacheControl(scope: PRIVATE)
+  displayName: String
+  bio: String
+  profileImageId: UUID @cacheControl(maxAge: 600)
+  coverImageId: UUID @cacheControl(maxAge: 600)
+  isVerified: Boolean!
+  isActive: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  lastLoginAt: DateTime @cacheControl(scope: PRIVATE)
+
+  # 統計フィールド
+  postsCount: Int! @cacheControl(maxAge: 60)
+  followersCount: Int! @cacheControl(maxAge: 60)
+  followingCount: Int! @cacheControl(maxAge: 60)
+
+  # フォロー関係
+  isFollowing: Boolean @cacheControl(maxAge: 30)
+  isFollowedBy: Boolean @cacheControl(maxAge: 30)
+
+  # リレーション
+  posts: [Post!]! @cacheControl(maxAge: 60)
+  likes: [Like!]! @cacheControl(scope: PRIVATE)
+  comments: [Comment!]! @cacheControl(maxAge: 120)
+  notifications: [Notification!]! @cacheControl(scope: PRIVATE)
+  settings: UserSettings @cacheControl(scope: PRIVATE)
+  role: Role
+}
+
+# 役割型
+type Role {
+  id: UUID!
+  name: String!
+  description: String
+}
+
+# ================================
+# ユーザー設定型
+# ================================
+type UserSettings @cacheControl(scope: PRIVATE) {
+  userId: UUID!
+  theme: String!
+  animationsEnabled: Boolean!
+  locale: String!
+  contentFilter: String!
+  displayMode: String!
+  timezone: String!
+  updatedAt: DateTime!
+}
+
+# ================================
+# ユーザー接続型（ページネーション対応）
+# ================================
+type UserConnection {
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type UserEdge {
+  node: User!
+  cursor: String!
+}
+
+# ================================
+# 認証型
+# ================================
+type AuthPayload {
+  success: Boolean!
+  message: String!
+  user: User
+  accessToken: String
+  requiresTwoFactor: Boolean
+  tempUserId: String
+}
+
+type LogoutPayload {
+  success: Boolean!
+  message: String!
+}
+
+type UserUpdatePayload {
+  success: Boolean!
+  message: String!
+  user: User
+}
+
+# ================================
+# 入力型
+# ================================
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input RegisterInput {
+  username: String!
+  email: String!
+  password: String!
+  displayName: String
+  timezone: String
+}
+
+input ChangePasswordInput {
+  currentPassword: String!
+  newPassword: String!
+}
+
+input UpdateEmailInput {
+  newEmail: String!
+  password: String!
+}
+
+input UpdateUserAvatarInput {
+  mediaId: UUID!
+}
+
+input ProfileUpdateInput {
+  displayName: String
+  bio: String
+  coverImageId: UUID
+}
+
+input UserSettingsUpdateInput {
+  theme: String
+  animationsEnabled: Boolean
+  locale: String
+  contentFilter: String
+  displayMode: String
+  timezone: String
+}
+
+# ================================
+# フォロー関連型
+# ================================
+type Follow {
+  id: UUID!
+  follower: User!
+  following: User!
+  createdAt: DateTime!
+}
+
+type FollowConnection {
+  edges: [FollowEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type FollowEdge {
+  node: User!
+  cursor: String!
+  followedAt: DateTime!
+}
+
+type FollowPayload {
+  success: Boolean!
+  message: String!
+  follow: Follow
+}
+
+type UnfollowPayload {
+  success: Boolean!
+  message: String!
+}
+
+# ================================
+# タイムライン関連型
+# ================================
+enum TimelineType {
+  FOLLOWING
+  RECOMMENDED
+  ALL
+}
+
+type TimelineConnection {
+  edges: [PostEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+  timelineType: TimelineType!
+}
+
+
+  # 投稿関連スキーマ
+  # 🎯 投稿関連スキーマ定義
+# 投稿、コメント、いいね、購入に関する型定義
+
+# ================================
+# 投稿型
+# ================================
+type Post @cacheControl(maxAge: 180) {
+  id: UUID!
+  content: String
+  visibility: PostVisibility!
+  isDeleted: Boolean!
+  isProcessing: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  # Paid投稿関連
+  price: Float
+  paidAt: DateTime
+
+  # リレーション
+  user: User! @cacheControl(inheritMaxAge: true)
+  userId: UUID!
+  media: [Media!]! @cacheControl(maxAge: 300)
+  likes: [Like!]! @cacheControl(maxAge: 30)
+  comments: [Comment!]! @cacheControl(maxAge: 60)
+  purchases: [PostPurchase!]! @cacheControl(maxAge: 60)
+
+  # 計算フィールド
+  likesCount: Int! @cacheControl(maxAge: 30)
+  commentsCount: Int! @cacheControl(maxAge: 60)
+  viewsCount: Int! @cacheControl(maxAge: 30)
+  isLikedByCurrentUser: Boolean @cacheControl(scope: PRIVATE, maxAge: 10)
+  isPurchasedByCurrentUser: Boolean @cacheControl(scope: PRIVATE, maxAge: 10)
+}
+
+# ================================
+# 投稿購入型
+# ================================
+type PostPurchase @cacheControl(maxAge: 300) {
+  id: UUID!
+  userId: UUID!
+  postId: UUID!
+  price: Float!
+  purchasedAt: DateTime!
+  expiresAt: DateTime
+  isActive: Boolean!
+
+  # リレーション
+  user: User! @cacheControl(inheritMaxAge: true)
+  post: Post! @cacheControl(inheritMaxAge: true)
+}
+
+# ================================
+# コメント型
+# ================================
+type Comment {
+  id: UUID!
+  content: String!
+  isDeleted: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  # リレーション
+  user: User!
+  userId: UUID!
+  post: Post!
+  postId: UUID!
+
+  # 計算フィールド
+  likesCount: Int!
+  isLikedByCurrentUser: Boolean
+}
+
+# ================================
+# いいね型
+# ================================
+type Like {
+  id: UUID!
+  createdAt: DateTime!
+
+  # リレーション
+  user: User!
+  userId: UUID!
+  post: Post!
+  postId: UUID!
+}
+
+# ================================
+# 投稿接続型（ページネーション対応）
+# ================================
+type PostConnection {
+  edges: [PostEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type PostEdge {
+  node: Post!
+  cursor: String!
+}
+
+# ================================
+# 入力型
+# ================================
+input PostCreateInput {
+  content: String
+  visibility: PostVisibility = PUBLIC
+  mediaIds: [UUID!]
+  price: Float
+}
+
+input PostUpdateInput {
+  content: String
+  visibility: PostVisibility
+  price: Float
+}
+
+input PurchasePostInput {
+  postId: UUID!
+}
+
+input UpdatePostToPaidInput {
+  postId: UUID!
+  price: Float!
+}
+
+input CommentCreateInput {
+  postId: UUID!
+  content: String!
+}
+
+
+  # ウォレット関連スキーマ
+  # 🎯 ウォレット関連スキーマ定義
+# ウォレット、取引、入出金に関する型定義
+
+# ================================
+# 列挙型
+# ================================
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  PAYMENT
+  RECEIVE
+  TRANSFER
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum DepositStatus {
+  PENDING
+  COMPLETED
+  EXPIRED
+}
+
+enum WithdrawalStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum ProviderType {
+  CRYPTO_DEPOSIT
+  CRYPTO_WITHDRAWAL
+  P2P
+}
+
+enum RequestType {
+  DEPOSIT
+  WITHDRAWAL
+}
+
+enum PaymentMethod {
+  CRYPTO
+  P2P
+}
+
+enum RequestStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+# 残高種別
+enum BalanceType {
+  WALLET
+  SALES
+  P2P
+}
+
+# ================================
+# ウォレット型
+# ================================
+type Wallet {
+  id: UUID!
+  userId: UUID!
+  balanceUsd: Float!
+  salesBalanceUsd: Float!
+  p2pBalanceUsd: Float!
+  p2pLockedUsd: Float!
+  isActive: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  user: User!
+}
+
+type UserWallet {
+  id: UUID!
+  userId: UUID!
+  walletName: String!
+  currency: String!
+  network: String!
+  address: String!
+  isVerified: Boolean!
+  isActive: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  user: User!
+}
+
+# ================================
+# 決済システム型
+# ================================
+type PaymentProvider {
+  id: UUID!
+  name: String!
+  displayName: String!
+  type: ProviderType!
+  isActive: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type PaymentRequest {
+  id: UUID!
+  userId: UUID!
+  providerId: UUID!
+  type: RequestType!
+  method: PaymentMethod!
+  amountUsd: Float!
+  currency: String
+  currencyAmount: Float
+  status: RequestStatus!
+  metadata: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  provider: PaymentProvider!
+  user: User!
+}
+
+# ================================
+# 入出金リクエスト型
+# ================================
+type DepositRequest {
+  id: UUID!
+  userId: UUID!
+  requestedUsdAmount: Float!
+  currency: String!
+  network: String!
+  expectedCryptoAmount: Float!
+  exchangeRate: Float!
+  ourDepositAddress: String!
+  status: DepositStatus!
+  expiresAt: DateTime!
+  completedAt: DateTime
+  createdAt: DateTime!
+  user: User!
+  walletTransactions: [WalletTransaction!]!
+}
+
+type WithdrawalRequest {
+  id: UUID!
+  userId: UUID!
+  currency: String!
+  amount: Float!
+  amountUsd: Float!
+  destinationAddress: String!
+  memo: String
+  network: String!
+  status: WithdrawalStatus!
+  errorMessage: String
+  processedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  user: User!
+  walletTransactions: [WalletTransaction!]!
+}
+
+# ================================
+# 取引履歴型
+# ================================
+type WalletTransaction {
+  id: UUID!
+  userId: UUID!
+  paymentRequestId: UUID
+  type: TransactionType!
+  balanceType: BalanceType!
+  amountUsd: Float!
+  description: String!
+  metadata: String
+  createdAt: DateTime!
+  user: User!
+  paymentRequest: PaymentRequest
+}
+
+# ================================
+# 為替レート型
+# ================================
+type ExchangeRate {
+  id: UUID!
+  currency: String!
+  usdRate: Float!
+  source: String!
+  isActive: Boolean!
+  createdAt: DateTime!
+}
+
+# ================================
+# 入力型
+# ================================
+input CreateDepositRequestInput {
+  requestedUsdAmount: Float!
+  currency: String!
+  network: String!
+  userWalletAddress: String!
+}
+
+input CreateWithdrawalRequestInput {
+  currency: String!
+  amount: Float!
+  destinationAddress: String!
+  memo: String
+  network: String!
+}
+
+input RegisterUserWalletInput {
+  walletName: String!
+  currency: String!
+  network: String!
+  address: String!
+}
+
+# ================================
+# 権限システム型
+# ================================
+# Permission and UserPermission are defined in admin.graphql
+
+# ================================
+# 残高移動用入力型
+# ================================
+input TransferBalanceInput {
+  fromBalanceType: BalanceType!
+  toBalanceType: BalanceType!
+  amountUsd: Float!
+  description: String
+}
+
+# ================================
+# 権限管理用入力型
+# ================================
+input GrantPermissionInput {
+  userId: UUID!
+  permissionName: String!
+  expiresAt: DateTime
+}
+
+input RevokePermissionInput {
+  userId: UUID!
+  permissionName: String!
+}
+
+# ================================
+# クエリ・ミューテーション拡張
+# ================================
+extend type Query {
+  # 権限管理
+  myPermissions: [UserPermission!]!
+  allPermissions: [Permission!]! # 管理者用
+  userPermissions(userId: UUID!): [UserPermission!]! # 管理者用
+  # ウォレット取引履歴（残高種別対応）
+  myWalletTransactionsByBalance(
+    balanceType: BalanceType!
+    first: Int
+    after: String
+  ): [WalletTransaction!]!
+}
+
+extend type Mutation {
+  # 権限管理
+  grantPermission(input: GrantPermissionInput!): UserPermission!
+  revokePermission(input: RevokePermissionInput!): Boolean!
+
+  # 残高移動
+  transferBalance(input: TransferBalanceInput!): WalletTransaction!
+}
+
+
+  # 通知関連スキーマ
+  # 🎯 通知関連スキーマ定義
+# 通知システムに関する型定義
+
+# ================================
+# 通知型
+# ================================
+type Notification {
+  id: UUID!
+  type: NotificationType!
+  content: String!
+  isRead: Boolean!
+  createdAt: DateTime!
+  readAt: DateTime
+
+  # リレーション
+  user: User!
+  userId: UUID!
+  actor: User
+  actorId: UUID
+  referenceId: UUID
+}
+
+
+  # メッセージ関連スキーマ
+  # 🎯 メッセージ関連スキーマ定義
+# ベストプラクティス設計による拡張可能なメッセージシステム
+
+# ================================
+# 列挙型
+# ================================
+enum ConversationType {
+  DIRECT # 1対1の会話
+  GROUP # グループチャット（将来実装）
+}
+
+enum MessageType {
+  TEXT # テキストメッセージ
+  IMAGE # 画像メッセージ（将来実装）
+  FILE # ファイルメッセージ（将来実装）
+  SYSTEM # システムメッセージ（将来実装）
+}
+
+enum ParticipantRole {
+  MEMBER # 一般メンバー
+  ADMIN # 管理者（将来実装）
+}
+
+# ================================
+# メッセージ型
+# ================================
+type Message @cacheControl(maxAge: 60) {
+  id: UUID!
+  conversationId: UUID!
+  senderId: UUID!
+  content: String!
+  type: MessageType!
+  replyToId: UUID
+  editedAt: DateTime
+  deletedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  # リレーション
+  conversation: Conversation! @cacheControl(inheritMaxAge: true)
+  sender: User! @cacheControl(inheritMaxAge: true)
+  replyTo: Message @cacheControl(inheritMaxAge: true)
+  replies: [Message!]! @cacheControl(maxAge: 30)
+  reads: [MessageRead!]! @cacheControl(maxAge: 10)
+
+  # 計算フィールド
+  isRead: Boolean! @cacheControl(maxAge: 10) # 現在のユーザーが既読かどうか
+  readCount: Int! @cacheControl(maxAge: 10) # 既読者数
+  isHidden: Boolean! @cacheControl(maxAge: 10) # 現在のユーザーが非表示にしているかどうか
+  canDelete: Boolean! @cacheControl(maxAge: 10) # 現在のユーザーが削除可能かどうか
+}
+
+# ================================
+# 会話型
+# ================================
+type Conversation @cacheControl(maxAge: 120) {
+  id: UUID!
+  type: ConversationType!
+  title: String # グループチャット用タイトル
+  createdBy: UUID!
+  isArchived: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  # リレーション
+  creator: User! @cacheControl(inheritMaxAge: true)
+  participants: [ConversationParticipant!]! @cacheControl(maxAge: 60)
+  messages(first: Int = 50, after: String, includeDeleted: Boolean = false): MessageConnection!
+
+  # 計算フィールド
+  lastMessage: Message @cacheControl(maxAge: 30)
+  unreadCount: Int! @cacheControl(maxAge: 10) # 現在のユーザーの未読数
+  participantCount: Int! @cacheControl(maxAge: 60)
+  activeParticipants: [User!]! @cacheControl(maxAge: 60) # 退出していない参加者
+}
+
+# ================================
+# 参加者型
+# ================================
+type ConversationParticipant @cacheControl(maxAge: 120) {
+  id: UUID!
+  conversationId: UUID!
+  userId: UUID!
+  role: ParticipantRole!
+  joinedAt: DateTime!
+  leftAt: DateTime
+  isMuted: Boolean!
+  lastReadAt: DateTime
+
+  # リレーション
+  conversation: Conversation! @cacheControl(inheritMaxAge: true)
+  user: User! @cacheControl(inheritMaxAge: true)
+
+  # 計算フィールド
+  isActive: Boolean! # leftAtがnullかどうか
+  unreadCount: Int! @cacheControl(maxAge: 10) # この参加者の未読数
+}
+
+# ================================
+# 既読状況型
+# ================================
+type MessageRead @cacheControl(maxAge: 60) {
+  id: UUID!
+  messageId: UUID!
+  userId: UUID!
+  readAt: DateTime!
+
+  # リレーション
+  message: Message! @cacheControl(inheritMaxAge: true)
+  user: User! @cacheControl(inheritMaxAge: true)
+}
+
+# ================================
+# ページネーション型
+# ================================
+type MessageConnection {
+  edges: [MessageEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type MessageEdge {
+  node: Message!
+  cursor: String!
+}
+
+type ConversationConnection {
+  edges: [ConversationEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type ConversationEdge {
+  node: Conversation!
+  cursor: String!
+}
+
+# ================================
+# 入力型
+# ================================
+input SendMessageInput {
+  conversationId: UUID
+  recipientId: UUID
+  content: String!
+  type: MessageType = TEXT
+  replyToId: UUID
+}
+
+input CreateConversationInput {
+  participantIds: [UUID!]!
+  title: String # グループチャット用
+  type: ConversationType = DIRECT
+  initialMessage: String
+}
+
+input MarkAsReadInput {
+  conversationId: UUID!
+  messageIds: [UUID!] # 指定しない場合は全未読メッセージを既読にする
+}
+
+input UpdateConversationInput {
+  conversationId: UUID!
+  title: String
+  isArchived: Boolean
+}
+
+input AddParticipantInput {
+  conversationId: UUID!
+  userId: UUID!
+  role: ParticipantRole = MEMBER
+}
+
+input RemoveParticipantInput {
+  conversationId: UUID!
+  userId: UUID!
+}
+
+input MuteConversationInput {
+  conversationId: UUID!
+  isMuted: Boolean!
+}
+
+# メッセージ削除用入力型
+input DeleteMessageInput {
+  messageId: UUID!
+  deleteType: MessageDeleteType!
+}
+
+# メッセージ削除タイプ
+enum MessageDeleteType {
+  UNSEND # 送信取り消し（全員から削除）
+  HIDE # トーク削除（自分のみ削除）
+}
+
+# メッセージ非表示用入力型
+input HideMessageInput {
+  messageId: UUID!
+}
+
+# ================================
+# レスポンス型
+# ================================
+type SendMessagePayload {
+  success: Boolean!
+  message: String!
+  messageData: Message
+  conversation: Conversation
+}
+
+type CreateConversationPayload {
+  success: Boolean!
+  message: String!
+  conversation: Conversation
+}
+
+type MarkAsReadPayload {
+  success: Boolean!
+  message: String!
+  conversation: Conversation
+  readCount: Int!
+}
+
+type UpdateConversationPayload {
+  success: Boolean!
+  message: String!
+  conversation: Conversation
+}
+
+type AddParticipantPayload {
+  success: Boolean!
+  message: String!
+  conversation: Conversation
+  participant: ConversationParticipant
+}
+
+type RemoveParticipantPayload {
+  success: Boolean!
+  message: String!
+  conversation: Conversation
+}
+
+type MuteConversationPayload {
+  success: Boolean!
+  message: String!
+  conversation: Conversation
+}
+
+type DeleteMessagePayload {
+  success: Boolean!
+  message: String!
+  deletedMessage: Message
+  deleteType: MessageDeleteType!
+}
+
+type HideMessagePayload {
+  success: Boolean!
+  message: String!
+  hiddenMessage: Message
+}
+
+# ================================
+# 統計型
+# ================================
+type MessageStats {
+  totalConversations: Int!
+  activeConversations: Int! # アーカイブされていない会話数
+  unreadConversations: Int!
+  totalUnreadMessages: Int!
+  totalMessages: Int!
+  archivedConversations: Int!
+}
+
+# ================================
+# Query拡張（operations.graphqlに統合される）
+# ================================
+# conversations(first: Int = 20, after: String, includeArchived: Boolean = false): ConversationConnection!
+# conversation(id: UUID!): Conversation
+# messageStats: MessageStats!
+# searchMessages(query: String!, conversationId: UUID, first: Int = 20, after: String): MessageConnection!
+
+# ================================
+# Mutation拡張（operations.graphqlに統合される）
+# ================================
+# sendMessage(input: SendMessageInput!): SendMessagePayload!
+# createConversation(input: CreateConversationInput!): CreateConversationPayload!
+# markAsRead(input: MarkAsReadInput!): MarkAsReadPayload!
+# updateConversation(input: UpdateConversationInput!): UpdateConversationPayload!
+# addParticipant(input: AddParticipantInput!): AddParticipantPayload!
+# removeParticipant(input: RemoveParticipantInput!): RemoveParticipantPayload!
+# muteConversation(input: MuteConversationInput!): MuteConversationPayload!
+
+# ================================
+# Subscription拡張（operations.graphqlに統合される）
+# ================================
+# messageAdded(conversationId: UUID!): Message!
+# messageRead(conversationId: UUID!): MessageRead!
+# conversationUpdated(userId: UUID!): Conversation!
+# participantAdded(conversationId: UUID!): ConversationParticipant!
+# participantRemoved(conversationId: UUID!): ConversationParticipant!
+
+
+  # 管理者機能スキーマ
+  # 🎯 管理者機能スキーマ定義
+# 管理者専用機能に関する型定義
+
+# ================================
+# 管理者機能の型定義
+# ================================
+type AdminResetResult {
+  success: Boolean!
+  message: String!
+  deletedCount: Int!
+}
+
+type SystemStats {
+  totalUsers: Int!
+  totalPosts: Int!
+  totalMedia: Int!
+  totalComments: Int!
+  totalLikes: Int!
+  storageUsed: String!
+  activeUsers24h: Int!
+  activeUsers7d: Int!
+  activeUsers30d: Int!
+}
+
+# ================================
+# 管理者用ユーザー管理型定義
+# ================================
+type AdminUserDetail {
+  id: UUID!
+  username: String!
+  email: String!
+  displayName: String
+  bio: String
+  profileImageId: UUID
+  coverImageId: UUID
+  isVerified: Boolean!
+  isActive: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  lastLoginAt: DateTime
+
+  # 統計情報
+  postsCount: Int!
+  followersCount: Int!
+  followingCount: Int!
+
+  # 権限情報
+  permissions: [UserPermission!]!
+}
+
+# ユーザー権限型
+type UserPermission {
+  id: UUID!
+  userId: UUID!
+  permissionId: UUID!
+  grantedBy: UUID
+  grantedAt: DateTime!
+  expiresAt: DateTime
+  isActive: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  # リレーション
+  permission: Permission!
+  grantedByUser: User
+}
+
+# 権限型
+type Permission {
+  id: UUID!
+  name: String!
+  description: String
+  createdAt: DateTime!
+}
+
+# 管理者用ユーザー接続型（ページネーション対応）
+type AdminUserConnection {
+  edges: [AdminUserEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type AdminUserEdge {
+  node: AdminUserDetail!
+  cursor: String!
+}
+
+# 管理者用ユーザー更新入力
+input AdminUpdateUserInput {
+  userId: UUID!
+  username: String
+  email: String
+  displayName: String
+  bio: String
+  isVerified: Boolean
+  isActive: Boolean
+}
+
+# 管理者用ユーザー更新結果
+type AdminUpdateUserPayload {
+  success: Boolean!
+  message: String!
+  user: AdminUserDetail
+}
+
+# 管理者用ユーザー削除結果
+type AdminDeleteUserPayload {
+  success: Boolean!
+  message: String!
+}
+
+# 管理者用パスワード変更入力
+input AdminChangeUserPasswordInput {
+  userId: UUID!
+  newPassword: String!
+}
+
+# 管理者用パスワード変更結果
+type AdminChangeUserPasswordPayload {
+  success: Boolean!
+  message: String!
+}
+
+
+  # キャッシュ統計スキーマ
+  # 🚀 キャッシュ統計スキーマ定義
+# 認証キャッシュシステムの統計情報に関する型定義
+
+# ================================
+# キャッシュ統計型
+# ================================
+type CacheStats {
+  l1Hits: Int!
+  l2Hits: Int!
+  dbHits: Int!
+  totalRequests: Int!
+  hitRate: Float!
+  enabled: Boolean!
+}
+
+# ================================
+# レート制限統計型
+# ================================
+type RateLimitStats {
+  totalKeys: Int!
+  blockedIdentifiers: Int!
+  enabled: Boolean!
+}
+
+# ================================
+# Query拡張（operations.graphqlに統合される）
+# ================================
+# authCacheStats: CacheStats!
+
+# ================================
+# Mutation拡張（operations.graphqlに統合される）
+# ================================
+# invalidateUserCache(userId: UUID!): Boolean!
+
+
+  # サイト機能管理スキーマ
+  # 🎯 サイト機能管理GraphQLスキーマ
+# サイト機能設定とユーザー機能権限の管理
+
+# ================================
+# サイト機能設定型定義
+# ================================
+type SiteFeatureSetting {
+  id: UUID!
+  featureName: String!
+  isEnabled: Boolean!
+  description: String
+  updatedBy: UUID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  # リレーション
+  updatedByUser: User!
+}
+
+# ユーザー機能権限型定義
+type UserFeaturePermission {
+  id: UUID!
+  userId: UUID!
+  featureName: String!
+  isEnabled: Boolean!
+  grantedBy: UUID!
+  grantedAt: DateTime!
+  expiresAt: DateTime
+  isActive: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  # リレーション
+  user: User!
+  grantedByUser: User!
+}
+
+# 機能フラグ一括取得用型定義
+type FeatureFlags {
+  POST_CREATE: Boolean!
+  POST_IMAGE_UPLOAD: Boolean!
+  POST_LIKE: Boolean!
+  MESSAGES_ACCESS: Boolean!
+  MESSAGES_SEND: Boolean!
+  WALLET_ACCESS: Boolean!
+  WALLET_DEPOSIT: Boolean!
+  WALLET_WITHDRAW: Boolean!
+}
+
+# ================================
+# 入力型定義
+# ================================
+input UpdateSiteFeatureInput {
+  featureName: String!
+  isEnabled: Boolean!
+  description: String
+}
+
+input UpdateUserFeaturePermissionInput {
+  userId: UUID!
+  featureName: String!
+  isEnabled: Boolean!
+  expiresAt: DateTime
+}
+
+input RevokeUserFeaturePermissionInput {
+  userId: UUID!
+  featureName: String!
+}
+
+# ================================
+# クエリ・ミューテーション拡張
+# ================================
+extend type Query {
+  # サイト機能設定
+  siteFeatureSettings: [SiteFeatureSetting!]!
+  siteFeatureSetting(featureName: String!): SiteFeatureSetting
+
+  # ユーザー機能権限
+  userFeaturePermissions(userId: UUID!): [UserFeaturePermission!]!
+  myFeaturePermissions: [UserFeaturePermission!]!
+
+  # 全機能フラグ一括取得（最適化版）
+  featureFlags: FeatureFlags!
+}
+
+extend type Mutation {
+  # サイト機能設定管理（管理者のみ）
+  updateSiteFeature(input: UpdateSiteFeatureInput!): SiteFeatureSetting!
+
+  # ユーザー機能権限管理（管理者のみ）
+  updateUserFeaturePermission(input: UpdateUserFeaturePermissionInput!): UserFeaturePermission!
+  revokeUserFeaturePermission(input: RevokeUserFeaturePermissionInput!): Boolean!
+}
+
+
+  # 2FA関連スキーマ
+  # 🔐 2FA (Two-Factor Authentication) GraphQL スキーマ
+
+# 入力型定義
+
+"""
+2FA設定開始入力
+"""
+input TwoFactorSetupInput {
+  """パスワード確認"""
+  password: String!
+}
+
+"""
+2FA有効化入力
+"""
+input TwoFactorEnableInput {
+  """TOTPコード（6桁）"""
+  totpCode: String!
+  """パスワード確認"""
+  password: String!
+}
+
+"""
+2FA無効化入力
+"""
+input TwoFactorDisableInput {
+  """パスワード確認"""
+  password: String!
+  """TOTPコードまたはバックアップコード"""
+  code: String!
+}
+
+"""
+2FAログイン入力
+"""
+input TwoFactorLoginInput {
+  """一時的なユーザーID"""
+  tempUserId: String!
+  """TOTPコードまたはバックアップコード"""
+  code: String!
+}
+
+"""
+バックアップコード再生成入力
+"""
+input TwoFactorRegenerateBackupCodesInput {
+  """パスワード確認"""
+  password: String!
+  """TOTPコード"""
+  totpCode: String!
+}
+
+# 出力型定義
+
+"""
+2FA設定データ
+"""
+type TwoFactorSetupData {
+  """Base32エンコードされたシークレット"""
+  secret: String!
+  """QRコード用のotpauth:// URL"""
+  qrCodeUrl: String!
+  """バックアップ用の手動入力シークレット"""
+  manualEntryKey: String!
+}
+
+"""
+バックアップコード
+"""
+type BackupCodes {
+  """バックアップコードリスト"""
+  codes: [String!]!
+  """生成日時"""
+  generatedAt: DateTime!
+}
+
+"""
+2FA状態
+"""
+type TwoFactorStatus {
+  """2FAが有効かどうか"""
+  enabled: Boolean!
+  """有効化日時"""
+  enabledAt: DateTime
+  """残りのバックアップコード数"""
+  backupCodesCount: Int!
+}
+
+"""
+2FA有効化結果
+"""
+type TwoFactorEnableResult {
+  """成功フラグ"""
+  success: Boolean!
+  """メッセージ"""
+  message: String!
+  """バックアップコード"""
+  backupCodes: BackupCodes!
+}
+
+"""
+2FA無効化結果
+"""
+type TwoFactorDisableResult {
+  """成功フラグ"""
+  success: Boolean!
+  """メッセージ"""
+  message: String!
+}
+
+# クエリ・ミューテーション定義
+
+extend type Query {
+  """
+  2FA状態取得
+  """
+  twoFactorStatus: TwoFactorStatus!
+}
+
+extend type Mutation {
+  """
+  2FA設定開始（QRコード生成）
+  """
+  setupTwoFactor(input: TwoFactorSetupInput!): TwoFactorSetupData!
+
+  """
+  2FA有効化
+  """
+  enableTwoFactor(input: TwoFactorEnableInput!): TwoFactorEnableResult!
+
+  """
+  2FA無効化
+  """
+  disableTwoFactor(input: TwoFactorDisableInput!): TwoFactorDisableResult!
+
+  """
+  バックアップコード再生成
+  """
+  regenerateBackupCodes(input: TwoFactorRegenerateBackupCodesInput!): BackupCodes!
+
+  """
+  2FA認証完了ログイン
+  """
+  loginWithTwoFactor(input: TwoFactorLoginInput!): AuthPayload!
+}
+
+
+  # P2P取引関連スキーマ
+  # 🎯 P2P取引スキーマ定義
+# P2Pウォレット入金機能に関する型定義
+
+# ================================
+# P2P取引ステータス
+# ================================
+enum P2PTradeStatus {
+  PENDING
+  MATCHED
+  PAYMENT_SENT
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  DISPUTED
+}
+
+# 支払い方法種別
+enum P2PPaymentMethodType {
+  BANK_TRANSFER
+  PAYPAY
+  PAYPAL
+  WISE
+  LINE_PAY
+  RAKUTEN_PAY
+}
+
+# ================================
+# P2P取引リクエスト
+# ================================
+type P2PTradeRequest {
+  id: UUID!
+  buyerId: UUID!
+  sellerId: UUID
+  offerId: UUID
+  offer: P2POffer
+  amountUsd: Decimal!
+  fiatCurrency: String!
+  fiatAmount: Decimal!
+  exchangeRate: Decimal!
+  status: P2PTradeStatus!
+  paymentMethod: P2PPaymentMethodType
+  paymentDetails: String
+  escrowAmount: Decimal
+  expiresAt: DateTime!
+  completedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  buyer: User!
+  seller: User
+}
+
+# ================================
+# P2Pオファー（支払い方法単位）
+# ================================
+type P2POffer {
+  id: UUID!
+  sellerId: UUID!
+  paymentMethod: P2PPaymentMethodType!
+  minAmountUsd: Decimal!
+  maxAmountUsd: Decimal!
+  fiatCurrency: String!
+  exchangeRateMargin: Decimal!
+  isActive: Boolean!
+  instructions: String
+  priority: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  seller: User!
+}
+
+# ================================
+# P2Pオファー 接続型 (Relay方式)
+# ================================
+type P2POfferEdge {
+  cursor: String!
+  node: P2POffer!
+}
+
+type P2POfferConnection {
+  edges: [P2POfferEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+# ================================
+# ソート定義
+# ================================
+enum P2POfferSortField {
+  RATE
+  MIN_AMOUNT
+  MAX_AMOUNT
+  CREATED_AT
+}
+
+enum SortOrder {
+  ASC
+  DESC
+}
+
+input P2POfferSortInput {
+  field: P2POfferSortField!
+  order: SortOrder!
+}
+
+# ================================
+# 入力型
+# ================================
+input CreateP2PTradeRequestInput {
+  offerId: UUID!
+  amountUsd: Decimal!
+}
+
+input CreateP2POfferInput {
+  paymentMethod: P2PPaymentMethodType!
+  minAmountUsd: Decimal!
+  maxAmountUsd: Decimal!
+  fiatCurrency: String!
+  exchangeRateMargin: Decimal!
+  instructions: String
+  priority: Int
+}
+
+input UpdateP2POfferInput {
+  offerId: UUID!
+  minAmountUsd: Decimal
+  maxAmountUsd: Decimal
+  exchangeRateMargin: Decimal
+  isActive: Boolean
+  instructions: String
+  priority: Int
+}
+
+input ConfirmP2PPaymentInput {
+  tradeId: UUID!
+  paymentDetails: String!
+}
+
+# ================================
+# クエリ拡張
+# ================================
+extend type Query {
+  myP2PTradeRequests(status: P2PTradeStatus, first: Int, after: String): [P2PTradeRequest!]!
+  p2pTradeRequest(tradeId: UUID!): P2PTradeRequest
+
+  # P2POfferベースのクエリ
+  availableP2POffers(
+    fiatCurrency: String
+    paymentMethod: P2PPaymentMethodType
+    amountUsd: Decimal
+    first: Int
+    after: String
+    orderBy: P2POfferSortInput
+  ): P2POfferConnection!
+
+  myP2POffers(
+    fiatCurrency: String
+    paymentMethod: P2PPaymentMethodType
+    isActive: Boolean
+  ): [P2POffer!]!
+}
+
+# ================================
+# ミューテーション拡張
+# ================================
+extend type Mutation {
+  # 買い手用
+  createP2PTradeRequest(input: CreateP2PTradeRequestInput!): P2PTradeRequest!
+  cancelP2PTradeRequest(tradeId: UUID!): Boolean!
+  markP2PPaymentSent(tradeId: UUID!): P2PTradeRequest!
+
+  # 売り手用
+  createP2POffer(input: CreateP2POfferInput!): P2POffer!
+  updateP2POffer(input: UpdateP2POfferInput!): P2POffer!
+  deleteP2POffer(offerId: UUID!): Boolean!
+  acceptP2PTradeRequest(tradeId: UUID!): P2PTradeRequest!
+  confirmP2PPaymentReceived(input: ConfirmP2PPaymentInput!): P2PTradeRequest!
+
+  # 紛争
+  createP2PDispute(input: CreateP2PDisputeInput!): P2PDispute!
+  resolveP2PDispute(input: ResolveP2PDisputeInput!): P2PDispute!
+
+  # 買い手設定
+  updateP2PBuyerPreference(input: UpdateP2PBuyerPreferenceInput!): P2PBuyerPreference!
+  deleteP2PBuyerPreference(id: UUID!): Boolean!
+
+  # 法定通貨管理（管理者用）
+  createFiatCurrency(input: CreateFiatCurrencyInput!): FiatCurrency!
+  updateFiatCurrency(input: UpdateFiatCurrencyInput!): FiatCurrency!
+}
+
+# ================================
+# サブスクリプション拡張
+# ================================
+extend type Subscription {
+  p2pTradeUpdated(userId: UUID!): P2PTradeRequest!
+  p2pDisputeUpdated(tradeId: UUID!): P2PDispute!
+}
+
+# ================================
+# 紛争関連
+# ================================
+enum P2PDisputeStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED_BUYER_WIN
+  RESOLVED_SELLER_WIN
+  RESOLVED_SPLIT
+  CLOSED
+}
+
+type P2PDispute {
+  id: UUID!
+  tradeId: UUID!
+  initiatorId: UUID!
+  reason: String!
+  evidence: String
+  status: P2PDisputeStatus!
+  resolution: String
+  resolvedBy: UUID
+  resolvedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  trade: P2PTradeRequest!
+  initiator: User!
+  resolver: User
+}
+
+input CreateP2PDisputeInput {
+  tradeId: UUID!
+  reason: String!
+  evidence: String
+}
+
+input ResolveP2PDisputeInput {
+  disputeId: UUID!
+  resolution: P2PDisputeStatus!
+  notes: String
+}
+
+# ================================
+# 通貨マスタ
+# ================================
+type FiatCurrency {
+  id: UUID!
+  code: String!
+  name: String!
+  symbol: String!
+  isActive: Boolean!
+}
+
+input CreateFiatCurrencyInput {
+  code: String!
+  name: String!
+  symbol: String!
+  isActive: Boolean
+}
+
+input UpdateFiatCurrencyInput {
+  id: UUID!
+  name: String
+  symbol: String
+  isActive: Boolean
+}
+
+# ================================
+# 買い手設定
+# ================================
+type P2PBuyerPreference {
+  id: UUID!
+  buyerId: UUID!
+  paymentMethod: P2PPaymentMethodType!
+  fiatCurrency: String!
+  minAmountUsd: Decimal!
+  maxAmountUsd: Decimal!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  buyer: User!
+}
+
+input UpdateP2PBuyerPreferenceInput {
+  paymentMethod: P2PPaymentMethodType!
+  fiatCurrency: String!
+  minAmountUsd: Decimal!
+  maxAmountUsd: Decimal!
+}
+
+# ================================
+# 追加クエリ
+# ================================
+extend type Query {
+  # 管理者用：全紛争一覧
+  adminP2PDisputes(status: P2PDisputeStatus, limit: Int, offset: Int): [P2PDispute!]!
+
+  # 通貨一覧
+  fiatCurrencies(isActive: Boolean): [FiatCurrency!]!
+
+  # 買い手設定
+  myP2PBuyerPreferences: [P2PBuyerPreference!]!
+
+  # 紛争
+  p2pDispute(disputeId: UUID!): P2PDispute
+  myP2PDisputes: [P2PDispute!]!
+
+  # リアルタイム為替レート
+  currentExchangeRate(currency: String!): Float!
+}
+
+
+  # メディア関連スキーマ（既存）
+  # 🚀 Media V2 GraphQL Schema - Zenko統合版
+# プリサインドURL、マルチパートアップロード、透明暗号化対応
+
+# ================================
+# スカラー型定義
+# ================================
+# JSON scalar is defined in base.graphql
+
+# ================================
+# Enum定義
+# ================================
+
+# MediaStatus, UploadProgressStatus, UploadSessionStatus are defined in base.graphql
+
+# ================================
+# 入力型定義
+# ================================
+
+# プリサインドアップロード入力（統一仕様）
+input PresignedUploadInput {
+  filename: String!
+  contentType: String!
+  size: Int!
+  mediaType: MediaType! # 必須に変更（統一仕様）
+}
+
+# プロキシアップロード入力（責任分離対応）
+input ProxyUploadInput {
+  filename: String!
+  contentType: String!
+  size: Int!
+  mediaType: MediaType!
+  fileData: String! # Base64エンコードされたファイルデータ
+}
+
+# マルチパートアップロード入力
+input MultipartUploadInput {
+  filename: String!
+  contentType: String!
+  size: Int!
+  partCount: Int!
+  mediaType: MediaType = POST
+}
+
+# マルチパート完了入力
+input CompletedPart {
+  partNumber: Int!
+  etag: String!
+}
+
+# ユーザーアバター更新入力
+input UpdateUserAvatarInput {
+  mediaId: UUID!
+}
+
+# ユーザーカバー画像更新入力
+input UpdateUserCoverInput {
+  mediaId: UUID!
+}
+
+# 🚀 UploadSession用入力型
+input CreateUploadSessionInput {
+  kind: MediaType!
+  filename: String!
+  contentType: String!
+  byteSize: Int!
+  width: Int
+  height: Int
+}
+
+# 🚀 UploadSession用出力型
+type UploadSession {
+  uploadId: ID!
+  uploadPath: String!
+  uploadAuthToken: String! # Authorization: Bearer 用トークン
+  expiresAt: DateTime!
+  requiredHeaders: [HeaderPair!]! # Content-Type 等の必須ヘッダ
+  maxBytes: Int!
+}
+
+# ヘッダーペア型
+type HeaderPair {
+  key: String!
+  value: String!
+}
+
+
+# ================================
+# 出力型定義
+# ================================
+
+# プリサインドアップロードデータ
+type PresignedUploadData {
+  uploadUrl: String!
+  downloadUrl: String!
+  s3Key: String!
+  mediaId: UUID!
+  expiresAt: DateTime!
+  fields: JSON
+}
+
+# プリサインドダウンロード出力
+type PresignedDownloadData {
+  downloadUrl: String!
+  expiresAt: DateTime!
+}
+
+# プロキシアップロードレスポンス（責任分離対応）
+type ProxyUploadResponse {
+  success: Boolean!
+  mediaId: UUID!
+  filename: String!
+  contentType: String!
+  size: Int!
+  downloadUrl: String!
+  encrypted: Boolean!
+}
+
+# マルチパートアップロードデータ
+type MultipartUploadData {
+  uploadId: String!
+  s3Key: String!
+  partUrls: [PartUploadUrl!]!
+  mediaId: UUID!
+  expiresAt: DateTime!
+}
+
+# パートアップロードURL
+type PartUploadUrl {
+  partNumber: Int!
+  uploadUrl: String!
+}
+
+# アップロード完了レスポンス
+type UploadCompleteResponse {
+  media: Media!
+  success: Boolean!
+  message: String
+}
+
+# UserUpdatePayload is defined in user.graphql
+
+# ================================
+# Mutation拡張
+# ================================
+
+extend type Mutation {
+  # プリサインドURL生成
+  generatePresignedUpload(input: PresignedUploadInput!): PresignedUploadData!
+  generatePresignedDownload(s3Key: String!): PresignedDownloadData!
+
+  # プロキシアップロード（責任分離対応）
+  uploadFileProxy(input: ProxyUploadInput!): ProxyUploadResponse!
+
+  # 🚀 Phase 2: 統一メディアアップロード
+  uploadMediaUnified(input: UnifiedUploadInput!): UnifiedUploadResponse!
+
+  # マルチパートアップロード
+  initiateMultipartUpload(input: MultipartUploadInput!): MultipartUploadData!
+  completeMultipartUpload(uploadId: String!, parts: [CompletedPart!]!): UploadCompleteResponse!
+  abortMultipartUpload(uploadId: String!): Boolean!
+
+  # アップロード完了通知（フロントエンド責任分離版）
+  notifyUploadComplete(mediaId: UUID!, s3Key: String!): UploadCompleteResponse!
+
+  # 直接Zenkoアップロード（小さなファイル用）
+  uploadToZenko(file: Upload!, mediaType: MediaType = POST): UploadCompleteResponse!
+
+  # 🚫 generatePresignedDownloadByKey は削除されました（generatePresignedDownloadを使用）
+
+  # ユーザーアバター更新
+  updateUserAvatar(input: UpdateUserAvatarInput!): UserUpdatePayload!
+  deleteUserAvatar: UserUpdatePayload!
+
+  # ユーザーカバー画像更新
+  updateUserCover(input: UpdateUserCoverInput!): UserUpdatePayload!
+  deleteUserCover: UserUpdatePayload!
+
+  # 🚀 S3 Gateway Presigned URL 移行
+  createUploadSession(input: CreateUploadSessionInput!): UploadSession!
+  completeUploadSession(uploadId: ID!): Media!
+}
+
+# ================================
+# Query拡張
+# ================================
+
+extend type Query {
+  # 統一メディア取得（統一仕様）
+  getUnifiedMedia(mediaId: UUID!): UnifiedMediaResponse!
+
+  # 統一メディア一覧取得
+  getUnifiedMediaList(
+    mediaType: MediaType
+    userId: UUID
+    limit: Int = 20
+    offset: Int = 0
+  ): UnifiedMediaListResponse!
+
+  # Paid投稿購入状況確認
+  checkPostPurchaseStatus(postId: UUID!): PostPurchaseStatusResponse!
+
+  # ユーザーの購入済み投稿一覧
+  getUserPurchasedPosts(userId: UUID, limit: Int = 20, offset: Int = 0): PurchasedPostsResponse!
+}
+
+# ================================
+# 状態確認型
+# ================================
+
+# ================================
+# Media型拡張
+# ================================
+
+extend type Media {
+  # OGP署名付きURL（単一バリアント）
+  ogpUrl(variant: String = "summary"): String
+
+  # OGP署名付きURL（複数バリアント）
+  ogpUrls: MediaOgpUrls!
+}
+
+# OGPバリアントURL
+type MediaOgpUrls {
+  summary: String
+  large: String
+}
+
+# ================================
+# Subscription型（メインスキーマに統合済み）
+# ================================
+
+# uploadProgress(mediaId: UUID!): UploadProgressUpdate!
+# 上記のサブスクリプションはメインスキーマのSubscription型に統合されています
+
+# アップロード進捗更新
+type UploadProgressUpdate {
+  mediaId: UUID!
+  status: UploadProgressStatus!
+  progress: Int!
+  message: String
+  error: String
+}
+
+# ================================
+# 統一メディア関連型定義
+# ================================
+
+# 統一メディアレスポンス
+type UnifiedMediaResponse {
+  media: Media!
+  variants: [MediaVariant!]!
+  isPaid: Boolean!
+  hasBlurVariant: Boolean!
+  accessGranted: Boolean! # ユーザーがアクセス可能かどうか
+}
+
+# 統一メディア一覧レスポンス
+type UnifiedMediaListResponse {
+  media: [UnifiedMediaResponse!]!
+  totalCount: Int!
+  hasNextPage: Boolean!
+}
+
+# Paid投稿購入状況レスポンス
+type PostPurchaseStatusResponse {
+  postId: UUID!
+  isPaid: Boolean!
+  price: Float
+  isPurchased: Boolean!
+  purchasedAt: DateTime
+  canAccess: Boolean! # アクセス可能かどうか
+}
+
+# 購入済み投稿一覧レスポンス
+type PurchasedPostsResponse {
+  posts: [PostWithPurchaseInfo!]!
+  totalCount: Int!
+  hasNextPage: Boolean!
+}
+
+# 購入情報付き投稿
+type PostWithPurchaseInfo {
+  post: Post!
+  purchaseInfo: PostPurchase!
+}
+
+# ================================
+# 🚀 Phase 2: 統一メディアアップロードシステム
+# ================================
+
+# 統一アップロード入力型
+input UnifiedUploadInput {
+  filename: String!
+  contentType: String!
+  size: Int!
+  mediaType: MediaType!
+  fileData: String!
+}
+
+# 統一アップロード応答型
+type UnifiedUploadResponse {
+  success: Boolean!
+  mediaId: String!
+  filename: String!
+  contentType: String!
+  size: Int!
+  downloadUrl: String!
+  status: MediaStatus!
+  message: String
+}
+
+# MediaType and MediaStatus are defined in base.graphql
+
+
+  # 統一メディアシステム（Phase 2）
+  
+  input UnifiedUploadInput {
+    filename: String!
+    contentType: String!
+    size: Int!
+    mediaType: MediaType!
+    fileData: String!
+  }
+
+  type UnifiedUploadResponse {
+    success: Boolean!
+    mediaId: String!
+    filename: String!
+    contentType: String!
+    size: Int!
+    downloadUrl: String!
+    status: MediaStatus!
+    message: String
+  }
+
+  extend type Mutation {
+    uploadMediaUnified(input: UnifiedUploadInput!): UnifiedUploadResponse!
+  }"
+`;

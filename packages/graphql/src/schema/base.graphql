@@ -1,0 +1,143 @@
+# 🎯 基本型定義 - スカラー型と基本的な列挙型
+# GraphQLスキーマの基盤となる型定義
+
+# ================================
+# スカラー型定義
+# ================================
+scalar DateTime
+scalar Upload
+scalar UUID
+scalar JSON
+scalar Decimal
+
+# ================================
+# キャッシュコントロール
+# ================================
+enum CacheControlScope {
+  PUBLIC
+  PRIVATE
+}
+
+directive @cacheControl(
+  maxAge: Int
+  scope: CacheControlScope
+  inheritMaxAge: Boolean
+) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
+
+# ================================
+# 基本列挙型
+# ================================
+
+enum PostVisibility {
+  PUBLIC
+  PRIVATE
+  FOLLOWERS_ONLY
+  PAID
+}
+
+enum MediaType {
+  POST
+  AVATAR
+  COVER
+  OGP
+}
+
+enum MediaVariantType {
+  THUMB
+  MEDIUM
+  LARGE
+  BLUR
+  OGP
+}
+
+# S3 Gateway専用ステータス
+enum MediaStatus {
+  PROCESSING
+  READY
+  FAILED
+}
+
+enum UploadProgressStatus {
+  UPLOADING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum UploadSessionStatus {
+  CREATED
+  UPLOADING
+  UPLOADED
+  COMPLETED
+  FAILED
+  EXPIRED
+}
+
+enum NotificationType {
+  LIKE
+  COMMENT
+  FOLLOW
+  POST_PROCESSING_COMPLETED
+  POST_PROCESSING_FAILED
+  COMMENT_PROCESSING_COMPLETED
+  COMMENT_PROCESSING_FAILED
+  AVATAR_PROCESSING_COMPLETED
+  AVATAR_PROCESSING_FAILED
+  WALLET_DEPOSIT_COMPLETED
+  WALLET_WITHDRAWAL_COMPLETED
+  WALLET_WITHDRAWAL_FAILED
+  P2P_TRADE_CREATED
+  P2P_TRADE_MATCHED
+  P2P_PAYMENT_SENT
+  P2P_TRADE_COMPLETED
+  P2P_TRADE_CANCELLED
+  P2P_TRADE_TIMEOUT
+}
+
+# ================================
+# ページネーション型
+# ================================
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+# ================================
+# 基本メディア型定義
+# ================================
+
+# メディア基本型
+type Media {
+  id: UUID!
+  filename: String!
+  s3Key: String!
+  mimeType: String!
+  fileSize: Int!
+  width: Int
+  height: Int
+  type: MediaType!
+  status: MediaStatus!
+  url: String
+  thumbnailUrl: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  variants: [MediaVariant!]!
+  user: User
+  post: Post
+}
+
+# メディアバリアント型
+type MediaVariant {
+  id: UUID!
+  type: MediaVariantType!
+  s3Key: String!
+  width: Int
+  height: Int
+  fileSize: Int
+  quality: Int
+  url: String
+  createdAt: DateTime!
+  media: Media!
+}

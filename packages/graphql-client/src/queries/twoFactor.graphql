@@ -1,0 +1,47 @@
+# 2FA関連のGraphQLクエリ・ミューテーション
+
+# 2FA状態取得
+query TwoFactorStatus {
+  twoFactorStatus {
+    enabled
+    enabledAt
+    backupCodesCount
+  }
+}
+
+# 2FA設定開始（QRコード生成）
+mutation SetupTwoFactor($input: TwoFactorSetupInput!) {
+  setupTwoFactor(input: $input) {
+    secret
+    qrCodeUrl
+    manualEntryKey
+  }
+}
+
+# 2FA有効化
+mutation EnableTwoFactor($input: TwoFactorEnableInput!) {
+  enableTwoFactor(input: $input) {
+    success
+    message
+    backupCodes {
+      codes
+      generatedAt
+    }
+  }
+}
+
+# 2FA無効化
+mutation DisableTwoFactor($input: TwoFactorDisableInput!) {
+  disableTwoFactor(input: $input) {
+    success
+    message
+  }
+}
+
+# バックアップコード再生成
+mutation RegenerateBackupCodes($input: TwoFactorRegenerateBackupCodesInput!) {
+  regenerateBackupCodes(input: $input) {
+    codes
+    generatedAt
+  }
+}

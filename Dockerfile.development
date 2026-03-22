@@ -1,0 +1,131 @@
+# =============================================================================
+# 🛠️ LIBARK Development Multi-Stage Dockerfile
+# =============================================================================
+# Development image that runs natively on both Apple Silicon and Intel
+# Supports native modules such as Sharp and Bcrypt
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Base Stage - shared base image
+# -----------------------------------------------------------------------------
+FROM node:24-alpine AS base
+
+# Install required system packages
+# - vips-dev: for Sharp (Alpine)
+# - python3/build-base: for building native modules such as bcrypt
+RUN apk add --no-cache \
+    libc6-compat \
+    python3 \
+    make \
+    g++ \
+    vips-dev \
+    git \
+    curl \
+    wget \
+    bash
+
+# pnpm setup
+ENV PNPM_HOME=/pnpm \
+    PATH=/pnpm:$PATH \
+    NODE_ENV=development
+
+RUN corepack enable && corepack prepare pnpm@10.11.0 --activate
+
+WORKDIR /app
+
+# pnpm configuration
+RUN pnpm config set store-dir /root/.pnpm-store && \
+    pnpm config set enable-pre-post-scripts true && \
+    pnpm config set auto-install-peers true && \
+    pnpm config set strict-peer-dependencies false
+
+# -----------------------------------------------------------------------------
+# Dev Stage - for dependency installation (DevContainer)
+# -----------------------------------------------------------------------------
+FROM base AS dev
+
+ENV NODE_OPTIONS="--max-old-space-size=4096" \
+    CHOKIDAR_USEPOLLING=true \
+    WATCHPACK_POLLING=true \
+    NEXT_TELEMETRY_DISABLED=1
+
+WORKDIR /app
+
+# Add development tools
+RUN apk add --no-cache zsh procps lsof
+
+# zsh configuration (optional)
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended || true
+
+CMD ["sh", "-c", "pnpm install && echo 'Dependencies installed!' && sleep infinity"]
+
+# -----------------------------------------------------------------------------
+# Frontend Dev Stage
+# -----------------------------------------------------------------------------
+FROM base AS frontend-dev
+
+ENV NODE_OPTIONS="--max-old-space-size=4096" \
+    CHOKIDAR_USEPOLLING=true \
+    WATCHPACK_POLLING=true \
+    NEXT_TELEMETRY_DISABLED=1 \
+    PORT=3000
+
+WORKDIR /app
+
+EXPOSE 3000
+
+HEALTHCHECK --interval=60s --timeout=10s --start-period=60s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
+
+CMD ["sh", "-c", "pnpm --filter frontend dev"]
+
+# -----------------------------------------------------------------------------
+# Backend Dev Stage
+# -----------------------------------------------------------------------------
+FROM base AS backend-dev
+
+ENV NODE_OPTIONS="--max-old-space-size=4096" \
+    PORT=8000
+
+WORKDIR /app
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8000/health || exit 1
+
+CMD ["sh", "-c", "pnpm --filter @libark/backend dev"]
+
+# -----------------------------------------------------------------------------
+# Worker Dev Stage
+# -----------------------------------------------------------------------------
+FROM base AS worker-dev
+
+ENV NODE_OPTIONS="--max-old-space-size=4096" \
+    PORT=8100
+
+WORKDIR /app
+
+EXPOSE 8100
+
+HEALTHCHECK --interval=60s --timeout=10s --start-period=120s --retries=3 \
+    CMD pgrep -f "node" || exit 1
+
+CMD ["sh", "-c", "pnpm --filter worker dev"]
+
+# -----------------------------------------------------------------------------
+# S3 Gateway Dev Stage
+# -----------------------------------------------------------------------------
+FROM base AS s3-gateway-dev
+
+ENV NODE_OPTIONS="--max-old-space-size=2048" \
+    PORT=8080
+
+WORKDIR /app
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=60s --timeout=10s --start-period=30s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
+
+CMD ["sh", "-c", "pnpm --filter @libark/s3-gateway dev"]

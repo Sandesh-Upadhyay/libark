@@ -1,0 +1,86 @@
+# P2P取引関連のGraphQLクエリ
+
+# P2P取引リクエストを取得（単一）
+query P2PTradeRequest($tradeId: UUID!) {
+  p2pTradeRequest(tradeId: $tradeId) {
+    ...P2PTradeInfo
+  }
+}
+
+# P2P取引リクエスト一覧を取得
+query MyP2PTradeRequests($status: P2PTradeStatus, $first: Int, $after: String) {
+  myP2PTradeRequests(status: $status, first: $first, after: $after) {
+    ...P2PTradeInfo
+  }
+}
+
+# 利用可能なP2Pオファー一覧を取得
+query AvailableP2POffers(
+  $fiatCurrency: String
+  $paymentMethod: P2PPaymentMethodType
+  $amountUsd: Decimal
+  $first: Int
+  $after: String
+  $orderBy: P2POfferSortInput
+) {
+  availableP2POffers(
+    fiatCurrency: $fiatCurrency
+    paymentMethod: $paymentMethod
+    amountUsd: $amountUsd
+    first: $first
+    after: $after
+    orderBy: $orderBy
+  ) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges {
+      cursor
+      node {
+        ...P2POfferInfo
+      }
+    }
+  }
+}
+
+# 自分のP2Pオファー一覧を取得
+query MyP2POffers($fiatCurrency: String, $paymentMethod: P2PPaymentMethodType, $isActive: Boolean) {
+  myP2POffers(fiatCurrency: $fiatCurrency, paymentMethod: $paymentMethod, isActive: $isActive) {
+    ...P2POfferInfo
+  }
+}
+
+# 通貨一覧を取得
+query FiatCurrencies($isActive: Boolean) {
+  fiatCurrencies(isActive: $isActive) {
+    ...FiatCurrencyInfo
+  }
+}
+
+# 自分の買い手設定一覧を取得
+query MyP2PBuyerPreferences {
+  myP2PBuyerPreferences {
+    ...P2PBuyerPreferenceInfo
+  }
+}
+
+# 紛争を取得（単一）
+query P2PDispute($disputeId: UUID!) {
+  p2pDispute(disputeId: $disputeId) {
+    ...P2PDisputeInfo
+  }
+}
+
+# 自分の紛争一覧を取得
+query MyP2PDisputes {
+  myP2PDisputes {
+    ...P2PDisputeInfo
+  }
+}
+
+# リアルタイム為替レートを取得
+query CurrentExchangeRate($currency: String!) {
+  currentExchangeRate(currency: $currency)
+}

@@ -1,0 +1,979 @@
+{
+  "common": {
+    "appName": "LIBARK",
+    "welcome": "Welcome to LIBARK",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "profile": "Profile",
+    "settings": "Settings",
+    "home": "Home",
+    "search": "Search",
+    "notifications": "Notifications",
+    "messages": "Messages",
+    "wallet": "Wallet",
+    "about": "About",
+    "features": "Features",
+    "loading": "Loading...",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "footerAbout": "About Service",
+    "footerTerms": "Terms of Service",
+    "footerPrivacy": "Privacy Policy",
+    "footerContact": "Contact Us",
+    "contact": "Contact Us",
+    "terms": "Terms of Service",
+    "privacy": "Privacy",
+    "comingSoon": "Coming Soon",
+    "backToHome": "Back to Home",
+    "backToProfile": "Back to Profile",
+    "back": "Back",
+    "refresh": "Refresh",
+    "admin": "Admin Panel",
+    "success": "Success",
+    "error": "Error",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "language": "Language",
+    "theme": "Theme",
+    "optional": "Optional",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "close": "Close",
+    "open": "Open",
+    "submit": "Submit",
+    "reset": "Reset",
+    "clear": "Clear",
+    "copy": "Copy",
+    "share": "Share",
+    "like": "Like",
+    "comment": "Comment",
+    "follow": "Follow",
+    "following": "Following",
+    "unfollow": "Unfollow",
+    "followers": "Followers",
+    "followersCount": "Followers",
+    "followingCount": "Following",
+    "block": "Block",
+    "report": "Report",
+    "mute": "Mute",
+    "unmute": "Unmute"
+  },
+  "home": {
+    "title": "Home",
+    "subtitle": "Share what's happening today",
+    "welcome": "Welcome back",
+    "createPost": "Create Post",
+    "whatsHappening": "What's happening?"
+  },
+  "landing": {
+    "hero": {
+      "title": "Connect Deeper, Experience Social Media Differently",
+      "subtitle": "Share your voice with the world on LIBARK. Connect in real-time, find empathy, and discover something new.",
+      "cta": "Get Started Now",
+      "loginCta": "Login"
+    },
+    "features": {
+      "title": "LIBARK Features",
+      "subtitle": "Features that enrich your social experience",
+      "realtime": {
+        "title": "Real-time Posts",
+        "description": "Share your thoughts and experiences the moment they happen"
+      },
+      "community": {
+        "title": "Community",
+        "description": "Connect with people who share your interests and make new friends"
+      },
+      "privacy": {
+        "title": "Privacy Focused",
+        "description": "Your data is securely protected and we respect your privacy"
+      },
+      "customization": {
+        "title": "Customization",
+        "description": "Customize your profile and themes to your liking"
+      }
+    },
+    "stats": {
+      "title": "Growing Community",
+      "users": "Active Users",
+      "posts": "Posts",
+      "connections": "Connections"
+    },
+    "cta": {
+      "title": "Start Your LIBARK Journey Today",
+      "subtitle": "Create your free account and begin a new social experience",
+      "button": "Start Free"
+    },
+    "secure": "Secure & Safe",
+    "fast": "Fast Response",
+    "free": "Free to Use",
+    "featuresTitle": "Main Features",
+    "featuresDescription": "Discover the rich features you can experience with LIBARK.",
+    "postShareTitle": "Post and Share",
+    "postShareDesc": "Post text and images to share your thoughts and experiences.",
+    "likeCommentTitle": "Likes and Comments",
+    "likeCommentDesc": "Like and comment on posts to interact with other users.",
+    "followTitle": "Follow Function",
+    "followDesc": "Follow users you're interested in to create a custom feed.",
+    "dmTitle": "Direct Messages",
+    "dmDesc": "Communicate directly with other users through private messages.",
+    "ctaTitle": "Start LIBARK Now",
+    "ctaText": "Register for free and easily. Start now and find new connections."
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "subtitle": "Sign in to your account",
+      "welcome": "Welcome back",
+      "description": "Sign in to your LIBARK account and connect with the community",
+      "email": {
+        "label": "Username or Email",
+        "placeholder": "Enter username or email"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Enter password"
+      },
+      "submit": "Sign In",
+      "submitting": "Signing in...",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up",
+      "backToHome": "Back to Home",
+      "trustIndicators": {
+        "secure": "Secure Login",
+        "fast": "Fast Processing"
+      }
+    },
+    "register": {
+      "title": "Sign Up",
+      "subtitle": "Create a new account",
+      "welcome": "Get started",
+      "description": "Create a new account and join the LIBARK community",
+      "username": {
+        "label": "Username",
+        "placeholder": "Enter username",
+        "helpText": "3-20 characters, alphanumeric and underscore only"
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "Enter email address"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Enter password",
+        "requirements": {
+          "title": "Password requirements:",
+          "length": "At least 8 characters",
+          "number": "Include numbers",
+          "letter": "Include letters",
+          "uppercase": "Include uppercase",
+          "lowercase": "Include lowercase"
+        }
+      },
+      "confirmPassword": {
+        "label": "Confirm Password",
+        "placeholder": "Re-enter password"
+      },
+      "displayName": {
+        "label": "Display Name (Optional)",
+        "placeholder": "Enter display name",
+        "helpText": "Name shown on your profile"
+      },
+      "submit": "Create Account",
+      "submitting": "Creating account...",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "backToHome": "Back to Home",
+      "trustIndicators": {
+        "secure": "Secure Registration",
+        "instant": "Get Started Instantly"
+      }
+    },
+    "errors": {
+      "required": "This field is required",
+      "invalidCredentials": "Invalid email or password",
+      "userExists": "This email is already in use",
+      "weakPassword": "Password does not meet requirements",
+      "invalidEmail": "Please enter a valid email address",
+      "invalidUsername": "Please enter a valid username",
+      "tooShort": "Too short",
+      "tooLong": "Too long",
+      "invalidFormat": "Invalid format",
+      "passwordMismatch": "Passwords do not match",
+      "loginFailed": "Login failed",
+      "registrationFailed": "Registration failed",
+      "logoutFailed": "Logout failed",
+      "networkError": "Network error occurred",
+      "unknownError": "An unexpected error occurred",
+      "sessionExpired": "Session expired",
+      "unauthorized": "Authentication required",
+      "forbidden": "Access denied",
+      "accountDisabled": "Account is disabled",
+      "invalidInput": "Invalid input data",
+      "serverError": "Server error occurred. Please try again later"
+    },
+    "success": {
+      "loginSuccess": "Successfully logged in",
+      "registerSuccess": "Account created successfully",
+      "logoutSuccess": "Successfully logged out",
+      "passwordChanged": "Password changed successfully",
+      "emailVerified": "Email verified successfully"
+    },
+    "validation": {
+      "email": {
+        "required": "Please enter your email address",
+        "invalid": "Please enter a valid email address"
+      },
+      "username": {
+        "required": "Please enter a username",
+        "tooShort": "Username must be at least 3 characters",
+        "tooLong": "Username must be 20 characters or less",
+        "invalid": "Username can only contain letters, numbers, and underscores"
+      },
+      "password": {
+        "required": "Please enter a password",
+        "tooShort": "Password must be at least 8 characters",
+        "requireUppercase": "Password must include uppercase letters",
+        "requireLowercase": "Password must include lowercase letters",
+        "requireNumbers": "Password must include numbers",
+        "requireSymbols": "Password must include symbols"
+      },
+      "confirmPassword": {
+        "required": "Please confirm your password",
+        "mismatch": "Passwords do not match"
+      },
+      "displayName": {
+        "tooLong": "Display name must be 50 characters or less"
+      },
+      "emailOrUsername": {
+        "required": "Please enter username or email",
+        "invalid": "Please enter a valid email or username"
+      }
+    },
+    "loading": {
+      "authenticating": "Authenticating...",
+      "checkingAuth": "Checking authentication...",
+      "signingIn": "Signing in...",
+      "signingUp": "Signing up...",
+      "signingOut": "Signing out..."
+    },
+    "accessibility": {
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "required": "required",
+      "optional": "optional",
+      "loading": "loading",
+      "error": "error",
+      "success": "success"
+    }
+  },
+  "actions": {
+    "createPost": "Create Post",
+    "editPost": "Edit Post",
+    "deletePost": "Delete Post",
+    "likePost": "Like",
+    "commentPost": "Comment",
+    "sharePost": "Share",
+    "reportPost": "Report",
+    "followUser": "Follow",
+    "unfollowUser": "Unfollow",
+    "blockUser": "Block",
+    "muteUser": "Mute"
+  },
+  "posts": {
+    "createPost": "Create Post",
+    "whatOnYourMind": "What's on your mind?",
+    "post": "Post",
+    "like": "Like",
+    "comment": "Comment",
+    "share": "Share",
+    "delete": "Delete",
+    "edit": "Edit",
+    "report": "Report"
+  },
+  "profile": {
+    "followers": "Followers",
+    "following": "Following",
+    "posts": "Posts",
+    "editProfile": "Edit Profile",
+    "follow": "Follow",
+    "unfollow": "Unfollow",
+    "settings": "Profile Settings",
+    "settingsDescription": "Edit your profile information.",
+    "profileImage": "Profile Image",
+    "profileImageDescription": "Set your profile image.",
+    "currentImage": "Current Image",
+    "currentImageDescription": "Click to upload a new image",
+    "basicInfo": "Basic Information",
+    "basicInfoDescription": "Set your basic profile information.",
+    "displayNameDescription": "Name displayed to other users (max 50 characters)",
+    "bioText": "Bio Text",
+    "bioSectionDescription": "Tell other users about yourself.",
+    "bioDescription": "Enter your bio",
+    "bioHint": "You can enter up to 160 characters including line breaks",
+    "saveNote": "Changes will be saved automatically.",
+    "uploadImage": "Upload Image",
+    "usernameCannotBeChanged": "Username cannot be changed",
+    "enterDisplayName": "Enter display name",
+    "bio": "Bio",
+    "enterBio": "Enter bio",
+    "characters": "characters",
+    "saveChanges": "Save Changes",
+    "saving": "Saving...",
+    "updateSuccess": "Profile updated successfully",
+    "userNotFound": "User not found",
+    "joinedOn": "Joined: {date}",
+    "media": "Media",
+    "likes": "Likes",
+    "noFollowers": "No followers yet",
+    "noFollowing": "Not following anyone yet",
+    "noMediaPosts": "No posts with media yet",
+    "noMedia": "No media yet"
+  },
+  "settings": {
+    "description": "Manage account settings and application preferences",
+    "welcome": {
+      "title": "Welcome to Settings",
+      "description": "You can change various settings from the left menu. Changes are automatically saved."
+    },
+    "overview": "Overview",
+    "profile": {
+      "title": "Profile Settings",
+      "description": "Manage profile information and avatar image",
+      "updateSuccess": "Profile updated successfully",
+      "updateError": "Failed to update profile",
+      "avatarDeleteSuccess": "Profile image deleted successfully",
+      "avatarDeleteError": "Failed to delete profile image",
+      "avatarUploadSuccess": "Profile image uploaded successfully",
+      "avatarUploadError": "Failed to upload profile image",
+      "changeAvatar": "Change Image",
+      "deleteAvatar": "Delete Image",
+      "uploading": "Uploading...",
+      "deleting": "Deleting...",
+      "invalidFileType": "Please select an image file",
+      "fileTooLarge": "File size must be 10MB or less",
+      "displayName": {
+        "label": "Display Name",
+        "placeholder": "Enter your display name",
+        "required": "Display name is required",
+        "tooLong": "Display name must be 50 characters or less",
+        "trim": "Leading and trailing spaces will be removed"
+      },
+      "bio": {
+        "label": "Bio",
+        "placeholder": "Enter your bio",
+        "tooLong": "Bio must be 500 characters or less"
+      },
+      "saving": "Saving...",
+      "saveChanges": "Save Changes",
+      "avatar": {
+        "title": "Profile Image",
+        "description": "Set and change your profile image",
+        "current": "Current Image",
+        "delete": "Delete Avatar",
+        "deleting": "Deleting...",
+        "dragAndDrop": "Drag and drop image",
+        "orClickToSelect": "or click to select file",
+        "uploadButton": "Upload Avatar",
+        "uploading": "Uploading...",
+        "uploadSuccess": "Avatar uploaded successfully",
+        "uploadProcessing": "Processing image. You will be notified when complete."
+      },
+      "info": {
+        "title": "Profile Information",
+        "description": "Set your display name and bio"
+      }
+    },
+    "account": {
+      "title": "Account Settings",
+      "description": "Manage security and account information",
+      "basic": {
+        "title": "Basic Information",
+        "description": "View your account's basic information"
+      },
+      "username": {
+        "label": "Username",
+        "description": "Username cannot be changed"
+      },
+      "email": {
+        "label": "Email Address",
+        "description": "Currently registered email address",
+        "title": "Email Change",
+        "change": "Change Email Address",
+        "changeDescription": "A confirmation email will be sent to the new email address",
+        "new": "New Email Address",
+        "password": "Current Password",
+        "changeButton": "Change Email Address",
+        "changing": "Changing...",
+        "changeSuccess": "Confirmation email sent to new email address",
+        "changeError": "Failed to change email address"
+      },
+      "password": {
+        "title": "Password Change",
+        "description": "Change your password regularly for security",
+        "change": "Change Password",
+        "changeDescription": "New password must be at least 8 characters",
+        "current": "Current Password",
+        "new": "New Password",
+        "confirm": "Confirm Password",
+        "changeButton": "Change Password",
+        "changing": "Changing...",
+        "mismatch": "New passwords do not match",
+        "tooShort": "Password must be at least 8 characters",
+        "changeSuccess": "Password changed successfully",
+        "changeError": "Failed to change password"
+      },
+      "email": {
+        "change": "Change Email Address",
+        "changeDescription": "A confirmation email will be sent to the new email address",
+        "new": "New Email Address",
+        "password": "Current Password",
+        "changeButton": "Change Email Address",
+        "changing": "Changing...",
+        "changeSuccess": "Email change confirmation sent",
+        "changeError": "Failed to change email address"
+      },
+      "delete": {
+        "title": "Delete Account",
+        "description": "Your account and all data will be permanently deleted. This action cannot be undone.",
+        "button": "Delete Account",
+        "confirmTitle": "Delete your account?",
+        "confirmDescription": "This action cannot be undone. Your account and all data will be permanently deleted.",
+        "confirmButton": "Delete Permanently",
+        "success": "Account deleted successfully",
+        "error": "Failed to delete account"
+      }
+    },
+    "notifications": {
+      "title": "Notification Settings",
+      "description": "Manage notification preferences"
+    },
+    "display": {
+      "title": "Display Settings",
+      "description": "Customize the app's appearance and display method",
+      "theme": {
+        "title": "Theme Settings",
+        "description": "Choose the app's appearance theme",
+        "selection": "Theme Selection",
+        "selectionDescription": "Choose light, dark, or system theme",
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System",
+        "current": "Current Theme",
+        "currentDescription": "Currently applied theme",
+        "systemDetected": "System Settings",
+        "changeSuccess": "Theme changed successfully"
+      },
+      "language": {
+        "title": "Language Settings",
+        "description": "Change the app's display language",
+        "select": "Display Language",
+        "selectDescription": "Select the language for the entire app"
+      },
+      "animations": {
+        "title": "Animation Settings",
+        "description": "Control the app's animation effects",
+        "enable": "Enable Animations",
+        "enableDescription": "Enable animation effects for page transitions and UI elements",
+        "enabled": "Animations enabled",
+        "disabled": "Animations disabled"
+      }
+    },
+    "notifications": {
+      "title": "Notification Settings",
+      "description": "Manage notification preferences"
+    },
+    "privacy": "Privacy",
+    "language": "Language",
+    "theme": "Theme",
+    "security": "Security",
+    "billing": "Billing",
+    "display": "Display",
+    "displayDescription": "Change settings related to the app's display.",
+    "animations": "Animations",
+    "enableAnimations": "Animation Effects",
+    "enableAnimationsDescription": "Enable animation effects for screen transitions and UI elements",
+    "animationsDescription": "Toggle animation effects on/off. Disabling may improve performance and reduce battery consumption.",
+    "themeDescription": "Choose the app theme. System will automatically switch based on your device settings.",
+    "colorScheme": "Color Scheme",
+    "colorSchemeDescription": "Light, dark, or follow system settings",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode",
+    "systemTheme": "System",
+    "profileSettings": {
+      "title": "Profile Settings",
+      "description": "Edit your profile image and basic information.",
+      "updateSuccess": "Profile updated successfully",
+      "updateError": "Failed to update profile",
+      "displayName": {
+        "label": "Display Name",
+        "placeholder": "Enter your display name",
+        "required": "Please enter a display name",
+        "maxLength": "Display name must be 20 characters or less",
+        "description": "The name displayed to other users"
+      },
+      "bio": {
+        "label": "Bio",
+        "placeholder": "Enter your bio",
+        "maxLength": "Bio must be 500 characters or less",
+        "description": "You can enter up to 500 characters including line breaks"
+      },
+      "username": {
+        "label": "Username",
+        "description": "Cannot be changed"
+      },
+      "avatar": {
+        "title": "Profile Image",
+        "description": "Upload an image that represents you",
+        "dragDrop": "Drag & drop an image",
+        "clickToSelect": "or click to select (max 20MB)",
+        "dropHere": "Drop image here",
+        "upload": "Upload Image",
+        "uploading": "Uploading...",
+        "delete": "Delete Image",
+        "deleting": "Deleting...",
+        "preview": "Profile image preview",
+        "invalidFile": "Please drop an image file",
+        "invalidFileType": "Please select an image file",
+        "fileTooLarge": "File size must be 20MB or less",
+        "cropSuccess": "Image cropped successfully",
+        "noImageSelected": "Please select an image to upload",
+        "uploadSuccess": "Avatar image uploaded successfully",
+        "uploadProcessing": "Image is being processed. You will be notified when complete."
+      },
+      "basicInfo": {
+        "title": "Basic Information",
+        "description": "Set information displayed to other users"
+      },
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "hasChanges": "You have unsaved changes"
+    }
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you are looking for does not exist or may have been moved."
+  },
+  "errors": {
+    "somethingWentWrong": "Something went wrong",
+    "tryAgain": "Please try again",
+    "pageNotFound": "Page not found",
+    "unauthorized": "Unauthorized",
+    "invalidCredentials": "Invalid username or password.",
+    "registrationFailed": "Registration failed. Please check your input.",
+    "profileUpdateFailed": "Failed to update profile",
+    "profileFetchFailed": "Failed to fetch profile",
+    "followFailed": "Failed to follow user",
+    "unfollowFailed": "Failed to unfollow user",
+    "followActionFailed": "Failed to process follow action"
+  },
+  "theme": {
+    "toggle": "Toggle Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "footer": {
+    "description": "A simple and easy-to-use social networking platform",
+    "company": "Operating Company",
+    "legal": "Legal Information",
+    "support": "Support",
+    "help": "Help",
+    "faq": "FAQ",
+    "community": "Community",
+    "rights": "All Rights Reserved",
+    "cookies": "Cookie Policy"
+  },
+  "language": {
+    "selectLanguage": "Select Language",
+    "japanese": "Japanese",
+    "english": "English"
+  },
+  "timezone": {
+    "regions": {
+      "africa": "Africa",
+      "america": "Americas",
+      "antarctica": "Antarctica",
+      "arctic": "Arctic",
+      "asia": "Asia",
+      "atlantic": "Atlantic",
+      "australia": "Australia",
+      "europe": "Europe",
+      "indian": "Indian Ocean",
+      "pacific": "Pacific"
+    },
+    "cities": {
+      "tokyo": "Tokyo",
+      "seoul": "Seoul",
+      "shanghai": "Shanghai",
+      "hong_kong": "Hong Kong",
+      "singapore": "Singapore",
+      "bangkok": "Bangkok",
+      "jakarta": "Jakarta",
+      "manila": "Manila",
+      "kolkata": "Kolkata",
+      "mumbai": "Mumbai",
+      "delhi": "Delhi",
+      "sydney": "Sydney",
+      "melbourne": "Melbourne",
+      "brisbane": "Brisbane",
+      "perth": "Perth",
+      "auckland": "Auckland",
+      "new_york": "New York",
+      "chicago": "Chicago",
+      "los_angeles": "Los Angeles",
+      "denver": "Denver",
+      "toronto": "Toronto",
+      "vancouver": "Vancouver",
+      "mexico_city": "Mexico City",
+      "sao_paulo": "São Paulo",
+      "buenos_aires": "Buenos Aires",
+      "london": "London",
+      "paris": "Paris",
+      "berlin": "Berlin",
+      "rome": "Rome",
+      "madrid": "Madrid",
+      "amsterdam": "Amsterdam",
+      "zurich": "Zurich",
+      "moscow": "Moscow",
+      "stockholm": "Stockholm",
+      "cairo": "Cairo",
+      "lagos": "Lagos",
+      "johannesburg": "Johannesburg",
+      "casablanca": "Casablanca"
+    }
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "description": "System management and maintenance",
+    "systemStats": {
+      "title": "System Statistics",
+      "description": "Current system usage",
+      "loading": "Loading statistics...",
+      "error": "Failed to load statistics: {message}",
+      "noData": "No statistics data available",
+      "refresh": "Refresh Statistics",
+      "totalUsers": "Total Users",
+      "totalPosts": "Total Posts",
+      "totalMedia": "Total Media",
+      "totalComments": "Total Comments",
+      "totalLikes": "Total Likes",
+      "storageUsed": "Storage Used",
+      "activeUsers24h": "24h Active",
+      "activeUsers7d": "7d Active",
+      "activeUsers30d": "30d Active"
+    },
+    "dangerousActions": {
+      "title": "Dangerous Actions",
+      "description": "The following operations cannot be undone. Please proceed with caution."
+    },
+    "resetPosts": {
+      "title": "Reset Post Data",
+      "description": "This operation will delete all post data and media data. This action cannot be undone.",
+      "button": "Reset Post Data",
+      "processing": "Resetting...",
+      "confirmMessage": "Are you sure you want to reset all posts? This action cannot be undone."
+    },
+    "resetPostsAndMedia": {
+      "title": "Reset Post Data and S3 Bucket",
+      "description": "This operation will delete all post data and media data in the S3 bucket. Since data in the S3 bucket will also be completely deleted, this action cannot be undone.",
+      "button": "Reset Post Data and S3 Bucket",
+      "processing": "Resetting...",
+      "confirmMessage": "Are you sure you want to reset all posts and media data in the S3 bucket? This action cannot be undone."
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "description": "Manage and view notifications",
+    "all": "All",
+    "unread": "Unread",
+    "markAllAsRead": "Mark All Read",
+    "markAsRead": "Mark as Read",
+    "unreadCount": "{{count}} unread notifications",
+    "noNotifications": "No notifications",
+    "noUnread": "No unread notifications",
+    "loading": "Loading notifications...",
+    "error": "Error",
+    "loadError": "Failed to load notifications",
+    "markAsReadError": "Failed to mark as read",
+    "markAllAsReadError": "Failed to mark all as read"
+  },
+  "wallet": {
+    "title": "Wallet",
+    "description": "Balance management and transaction history",
+    "overview": {
+      "title": "Overview"
+    },
+    "balance": {
+      "title": "Balance",
+      "description": "Current balance and currency information"
+    },
+    "actions": {
+      "title": "Deposit & Withdraw",
+      "description": "Deposit via cryptocurrency or P2P trading, or withdraw funds"
+    },
+    "deposit": {
+      "title": "Deposit",
+      "description": "Deposit cryptocurrency to your wallet",
+      "crypto": {
+        "title": "Cryptocurrency Deposit",
+        "description": "Deposit with Bitcoin, Ethereum, and other cryptocurrencies",
+        "features": {
+          "instant": "Instant reflection",
+          "secure": "Secure processing",
+          "lowFees": "Low fees"
+        }
+      },
+      "card": {
+        "title": "Credit Card Deposit",
+        "description": "Instant deposit with Visa and Mastercard",
+        "features": {
+          "instant": "Instant balance reflection",
+          "secure": "Secure payment processing",
+          "convenient": "Simple and convenient"
+        }
+      },
+      "p2p": {
+        "title": "P2P Trading",
+        "description": "Direct peer-to-peer trading",
+        "features": {
+          "flexible": "Flexible trading conditions",
+          "competitive": "Competitive prices",
+          "community": "Community-based"
+        },
+        "deposit": {
+          "title": "P2P Deposit",
+          "description": "Deposit to your wallet using fiat currency",
+          "steps": {
+            "amountInput": {
+              "title": "Enter Deposit Amount",
+              "currencyLabel": "Currency",
+              "amountLabel": "Amount",
+              "quickSelect": "Quick Select",
+              "minDeposit": "Minimum Deposit",
+              "maxDeposit": "Maximum Deposit",
+              "nextButton": "Next: Find Offers",
+              "backButton": "Change Amount"
+            },
+            "offerSelection": {
+              "title": "Select Offer",
+              "depositing": "depositing",
+              "filterLabel": "Filter",
+              "filterAll": "All",
+              "selectOffer": "Select This Offer",
+              "noOffers": "No available offers"
+            },
+            "payment": {
+              "title": "Please Make Payment",
+              "timeRemaining": "Time Remaining",
+              "tradeInfo": "Trade Information",
+              "tradeId": "Trade ID",
+              "paymentAmount": "Payment Amount",
+              "rate": "Rate",
+              "depositAmount": "Deposit Amount",
+              "paymentInfo": "Payment Information",
+              "paymentMethod": "Payment Method",
+              "bankName": "Bank Name",
+              "branchName": "Branch Name",
+              "accountType": "Account Type",
+              "accountNumber": "Account Number",
+              "accountHolder": "Account Holder",
+              "copy": "Copy",
+              "copied": "Copied",
+              "warning": "⚠️ Please include the trade ID in the sender name",
+              "importantNotes": "📌 Important Notes",
+              "note1": "Enter the exact amount",
+              "note2": "After payment, be sure to click \"Payment Complete\"",
+              "note3": "If payment is not confirmed within 30 minutes, the trade will be cancelled",
+              "cancelTrade": "Cancel Trade",
+              "paymentComplete": "✅ Payment Completed"
+            },
+            "confirmation": {
+              "title": "🎉 Deposit Completed!",
+              "tradeDetails": "Trade Details",
+              "completedAt": "Completed At",
+              "status": "Status",
+              "statusCompleted": "✅ Completed",
+              "checkBalance": "💰 Check P2P Balance",
+              "transferToWallet": "Transfer to Wallet Balance",
+              "newDeposit": "Start New Deposit",
+              "viewHistory": "View Trade History",
+              "goToWallet": "Go to Wallet"
+            }
+          },
+          "offer": {
+            "rate": "Rate",
+            "margin": "+{margin}%",
+            "paymentMethods": "Payment Methods",
+            "amountRange": "Amount Range",
+            "completionRate": "Completion Rate",
+            "trades": "trades"
+          },
+          "trade": {
+            "tradeId": "Trade ID",
+            "status": "Status",
+            "amount": "Amount",
+            "timestamp": "Timestamp"
+          },
+          "timeline": {
+            "tradeCreated": "Trade Created",
+            "offerAccepted": "Offer Accepted",
+            "paymentConfirmed": "Payment Confirmation Pending",
+            "depositCompleted": "Deposit Completed",
+            "remainingTime": "Time Remaining",
+            "acceptedBy": "{seller} accepted the trade"
+          },
+          "seller": {
+            "title": "Seller Offer Settings",
+            "description": "Set up offers as a P2P seller",
+            "minAmount": "Minimum Amount (USD)",
+            "maxAmount": "Maximum Amount (USD)",
+            "currency": "Currency",
+            "margin": "Margin (%)",
+            "paymentMethods": "Payment Methods",
+            "saveButton": "Save Offer",
+            "cancelButton": "Cancel"
+          }
+        },
+        "tradeDetail": {
+          "title": "Trade Details",
+          "notFound": "Trade not found",
+          "loading": "Loading..."
+        },
+        "history": {
+          "title": "Trade History",
+          "description": "View your P2P trade history",
+          "statusFilter": "Status Filter",
+          "noTrades": "No trade history",
+          "loading": "Loading...",
+          "error": "An error occurred"
+        },
+        "seller": {
+          "title": "Seller Offer Settings",
+          "description": "Set up offers as a P2P seller"
+        },
+        "status": {
+          "PENDING": "Pending",
+          "MATCHED": "Matched",
+          "PAYMENT_SENT": "Payment Sent",
+          "CONFIRMED": "Confirmed",
+          "COMPLETED": "Completed",
+          "CANCELLED": "Cancelled",
+          "DISPUTED": "Disputed"
+        },
+        "paymentMethods": {
+          "bank_transfer": "Bank Transfer",
+          "paypay": "PayPay",
+          "line_pay": "LINE Pay",
+          "merpay": "Merpay",
+          "rakuten_pay": "Rakuten Pay",
+          "au_pay": "au PAY",
+          "d_pay": "d Payment"
+        },
+        "currencies": {
+          "JPY": "Japanese Yen",
+          "USD": "US Dollar",
+          "EUR": "Euro"
+        }
+      }
+    },
+    "withdraw": {
+      "title": "Withdraw",
+      "description": "Send cryptocurrency to external wallet",
+      "crypto": {
+        "history": {
+          "title": "History"
+        }
+      },
+      "form": {
+        "title": "Withdrawal Information",
+        "description": "Enter destination and amount"
+      }
+    },
+    "settings": {
+      "title": "Wallet Settings"
+    },
+    "totalBalance": "Total Balance",
+    "recentTransactions": "Recent Transactions",
+    "viewAll": "View All",
+    "send": "Send",
+    "transactionTypes": {
+      "deposit": "Deposit",
+      "withdrawal": "Withdrawal",
+      "transfer_in": "Receive",
+      "transfer_out": "Send",
+      "content_purchase": "Content Purchase",
+      "subscription": "Subscription",
+      "refund": "Refund",
+      "crypto_deposit": "Crypto Deposit",
+      "p2p_trade": "P2P Trade",
+      "default": "Transaction"
+    },
+    "transactions": {
+      "title": "Transaction History",
+      "description": "View your past deposit and withdrawal history",
+      "filter": {
+        "title": "Filter",
+        "description": "Filter transaction history"
+      },
+      "list": {
+        "title": "Transaction List"
+      },
+      "columns": {
+        "type": "Type",
+        "description": "Description",
+        "amount": "Amount",
+        "date": "Date",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "fee": "Fee",
+      "detailsButton": "Details"
+    }
+  },
+  "post": {
+    "creator": {
+      "placeholder": "What's on your mind?"
+    }
+  },
+  "follow": {
+    "follow": "Follow",
+    "following": "Following",
+    "unfollow": "Unfollow",
+    "followers": "Followers",
+    "followersCount": "Followers",
+    "followingCount": "Following",
+    "followSuccess": "Successfully followed",
+    "unfollowSuccess": "Successfully unfollowed",
+    "followError": "Failed to follow",
+    "unfollowError": "Failed to unfollow",
+    "cannotFollowSelf": "Cannot follow yourself",
+    "loginRequired": "Login required",
+    "alreadyFollowing": "Already following",
+    "alreadyUnfollowed": "Already unfollowed",
+    "notFollowing": "Not following",
+    "rateLimitError": "Too many follow operations. Please wait before trying again",
+    "followersEmpty": "No followers yet",
+    "followingEmpty": "Not following anyone yet",
+    "followToSeeMore": "Follow other users to see their posts"
+  },
+  "timeline": {
+    "following": "Following",
+    "recommended": "Recommended",
+    "all": "All",
+    "loginRequired": "Login required to view timeline",
+    "noPostsFollowing": "No posts from users you follow",
+    "noPostsRecommended": "No recommended posts",
+    "noPostsAll": "No posts available",
+    "loadingFailed": "Failed to load posts",
+    "loadMore": "Load more",
+    "loading": "Loading..."
+  }
+}

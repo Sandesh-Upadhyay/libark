@@ -1,0 +1,187 @@
+# 管理者機能関連のGraphQLクエリ・ミューテーション
+
+# システム統計取得
+query GetSystemStats {
+  systemStats {
+    totalUsers
+    totalPosts
+    totalMedia
+    totalComments
+    totalLikes
+    storageUsed
+    activeUsers24h
+    activeUsers7d
+    activeUsers30d
+  }
+}
+
+# 投稿データリセット
+mutation ResetPosts {
+  resetPosts {
+    success
+    message
+    deletedCount
+  }
+}
+
+# 投稿データとS3メディアリセット
+mutation ResetPostsAndMedia {
+  resetPostsAndMedia {
+    success
+    message
+    deletedCount
+  }
+}
+
+# ================================
+# 管理者用ユーザー管理
+# ================================
+
+# 管理者用ユーザー詳細フラグメント
+fragment AdminUserDetailInfo on AdminUserDetail {
+  id
+  username
+  email
+  displayName
+  bio
+  profileImageId
+  coverImageId
+  isVerified
+  isActive
+  createdAt
+  updatedAt
+  lastLoginAt
+  postsCount
+  followersCount
+  followingCount
+  permissions {
+    id
+    userId
+    permissionId
+    grantedBy
+    grantedAt
+    expiresAt
+    isActive
+    createdAt
+    updatedAt
+    permission {
+      id
+      name
+      description
+      createdAt
+    }
+    grantedByUser {
+      id
+      username
+      displayName
+    }
+  }
+}
+
+# 管理者用ユーザー一覧取得
+query AdminUsers($first: Int = 20, $after: String, $search: String) {
+  adminUsers(first: $first, after: $after, search: $search) {
+    edges {
+      node {
+        ...AdminUserDetailInfo
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+# 管理者用ユーザー詳細取得
+query AdminUser($id: UUID!) {
+  adminUser(id: $id) {
+    ...AdminUserDetailInfo
+  }
+}
+
+# 管理者用ユーザー情報更新
+mutation AdminUpdateUser($input: AdminUpdateUserInput!) {
+  adminUpdateUser(input: $input) {
+    success
+    message
+    user {
+      ...AdminUserDetailInfo
+    }
+  }
+}
+
+# 管理者用ユーザーパスワード変更
+mutation AdminChangeUserPassword($input: AdminChangeUserPasswordInput!) {
+  adminChangeUserPassword(input: $input) {
+    success
+    message
+  }
+}
+
+# 管理者用ユーザー削除
+mutation AdminDeleteUser($userId: UUID!) {
+  adminDeleteUser(userId: $userId) {
+    success
+    message
+  }
+}
+
+# ================================
+# 管理者用P2P管理
+# ================================
+
+# 管理者用P2P紛争一覧
+query AdminP2PDisputes($status: P2PDisputeStatus, $limit: Int, $offset: Int) {
+  adminP2PDisputes(status: $status, limit: $limit, offset: $offset) {
+    ...P2PDisputeInfo
+    trade {
+        ...P2PTradeInfo
+    }
+  }
+}
+
+# 管理者用紛争詳細取得
+query AdminP2PDispute($disputeId: UUID!) {
+  p2pDispute(disputeId: $disputeId) {
+    ...P2PDisputeInfo
+    trade {
+      ...P2PTradeInfo
+    }
+  }
+}
+
+# 法定通貨管理
+mutation CreateFiatCurrency($input: CreateFiatCurrencyInput!) {
+  createFiatCurrency(input: $input) {
+    id
+    code
+    name
+    symbol
+    isActive
+  }
+}
+
+mutation UpdateFiatCurrency($input: UpdateFiatCurrencyInput!) {
+  updateFiatCurrency(input: $input) {
+    id
+    code
+    name
+    symbol
+    isActive
+  }
+}
+
+query AdminFiatCurrencies($isActive: Boolean) {
+  fiatCurrencies(isActive: $isActive) {
+    id
+    code
+    name
+    symbol
+    isActive
+  }
+}

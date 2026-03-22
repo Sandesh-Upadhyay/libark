@@ -1,0 +1,41 @@
+# GraphQL Code Generator設定
+# 型安全なGraphQLクライアントコードを自動生成
+
+schema:
+  - '../graphql/dist/schema/*.graphql'
+documents: 'src/**/*.graphql'
+generates:
+  src/generated/graphql.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo
+    config:
+      withHooks: true
+      withComponent: false
+      withHOC: false
+      withMutationFn: true
+      apolloReactHooksImportFrom: '@apollo/client'
+      skipTypename: false
+      scalars:
+        DateTime: string
+        UUID: string
+        Upload: File
+        JSON: Record<string, unknown>
+      avoidOptionals:
+        field: true
+        inputValue: false
+        object: false
+      maybeValue: T | null
+      inputMaybeValue: T | null
+      omitOperationSuffix: false
+      documentMode: documentNode
+      fragmentMasking: false
+      useTypeImports: true
+      dedupeFragments: true
+      inlineFragmentTypes: combine
+      preResolveTypes: true
+
+hooks:
+  afterOneFileWrite:
+    - prettier --write

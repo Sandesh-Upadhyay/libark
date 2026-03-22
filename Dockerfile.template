@@ -1,0 +1,49 @@
+# =============================================================================
+# LIBARK Dockerfile Template
+# =============================================================================
+# Purpose:
+# - Base template for creating service-specific Dockerfiles.
+# - Keep this file as a reference; do not use directly in production.
+# =============================================================================
+
+# ---- Base Stage ----
+FROM node:24-alpine AS base
+
+ENV PNPM_HOME=/pnpm \
+    PATH=/pnpm:$PATH
+
+RUN corepack enable && corepack prepare pnpm@10.11.0 --activate
+
+WORKDIR /app
+
+# ---- Dependencies Stage ----
+FROM base AS deps
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps ./apps
+COPY packages ./packages
+
+# Install dependencies for workspace
+RUN pnpm install --frozen-lockfile
+
+# ---- Build Stage ----
+FROM deps AS build
+
+# Build command example (replace with target-specific command)
+# RUN pnpm --filter <workspace-name> build
+RUN pnpm build
+
+# ---- Runtime Stage ----
+FROM node:24-alpine AS runtime
+
+ENV NODE_ENV=production
+WORKDIR /app
+
+# Copy only what runtime needs
+COPY --from=build /app ./
+
+# Expose default app port (customize per service)
+EXPOSE 3000
+
+# Runtime command example (replace per service)
+CMD ["node", "apps/frontend/dist/index.js"]

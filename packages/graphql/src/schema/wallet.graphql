@@ -1,0 +1,271 @@
+# 🎯 ウォレット関連スキーマ定義
+# ウォレット、取引、入出金に関する型定義
+
+# ================================
+# 列挙型
+# ================================
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  PAYMENT
+  RECEIVE
+  TRANSFER
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum DepositStatus {
+  PENDING
+  COMPLETED
+  EXPIRED
+}
+
+enum WithdrawalStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum ProviderType {
+  CRYPTO_DEPOSIT
+  CRYPTO_WITHDRAWAL
+  P2P
+}
+
+enum RequestType {
+  DEPOSIT
+  WITHDRAWAL
+}
+
+enum PaymentMethod {
+  CRYPTO
+  P2P
+}
+
+enum RequestStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+# 残高種別
+enum BalanceType {
+  WALLET
+  SALES
+  P2P
+}
+
+# ================================
+# ウォレット型
+# ================================
+type Wallet {
+  id: UUID!
+  userId: UUID!
+  balanceUsd: Float!
+  salesBalanceUsd: Float!
+  p2pBalanceUsd: Float!
+  p2pLockedUsd: Float!
+  isActive: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  user: User!
+}
+
+type UserWallet {
+  id: UUID!
+  userId: UUID!
+  walletName: String!
+  currency: String!
+  network: String!
+  address: String!
+  isVerified: Boolean!
+  isActive: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  user: User!
+}
+
+# ================================
+# 決済システム型
+# ================================
+type PaymentProvider {
+  id: UUID!
+  name: String!
+  displayName: String!
+  type: ProviderType!
+  isActive: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type PaymentRequest {
+  id: UUID!
+  userId: UUID!
+  providerId: UUID!
+  type: RequestType!
+  method: PaymentMethod!
+  amountUsd: Float!
+  currency: String
+  currencyAmount: Float
+  status: RequestStatus!
+  metadata: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  provider: PaymentProvider!
+  user: User!
+}
+
+# ================================
+# 入出金リクエスト型
+# ================================
+type DepositRequest {
+  id: UUID!
+  userId: UUID!
+  requestedUsdAmount: Float!
+  currency: String!
+  network: String!
+  expectedCryptoAmount: Float!
+  exchangeRate: Float!
+  ourDepositAddress: String!
+  status: DepositStatus!
+  expiresAt: DateTime!
+  completedAt: DateTime
+  createdAt: DateTime!
+  user: User!
+  walletTransactions: [WalletTransaction!]!
+}
+
+type WithdrawalRequest {
+  id: UUID!
+  userId: UUID!
+  currency: String!
+  amount: Float!
+  amountUsd: Float!
+  destinationAddress: String!
+  memo: String
+  network: String!
+  status: WithdrawalStatus!
+  errorMessage: String
+  processedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  user: User!
+  walletTransactions: [WalletTransaction!]!
+}
+
+# ================================
+# 取引履歴型
+# ================================
+type WalletTransaction {
+  id: UUID!
+  userId: UUID!
+  paymentRequestId: UUID
+  type: TransactionType!
+  balanceType: BalanceType!
+  amountUsd: Float!
+  description: String!
+  metadata: String
+  createdAt: DateTime!
+  user: User!
+  paymentRequest: PaymentRequest
+}
+
+# ================================
+# 為替レート型
+# ================================
+type ExchangeRate {
+  id: UUID!
+  currency: String!
+  usdRate: Float!
+  source: String!
+  isActive: Boolean!
+  createdAt: DateTime!
+}
+
+# ================================
+# 入力型
+# ================================
+input CreateDepositRequestInput {
+  requestedUsdAmount: Float!
+  currency: String!
+  network: String!
+  userWalletAddress: String!
+}
+
+input CreateWithdrawalRequestInput {
+  currency: String!
+  amount: Float!
+  destinationAddress: String!
+  memo: String
+  network: String!
+}
+
+input RegisterUserWalletInput {
+  walletName: String!
+  currency: String!
+  network: String!
+  address: String!
+}
+
+# ================================
+# 権限システム型
+# ================================
+# Permission and UserPermission are defined in admin.graphql
+
+# ================================
+# 残高移動用入力型
+# ================================
+input TransferBalanceInput {
+  fromBalanceType: BalanceType!
+  toBalanceType: BalanceType!
+  amountUsd: Float!
+  description: String
+}
+
+# ================================
+# 権限管理用入力型
+# ================================
+input GrantPermissionInput {
+  userId: UUID!
+  permissionName: String!
+  expiresAt: DateTime
+}
+
+input RevokePermissionInput {
+  userId: UUID!
+  permissionName: String!
+}
+
+# ================================
+# クエリ・ミューテーション拡張
+# ================================
+extend type Query {
+  # 権限管理
+  myPermissions: [UserPermission!]!
+  allPermissions: [Permission!]! # 管理者用
+  userPermissions(userId: UUID!): [UserPermission!]! # 管理者用
+  # ウォレット取引履歴（残高種別対応）
+  myWalletTransactionsByBalance(
+    balanceType: BalanceType!
+    first: Int
+    after: String
+  ): [WalletTransaction!]!
+}
+
+extend type Mutation {
+  # 権限管理
+  grantPermission(input: GrantPermissionInput!): UserPermission!
+  revokePermission(input: RevokePermissionInput!): Boolean!
+
+  # 残高移動
+  transferBalance(input: TransferBalanceInput!): WalletTransaction!
+}

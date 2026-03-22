@@ -1,0 +1,56 @@
+# 認証関連のGraphQLクエリ・ミューテーション
+
+# UserInfoフラグメントはuser.graphqlで定義
+
+# 現在のユーザー情報取得
+query Me {
+  me {
+    ...UserInfo
+  }
+}
+
+# ログイン
+mutation Login($input: LoginInput!) {
+  login(input: $input) {
+    success
+    message
+    user {
+      ...UserInfo
+    }
+    accessToken
+    requiresTwoFactor
+    tempUserId
+  }
+}
+
+# ユーザー登録
+mutation Register($input: RegisterInput!) {
+  register(input: $input) {
+    success
+    message
+    user {
+      ...UserInfo
+    }
+    accessToken
+  }
+}
+
+# ログアウト
+mutation Logout {
+  logout {
+    success
+    message
+  }
+}
+
+# 2FAログイン
+mutation LoginWithTwoFactor($input: TwoFactorLoginInput!) {
+  loginWithTwoFactor(input: $input) {
+    success
+    message
+    user {
+      ...UserInfo
+    }
+    accessToken
+  }
+}

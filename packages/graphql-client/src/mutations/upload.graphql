@@ -1,0 +1,137 @@
+# ファイルアップロード用GraphQL Mutations
+
+# レガシーアップロードミューテーションは削除されました
+# プリサインURL方式を使用してください
+
+# プリサインURL生成用Mutations
+mutation GeneratePresignedUpload($input: PresignedUploadInput!) {
+  generatePresignedUpload(input: $input) {
+    uploadUrl
+    downloadUrl
+    s3Key
+    mediaId
+    expiresAt
+    fields
+  }
+}
+
+mutation GeneratePresignedDownload($s3Key: String!) {
+  generatePresignedDownload(s3Key: $s3Key) {
+    downloadUrl
+    expiresAt
+  }
+}
+
+mutation NotifyUploadComplete($mediaId: UUID!, $s3Key: String!) {
+  notifyUploadComplete(mediaId: $mediaId, s3Key: $s3Key) {
+    media {
+      id
+      status
+      url
+      thumbnailUrl
+    }
+    success
+    message
+  }
+}
+
+# CompleteUploadミューテーションは削除されました
+# NotifyUploadCompleteを使用してください
+
+# 統一メディアアップロード（Phase 2）
+mutation UploadMediaUnified($input: UnifiedUploadInput!) {
+  uploadMediaUnified(input: $input) {
+    success
+    mediaId
+    filename
+    contentType
+    size
+    downloadUrl
+    status
+    message
+  }
+}
+
+mutation UpdateUserAvatar($input: UpdateUserAvatarInput!) {
+  updateUserAvatar(input: $input) {
+    success
+    message
+    user {
+      id
+      username
+      email
+      displayName
+      bio
+      profileImageId
+      coverImageId
+      isVerified
+      isActive
+      createdAt
+      updatedAt
+      lastLoginAt
+    }
+  }
+}
+
+mutation DeleteUserAvatar {
+  deleteUserAvatar {
+    success
+    message
+    user {
+      id
+      username
+      email
+      displayName
+      bio
+      profileImageId
+      coverImageId
+      isVerified
+      isActive
+      createdAt
+      updatedAt
+      lastLoginAt
+    }
+  }
+}
+
+mutation UpdateUserCover($input: UpdateUserCoverInput!) {
+  updateUserCover(input: $input) {
+    success
+    message
+    user {
+      id
+      username
+      email
+      displayName
+      bio
+      profileImageId
+      coverImageId
+      isVerified
+      isActive
+      createdAt
+      updatedAt
+      lastLoginAt
+    }
+  }
+}
+
+mutation DeleteUserCover {
+  deleteUserCover {
+    success
+    message
+    user {
+      id
+      username
+      email
+      displayName
+      bio
+      profileImageId
+      coverImageId
+      isVerified
+      isActive
+      createdAt
+      updatedAt
+      lastLoginAt
+    }
+  }
+}

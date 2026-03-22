@@ -1,0 +1,21 @@
+# 🎯 通知関連スキーマ定義
+# 通知システムに関する型定義
+
+# ================================
+# 通知型
+# ================================
+type Notification {
+  id: UUID!
+  type: NotificationType!
+  content: String!
+  isRead: Boolean!
+  createdAt: DateTime!
+  readAt: DateTime
+
+  # リレーション
+  user: User!
+  userId: UUID!
+  actor: User
+  actorId: UUID
+  referenceId: UUID
+}

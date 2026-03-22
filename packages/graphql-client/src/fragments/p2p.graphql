@@ -1,0 +1,102 @@
+# P2P関連のGraphQLフラグメント
+
+# P2P取引リクエスト情報
+fragment P2PTradeInfo on P2PTradeRequest {
+  id
+  buyerId
+  sellerId
+  offerId
+  offer {
+    id
+    sellerId
+    paymentMethod
+    minAmountUsd
+    maxAmountUsd
+    fiatCurrency
+    exchangeRateMargin
+    isActive
+    instructions
+    priority
+    createdAt
+    updatedAt
+    seller {
+      ...UserInfo
+    }
+  }
+  amountUsd
+  fiatCurrency
+  fiatAmount
+  exchangeRate
+  status
+  paymentMethod
+  paymentDetails
+  escrowAmount
+  expiresAt
+  completedAt
+  createdAt
+  updatedAt
+  buyer {
+    ...UserInfo
+  }
+  seller {
+    ...UserInfo
+  }
+}
+
+# P2Pオファー情報
+fragment P2POfferInfo on P2POffer {
+  id
+  sellerId
+  paymentMethod
+  minAmountUsd
+  maxAmountUsd
+  fiatCurrency
+  exchangeRateMargin
+  isActive
+  instructions
+  priority
+  createdAt
+  updatedAt
+  seller {
+    ...UserInfo
+  }
+}
+
+# 通貨情報
+fragment FiatCurrencyInfo on FiatCurrency {
+  id
+  code
+  name
+  symbol
+  isActive
+}
+
+# 買い手設定情報
+fragment P2PBuyerPreferenceInfo on P2PBuyerPreference {
+  id
+  buyerId
+  paymentMethod
+  fiatCurrency
+  minAmountUsd
+  maxAmountUsd
+  createdAt
+  updatedAt
+}
+
+# 紛争情報
+fragment P2PDisputeInfo on P2PDispute {
+  id
+  tradeId
+  initiatorId
+  reason
+  evidence
+  status
+  resolution
+  resolvedBy
+  resolvedAt
+  createdAt
+  updatedAt
+  initiator {
+    ...UserInfo
+  }
+}

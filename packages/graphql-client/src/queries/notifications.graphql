@@ -1,0 +1,43 @@
+# 通知関連のGraphQLクエリとミューテーション
+
+query Notifications($first: Int, $after: String, $isRead: Boolean, $type: NotificationType) {
+  notifications(first: $first, after: $after, isRead: $isRead, type: $type) {
+    id
+    type
+    content
+    isRead
+    createdAt
+    readAt
+    referenceId
+    userId
+    actorId
+    user {
+      id
+      username
+      displayName
+      profileImageId
+    }
+    actor {
+      id
+      username
+      displayName
+      profileImageId
+    }
+  }
+}
+
+query UnreadNotificationsCount {
+  unreadNotificationsCount
+}
+
+mutation MarkNotificationsAsRead($ids: [UUID!]!) {
+  markNotificationsAsRead(ids: $ids) {
+    id
+    isRead
+    readAt
+  }
+}
+
+mutation MarkAllNotificationsAsRead {
+  markAllNotificationsAsRead
+}

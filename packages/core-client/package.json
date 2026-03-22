@@ -1,0 +1,48 @@
+{
+  "name": "@libark/core-client",
+  "version": "1.0.0",
+  "description": "LIBARKクライアント専用基盤パッケージ - ブラウザ専用機能",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./crypto": {
+      "types": "./dist/crypto/index.d.ts",
+      "import": "./dist/crypto/index.js"
+    },
+    "./security": {
+      "types": "./dist/security/index.d.ts",
+      "import": "./dist/security/index.js"
+    }
+  },
+  "scripts": {
+    "build": "../../node_modules/.bin/tsc --build",
+    "dev": "../../node_modules/.bin/tsc --build --watch",
+    "clean": "rm -rf dist .tsbuildinfo",
+    "type-check": "../../node_modules/.bin/tsc --noEmit",
+    "test": "../../node_modules/.bin/vitest run --reporter=verbose",
+    "test:watch": "../../node_modules/.bin/vitest",
+    "test:coverage": "../../node_modules/.bin/vitest run --coverage"
+  },
+  "dependencies": {
+    "@libark/core-shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@vitest/coverage-v8": "^3.2.4",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.4"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

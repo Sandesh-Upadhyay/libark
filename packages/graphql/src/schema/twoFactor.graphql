@@ -1,0 +1,145 @@
+# 🔐 2FA (Two-Factor Authentication) GraphQL スキーマ
+
+# 入力型定義
+
+"""
+2FA設定開始入力
+"""
+input TwoFactorSetupInput {
+  """パスワード確認"""
+  password: String!
+}
+
+"""
+2FA有効化入力
+"""
+input TwoFactorEnableInput {
+  """TOTPコード（6桁）"""
+  totpCode: String!
+  """パスワード確認"""
+  password: String!
+}
+
+"""
+2FA無効化入力
+"""
+input TwoFactorDisableInput {
+  """パスワード確認"""
+  password: String!
+  """TOTPコードまたはバックアップコード"""
+  code: String!
+}
+
+"""
+2FAログイン入力
+"""
+input TwoFactorLoginInput {
+  """一時的なユーザーID"""
+  tempUserId: String!
+  """TOTPコードまたはバックアップコード"""
+  code: String!
+}
+
+"""
+バックアップコード再生成入力
+"""
+input TwoFactorRegenerateBackupCodesInput {
+  """パスワード確認"""
+  password: String!
+  """TOTPコード"""
+  totpCode: String!
+}
+
+# 出力型定義
+
+"""
+2FA設定データ
+"""
+type TwoFactorSetupData {
+  """Base32エンコードされたシークレット"""
+  secret: String!
+  """QRコード用のotpauth:// URL"""
+  qrCodeUrl: String!
+  """バックアップ用の手動入力シークレット"""
+  manualEntryKey: String!
+}
+
+"""
+バックアップコード
+"""
+type BackupCodes {
+  """バックアップコードリスト"""
+  codes: [String!]!
+  """生成日時"""
+  generatedAt: DateTime!
+}
+
+"""
+2FA状態
+"""
+type TwoFactorStatus {
+  """2FAが有効かどうか"""
+  enabled: Boolean!
+  """有効化日時"""
+  enabledAt: DateTime
+  """残りのバックアップコード数"""
+  backupCodesCount: Int!
+}
+
+"""
+2FA有効化結果
+"""
+type TwoFactorEnableResult {
+  """成功フラグ"""
+  success: Boolean!
+  """メッセージ"""
+  message: String!
+  """バックアップコード"""
+  backupCodes: BackupCodes!
+}
+
+"""
+2FA無効化結果
+"""
+type TwoFactorDisableResult {
+  """成功フラグ"""
+  success: Boolean!
+  """メッセージ"""
+  message: String!
+}
+
+# クエリ・ミューテーション定義
+
+extend type Query {
+  """
+  2FA状態取得
+  """
+  twoFactorStatus: TwoFactorStatus!
+}
+
+extend type Mutation {
+  """
+  2FA設定開始（QRコード生成）
+  """
+  setupTwoFactor(input: TwoFactorSetupInput!): TwoFactorSetupData!
+
+  """
+  2FA有効化
+  """
+  enableTwoFactor(input: TwoFactorEnableInput!): TwoFactorEnableResult!
+
+  """
+  2FA無効化
+  """
+  disableTwoFactor(input: TwoFactorDisableInput!): TwoFactorDisableResult!
+
+  """
+  バックアップコード再生成
+  """
+  regenerateBackupCodes(input: TwoFactorRegenerateBackupCodesInput!): BackupCodes!
+
+  """
+  2FA認証完了ログイン
+  """
+  loginWithTwoFactor(input: TwoFactorLoginInput!): AuthPayload!
+}

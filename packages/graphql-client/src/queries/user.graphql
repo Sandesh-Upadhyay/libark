@@ -1,0 +1,86 @@
+# ユーザー管理関連のGraphQLクエリとミューテーション
+
+# ユーザー情報フラグメント
+fragment UserInfo on User {
+  id
+  username
+  email
+  displayName
+  bio
+  profileImageId
+  coverImageId
+  isVerified
+  isActive
+  createdAt
+  updatedAt
+  lastLoginAt
+  postsCount
+  followersCount
+  followingCount
+}
+
+# ユーザー設定フラグメント
+fragment UserSettingsInfo on UserSettings {
+  userId
+  theme
+  animationsEnabled
+  locale
+  contentFilter
+  displayMode
+  timezone
+  updatedAt
+}
+
+# ユーザー一覧取得
+query Users($first: Int, $after: String, $search: String) {
+  users(first: $first, after: $after, search: $search) {
+    edges {
+      node {
+        ...UserInfo
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+# IDでユーザー取得
+query User($id: UUID!) {
+  user(id: $id) {
+    ...UserInfo
+  }
+}
+
+# ユーザー名でユーザー取得
+query UserByUsername($username: String!) {
+  userByUsername(username: $username) {
+    ...UserInfo
+  }
+}
+
+# 現在のユーザー設定取得
+query MySettings {
+  mySettings {
+    ...UserSettingsInfo
+  }
+}
+
+# プロフィール更新
+mutation UpdateProfile($input: ProfileUpdateInput!) {
+  updateProfile(input: $input) {
+    ...UserInfo
+  }
+}
+
+# ユーザー設定更新
+mutation UpdateUserSettings($input: UserSettingsUpdateInput!) {
+  updateUserSettings(input: $input) {
+    ...UserSettingsInfo
+  }
+}

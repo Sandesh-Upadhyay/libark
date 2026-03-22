@@ -1,0 +1,26 @@
+# ビルド成果物
+dist/
+build/
+
+# Node.js
+node_modules/
+
+# TypeScript生成ファイル
+*.js
+*.js.map
+*.d.ts
+
+# ログファイル
+*.log
+
+# 一時ファイル
+.tmp/
+.cache/
+
+# IDE設定
+.vscode/
+.idea/
+
+# OS生成ファイル
+.DS_Store
+Thumbs.db
