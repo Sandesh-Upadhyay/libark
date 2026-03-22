@@ -1,0 +1,130 @@
+# 🎯 投稿関連スキーマ定義
+# 投稿、コメント、いいね、購入に関する型定義
+
+# ================================
+# 投稿型
+# ================================
+type Post @cacheControl(maxAge: 180) {
+  id: UUID!
+  content: String
+  visibility: PostVisibility!
+  isDeleted: Boolean!
+  isProcessing: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  # Paid投稿関連
+  price: Float
+  paidAt: DateTime
+
+  # リレーション
+  user: User! @cacheControl(inheritMaxAge: true)
+  userId: UUID!
+  media: [Media!]! @cacheControl(maxAge: 300)
+  likes: [Like!]! @cacheControl(maxAge: 30)
+  comments: [Comment!]! @cacheControl(maxAge: 60)
+  purchases: [PostPurchase!]! @cacheControl(maxAge: 60)
+
+  # 計算フィールド
+  likesCount: Int! @cacheControl(maxAge: 30)
+  commentsCount: Int! @cacheControl(maxAge: 60)
+  viewsCount: Int! @cacheControl(maxAge: 30)
+  isLikedByCurrentUser: Boolean @cacheControl(scope: PRIVATE, maxAge: 10)
+  isPurchasedByCurrentUser: Boolean @cacheControl(scope: PRIVATE, maxAge: 10)
+}
+
+# ================================
+# 投稿購入型
+# ================================
+type PostPurchase @cacheControl(maxAge: 300) {
+  id: UUID!
+  userId: UUID!
+  postId: UUID!
+  price: Float!
+  purchasedAt: DateTime!
+  expiresAt: DateTime
+  isActive: Boolean!
+
+  # リレーション
+  user: User! @cacheControl(inheritMaxAge: true)
+  post: Post! @cacheControl(inheritMaxAge: true)
+}
+
+# ================================
+# コメント型
+# ================================
+type Comment {
+  id: UUID!
+  content: String!
+  isDeleted: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  # リレーション
+  user: User!
+  userId: UUID!
+  post: Post!
+  postId: UUID!
+
+  # 計算フィールド
+  likesCount: Int!
+  isLikedByCurrentUser: Boolean
+}
+
+# ================================
+# いいね型
+# ================================
+type Like {
+  id: UUID!
+  createdAt: DateTime!
+
+  # リレーション
+  user: User!
+  userId: UUID!
+  post: Post!
+  postId: UUID!
+}
+
+# ================================
+# 投稿接続型（ページネーション対応）
+# ================================
+type PostConnection {
+  edges: [PostEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type PostEdge {
+  node: Post!
+  cursor: String!
+}
+
+# ================================
+# 入力型
+# ================================
+input PostCreateInput {
+  content: String
+  visibility: PostVisibility = PUBLIC
+  mediaIds: [UUID!]
+  price: Float
+}
+
+input PostUpdateInput {
+  content: String
+  visibility: PostVisibility
+  price: Float
+}
+
+input PurchasePostInput {
+  postId: UUID!
+}
+
+input UpdatePostToPaidInput {
+  postId: UUID!
+  price: Float!
+}
+
+input CommentCreateInput {
+  postId: UUID!
+  content: String!
+}

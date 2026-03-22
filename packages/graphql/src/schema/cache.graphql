@@ -1,0 +1,33 @@
+# 🚀 キャッシュ統計スキーマ定義
+# 認証キャッシュシステムの統計情報に関する型定義
+
+# ================================
+# キャッシュ統計型
+# ================================
+type CacheStats {
+  l1Hits: Int!
+  l2Hits: Int!
+  dbHits: Int!
+  totalRequests: Int!
+  hitRate: Float!
+  enabled: Boolean!
+}
+
+# ================================
+# レート制限統計型
+# ================================
+type RateLimitStats {
+  totalKeys: Int!
+  blockedIdentifiers: Int!
+  enabled: Boolean!
+}
+
+# ================================
+# Query拡張（operations.graphqlに統合される）
+# ================================
+# authCacheStats: CacheStats!
+
+# ================================
+# Mutation拡張（operations.graphqlに統合される）
+# ================================
+# invalidateUserCache(userId: UUID!): Boolean!

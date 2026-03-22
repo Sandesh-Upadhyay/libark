@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth scrollbar-custom selection-custom">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LIBARK</title>
+    <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;500;700&family=Source+Code+Pro:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- テーマフラッシュを防ぐためのインラインスクリプト -->
+    <script>
+      (function() {
+        try {
+          // Chrome拡張機能エラーを抑制
+          if (typeof chrome !== 'undefined' && chrome.runtime) {
+            const originalConsoleError = console.error;
+            console.error = function(...args) {
+              const message = args.join(' ');
+              // Chrome拡張機能のメッセージポートエラーを無視
+              if (message.includes('runtime.lastError') && message.includes('message port closed')) {
+                return; // エラーを表示しない
+              }
+              originalConsoleError.apply(console, args);
+            };
+          }
+
+          // ローカルストレージからテーマ設定を取得
+          const storedSettings = localStorage.getItem('libark-user-settings');
+          if (storedSettings) {
+            const settings = JSON.parse(storedSettings);
+            // Zustand persist の構造に合わせて修正
+            const theme = settings.state?.settings?.theme || settings.settings?.theme || 'system';
+
+            // テーマを適用
+            const currentTheme = theme === 'system'
+              ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+              : theme;
+
+            // HTML要素にテーマを適用（darkクラスのみ使用）
+            document.documentElement.classList.remove('light', 'dark');
+            document.documentElement.classList.add(currentTheme);
+
+            // カラースキームの設定
+            document.documentElement.style.colorScheme = currentTheme;
+          }
+        } catch (e) {
+          // エラーが発生した場合は何もしない
+          console.error('テーマ設定の読み込みに失敗しました:', e);
+        }
+      })();
+    </script>
+
+
+  </head>
+  <body class="font-sans font-optimized">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

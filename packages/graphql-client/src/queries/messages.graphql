@@ -1,0 +1,258 @@
+# メッセージ関連のGraphQLクエリ・ミューテーション・サブスクリプション
+
+# ================================
+# フラグメント
+# ================================
+
+fragment MessageInfo on Message {
+  id
+  conversationId
+  senderId
+  content
+  type
+  replyToId
+  editedAt
+  deletedAt
+  createdAt
+  updatedAt
+  isRead
+  readCount
+  isHidden
+  canDelete
+  sender {
+    id
+    username
+    displayName
+    profileImageId
+    isVerified
+  }
+}
+
+fragment ConversationInfo on Conversation {
+  id
+  type
+  title
+  createdBy
+  isArchived
+  createdAt
+  updatedAt
+  lastMessage {
+    ...MessageInfo
+  }
+  unreadCount
+  participantCount
+  activeParticipants {
+    id
+    username
+    displayName
+    profileImageId
+    isVerified
+  }
+  participants {
+    id
+    userId
+    role
+    joinedAt
+    leftAt
+    isMuted
+    user {
+      id
+      username
+      displayName
+      profileImageId
+      isVerified
+    }
+  }
+}
+
+# ================================
+# クエリ
+# ================================
+
+query GetConversations($first: Int, $after: String, $includeArchived: Boolean) {
+  conversations(first: $first, after: $after, includeArchived: $includeArchived) {
+    edges {
+      node {
+        ...ConversationInfo
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+query GetConversation($id: UUID!) {
+  conversation(id: $id) {
+    ...ConversationInfo
+    messages(first: 50) {
+      edges {
+        node {
+          ...MessageInfo
+        }
+        cursor
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
+    }
+  }
+}
+
+query GetConversationMessages($conversationId: UUID!, $first: Int, $after: String) {
+  conversation(id: $conversationId) {
+    id
+    messages(first: $first, after: $after) {
+      edges {
+        node {
+          ...MessageInfo
+        }
+        cursor
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
+    }
+  }
+}
+
+query GetMessageStats {
+  messageStats {
+    totalConversations
+    activeConversations
+    unreadConversations
+    totalUnreadMessages
+    totalMessages
+    archivedConversations
+  }
+}
+
+query SearchUsers($search: String!, $first: Int = 10) {
+  users(search: $search, first: $first) {
+    edges {
+      node {
+        id
+        username
+        displayName
+        profileImageId
+        isVerified
+      }
+    }
+  }
+}
+
+# ================================
+# ミューテーション
+# ================================
+
+mutation SendMessage($input: SendMessageInput!) {
+  sendMessage(input: $input) {
+    success
+    message
+    messageData {
+      ...MessageInfo
+    }
+    conversation {
+      ...ConversationInfo
+    }
+  }
+}
+
+mutation CreateConversation($input: CreateConversationInput!) {
+  createConversation(input: $input) {
+    success
+    message
+    conversation {
+      ...ConversationInfo
+    }
+  }
+}
+
+mutation MarkAsRead($input: MarkAsReadInput!) {
+  markAsRead(input: $input) {
+    success
+    message
+    readCount
+    conversation {
+      ...ConversationInfo
+    }
+  }
+}
+
+mutation UpdateConversation($input: UpdateConversationInput!) {
+  updateConversation(input: $input) {
+    success
+    message
+    conversation {
+      ...ConversationInfo
+    }
+  }
+}
+
+mutation DeleteMessage($input: DeleteMessageInput!) {
+  deleteMessage(input: $input) {
+    success
+    message
+    deletedMessage {
+      ...MessageInfo
+    }
+    deleteType
+  }
+}
+
+mutation HideMessage($input: HideMessageInput!) {
+  hideMessage(input: $input) {
+    success
+    message
+    hiddenMessage {
+      ...MessageInfo
+    }
+  }
+}
+
+# ================================
+# サブスクリプション
+# ================================
+
+subscription MessageAdded($conversationId: UUID!) {
+  messageAdded(conversationId: $conversationId) {
+    ...MessageInfo
+  }
+}
+
+subscription MessageRead($conversationId: UUID!) {
+  messageRead(conversationId: $conversationId) {
+    id
+    messageId
+    userId
+    readAt
+    message {
+      ...MessageInfo
+    }
+    user {
+      id
+      username
+      displayName
+      profileImageId
+    }
+  }
+}
+
+subscription ConversationUpdated($userId: UUID!) {
+  conversationUpdated(userId: $userId) {
+    ...ConversationInfo
+  }
+}

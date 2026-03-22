@@ -1,0 +1,50 @@
+{
+  "name": "@libark/nowpayments-api",
+  "version": "1.0.0",
+  "description": "NOWPayments API integration for LibArk",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --build",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "test": "vitest run --reporter=verbose",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix"
+  },
+  "dependencies": {
+    "@libark/core-shared": "workspace:*",
+    "@libark/core-server": "workspace:*",
+    "crypto": "^1.0.1",
+    "merge-stream": "^2.0.0",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "eslint": "^8.0.0",
+    "typescript": "^5.9.0",
+    "@vitest/coverage-v8": "^3.2.4",
+    "vitest": "^3.2.4"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "nowpayments",
+    "crypto",
+    "payments",
+    "api",
+    "libark"
+  ],
+  "author": "LibArk Team",
+  "license": "MIT"
+}

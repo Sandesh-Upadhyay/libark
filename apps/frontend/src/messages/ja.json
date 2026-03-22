@@ -1,0 +1,1007 @@
+{
+  "common": {
+    "appName": "LIBARK",
+    "welcome": "LIBARKへようこそ",
+    "login": "ログイン",
+    "register": "登録",
+    "logout": "ログアウト",
+    "profile": "プロフィール",
+    "settings": "設定",
+    "home": "ホーム",
+    "search": "検索",
+    "notifications": "通知",
+    "messages": "メッセージ",
+    "wallet": "ウォレット",
+    "about": "サービスについて",
+    "features": "機能",
+    "loading": "読み込み中...",
+    "getStarted": "今すぐ始める",
+    "learnMore": "詳しく見る",
+    "footerAbout": "サービスについて",
+    "footerTerms": "利用規約",
+    "footerPrivacy": "プライバシーポリシー",
+    "footerContact": "お問い合わせ",
+    "contact": "お問い合わせ",
+    "terms": "利用規約",
+    "privacy": "プライバシー",
+    "comingSoon": "準備中です",
+    "backToHome": "ホームに戻る",
+    "backToProfile": "プロフィールに戻る",
+    "back": "戻る",
+    "refresh": "更新",
+    "admin": "管理パネル",
+    "success": "成功",
+    "error": "エラー",
+    "light": "ライト",
+    "dark": "ダーク",
+    "system": "システム",
+    "language": "言語",
+    "theme": "テーマ",
+    "optional": "任意",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "edit": "編集",
+    "delete": "削除",
+    "confirm": "確認",
+    "yes": "はい",
+    "no": "いいえ",
+    "close": "閉じる",
+    "open": "開く",
+    "submit": "送信",
+    "reset": "リセット",
+    "clear": "クリア",
+    "copy": "コピー",
+    "share": "シェア",
+    "like": "いいね",
+    "comment": "コメント",
+    "follow": "フォロー",
+    "following": "フォロー中",
+    "unfollow": "フォロー解除",
+    "followers": "フォロワー",
+    "followersCount": "フォロワー数",
+    "followingCount": "フォロー中",
+    "block": "ブロック",
+    "report": "報告",
+    "mute": "ミュート",
+    "unmute": "ミュート解除"
+  },
+  "home": {
+    "title": "ホーム",
+    "subtitle": "今日の出来事をシェアしましょう",
+    "welcome": "おかえりなさい",
+    "createPost": "投稿を作成",
+    "whatsHappening": "いま何してる？"
+  },
+  "landing": {
+    "hero": {
+      "title": "つながりを深める、新しいSNS体験",
+      "subtitle": "LIBARKで、あなたの声を世界に届けよう。リアルタイムでつながり、共感し、新しい発見を楽しもう。",
+      "cta": "今すぐ始める",
+      "loginCta": "ログイン"
+    },
+    "features": {
+      "title": "LIBARKの特徴",
+      "subtitle": "あなたのソーシャル体験を豊かにする機能",
+      "realtime": {
+        "title": "リアルタイム投稿",
+        "description": "思いついたその瞬間に、あなたの考えや体験をシェア"
+      },
+      "community": {
+        "title": "コミュニティ",
+        "description": "同じ興味を持つ人々とつながり、新しい友達を見つけよう"
+      },
+      "privacy": {
+        "title": "プライバシー重視",
+        "description": "あなたのデータは安全に保護され、プライバシーを尊重します"
+      },
+      "customization": {
+        "title": "カスタマイズ",
+        "description": "あなた好みにプロフィールやテーマをカスタマイズ"
+      }
+    },
+    "stats": {
+      "title": "成長し続けるコミュニティ",
+      "users": "アクティブユーザー",
+      "posts": "投稿数",
+      "connections": "つながり"
+    },
+    "cta": {
+      "title": "今すぐLIBARKを始めよう",
+      "subtitle": "無料でアカウントを作成して、新しいソーシャル体験を始めましょう",
+      "button": "無料で始める"
+    },
+    "secure": "安全・安心",
+    "fast": "高速レスポンス",
+    "free": "無料で利用",
+    "featuresTitle": "主な機能",
+    "featuresDescription": "LIBARKで体験できる、豊富な機能をご紹介します。",
+    "postShareTitle": "投稿とシェア",
+    "postShareDesc": "テキストや画像を投稿して、あなたの考えや経験をシェアしましょう。",
+    "likeCommentTitle": "いいねとコメント",
+    "likeCommentDesc": "投稿にいいねやコメントをつけて、他のユーザーと交流しましょう。",
+    "followTitle": "フォロー機能",
+    "followDesc": "興味のあるユーザーをフォローして、カスタムフィードを作成しましょう。",
+    "dmTitle": "ダイレクトメッセージ",
+    "dmDesc": "プライベートメッセージで他のユーザーと直接コミュニケーションを取りましょう。",
+    "ctaTitle": "今すぐLIBARKを始めましょう",
+    "ctaText": "無料で簡単に登録できます。今すぐ始めて、新しいつながりを見つけましょう。"
+  },
+  "auth": {
+    "login": {
+      "title": "ログイン",
+      "subtitle": "アカウントにサインインしてください",
+      "welcome": "おかえりなさい",
+      "description": "LIBARKアカウントにログインして、コミュニティとつながりましょう",
+      "email": {
+        "label": "ユーザー名またはメールアドレス",
+        "placeholder": "ユーザー名またはメールアドレスを入力"
+      },
+      "password": {
+        "label": "パスワード",
+        "placeholder": "パスワードを入力"
+      },
+      "submit": "ログイン",
+      "submitting": "ログイン中...",
+      "forgotPassword": "パスワードを忘れた場合",
+      "noAccount": "アカウントをお持ちでない場合",
+      "signUp": "新規登録",
+      "backToHome": "ホームに戻る",
+      "trustIndicators": {
+        "secure": "安全なログイン",
+        "fast": "高速処理"
+      }
+    },
+    "register": {
+      "title": "新規登録",
+      "subtitle": "新しいアカウントを作成してください",
+      "welcome": "はじめましょう",
+      "description": "新しいアカウントを作成して、LIBARKのコミュニティに参加しましょう",
+      "username": {
+        "label": "ユーザー名",
+        "placeholder": "ユーザー名を入力",
+        "helpText": "3-20文字の英数字とアンダースコア"
+      },
+      "email": {
+        "label": "メールアドレス",
+        "placeholder": "メールアドレスを入力"
+      },
+      "password": {
+        "label": "パスワード",
+        "placeholder": "パスワードを入力",
+        "requirements": {
+          "title": "パスワード要件:",
+          "length": "8文字以上",
+          "number": "数字を含む",
+          "letter": "英字を含む",
+          "uppercase": "大文字を含む",
+          "lowercase": "小文字を含む"
+        }
+      },
+      "confirmPassword": {
+        "label": "パスワード確認",
+        "placeholder": "パスワードを再入力"
+      },
+      "displayName": {
+        "label": "表示名（任意）",
+        "placeholder": "表示名を入力",
+        "helpText": "プロフィールに表示される名前"
+      },
+      "submit": "アカウント作成",
+      "submitting": "登録中...",
+      "hasAccount": "既にアカウントをお持ちの場合",
+      "signIn": "ログイン",
+      "backToHome": "ホームに戻る",
+      "trustIndicators": {
+        "secure": "安全な登録",
+        "instant": "即座に開始"
+      }
+    },
+    "errors": {
+      "required": "この項目は必須です",
+      "invalidCredentials": "メールアドレスまたはパスワードが正しくありません",
+      "userExists": "このメールアドレスは既に使用されています",
+      "weakPassword": "パスワードが要件を満たしていません",
+      "invalidEmail": "有効なメールアドレスを入力してください",
+      "invalidUsername": "有効なユーザー名を入力してください",
+      "tooShort": "文字数が不足しています",
+      "tooLong": "文字数が多すぎます",
+      "invalidFormat": "形式が正しくありません",
+      "passwordMismatch": "パスワードが一致しません",
+      "loginFailed": "ログインに失敗しました",
+      "registrationFailed": "登録に失敗しました",
+      "logoutFailed": "ログアウトに失敗しました",
+      "networkError": "ネットワークエラーが発生しました",
+      "unknownError": "予期しないエラーが発生しました",
+      "sessionExpired": "セッションが期限切れです",
+      "unauthorized": "認証が必要です",
+      "forbidden": "アクセス権限がありません",
+      "accountDisabled": "アカウントが無効化されています",
+      "invalidInput": "入力データが無効です",
+      "serverError": "サーバーエラーが発生しました。しばらく待ってから再試行してください"
+    },
+    "success": {
+      "loginSuccess": "ログインしました",
+      "registerSuccess": "アカウントを作成しました",
+      "logoutSuccess": "ログアウトしました",
+      "passwordChanged": "パスワードを変更しました",
+      "emailVerified": "メールアドレスを確認しました"
+    },
+    "validation": {
+      "email": {
+        "required": "メールアドレスを入力してください",
+        "invalid": "有効なメールアドレスを入力してください"
+      },
+      "username": {
+        "required": "ユーザー名を入力してください",
+        "tooShort": "ユーザー名は3文字以上で入力してください",
+        "tooLong": "ユーザー名は20文字以下で入力してください",
+        "invalid": "ユーザー名は英数字とアンダースコアのみ使用できます"
+      },
+      "password": {
+        "required": "パスワードを入力してください",
+        "tooShort": "パスワードは8文字以上で入力してください",
+        "requireUppercase": "パスワードは大文字を含む必要があります",
+        "requireLowercase": "パスワードは小文字を含む必要があります",
+        "requireNumbers": "パスワードは数字を含む必要があります",
+        "requireSymbols": "パスワードは記号を含む必要があります"
+      },
+      "confirmPassword": {
+        "required": "パスワード確認を入力してください",
+        "mismatch": "パスワードが一致しません"
+      },
+      "displayName": {
+        "tooLong": "表示名は50文字以下で入力してください"
+      },
+      "emailOrUsername": {
+        "required": "ユーザー名またはメールアドレスを入力してください",
+        "invalid": "有効なメールアドレスまたはユーザー名を入力してください"
+      }
+    },
+    "loading": {
+      "authenticating": "認証中...",
+      "checkingAuth": "認証状態を確認中...",
+      "signingIn": "サインイン中...",
+      "signingUp": "サインアップ中...",
+      "signingOut": "サインアウト中..."
+    },
+    "accessibility": {
+      "showPassword": "パスワードを表示",
+      "hidePassword": "パスワードを隠す",
+      "required": "必須",
+      "optional": "任意",
+      "loading": "読み込み中",
+      "error": "エラー",
+      "success": "成功"
+    }
+  },
+  "actions": {
+    "createPost": "投稿を作成",
+    "editPost": "投稿を編集",
+    "deletePost": "投稿を削除",
+    "likePost": "いいね",
+    "commentPost": "コメント",
+    "sharePost": "シェア",
+    "reportPost": "通報",
+    "followUser": "フォロー",
+    "unfollowUser": "フォロー解除",
+    "blockUser": "ブロック",
+    "muteUser": "ミュート"
+  },
+  "posts": {
+    "createPost": "投稿を作成",
+    "whatOnYourMind": "何を考えていますか？",
+    "post": "投稿",
+    "like": "いいね",
+    "comment": "コメント",
+    "share": "シェア",
+    "delete": "削除",
+    "edit": "編集",
+    "report": "通報"
+  },
+  "profile": {
+    "followers": "フォロワー",
+    "following": "フォロー中",
+    "posts": "投稿",
+    "editProfile": "プロフィールを編集",
+    "follow": "フォローする",
+    "unfollow": "フォロー解除",
+    "settings": "プロフィール設定",
+    "settingsDescription": "プロフィール情報を編集できます。",
+    "profileImage": "プロフィール画像",
+    "profileImageDescription": "あなたのプロフィール画像を設定します。",
+    "currentImage": "現在の画像",
+    "currentImageDescription": "クリックして新しい画像をアップロード",
+    "basicInfo": "基本情報",
+    "basicInfoDescription": "プロフィールの基本情報を設定します。",
+    "displayNameDescription": "他のユーザーに表示される名前（最大50文字）",
+    "bioText": "自己紹介文",
+    "bioSectionDescription": "あなたについて他のユーザーに伝えたいことを書いてください。",
+    "bioDescription": "自己紹介文を入力してください",
+    "bioHint": "改行も含めて160文字まで入力できます",
+    "saveNote": "変更内容は自動的に保存されます。",
+    "uploadImage": "画像をアップロード",
+    "usernameCannotBeChanged": "ユーザー名は変更できません",
+    "enterDisplayName": "表示名を入力",
+    "bio": "自己紹介",
+    "enterBio": "自己紹介を入力",
+    "characters": "文字",
+    "saveChanges": "変更を保存",
+    "saving": "保存中...",
+    "updateSuccess": "プロフィールを更新しました",
+    "userNotFound": "ユーザーが見つかりません",
+    "joinedOn": "登録日: {date}",
+    "media": "メディア",
+    "likes": "いいね",
+    "noFollowers": "フォロワーがいません",
+    "noFollowing": "フォローしているユーザーがいません",
+    "noMediaPosts": "メディア付きの投稿がありません",
+    "noMedia": "まだメディアがありません",
+    "avatar": {
+      "title": "プロフィール画像",
+      "description": "あなたを表現する画像をアップロードしてください",
+      "current": "現在のアバター",
+      "currentDescription": "設定されているプロフィール画像",
+      "dragDrop": "画像をドラッグ&ドロップ",
+      "orClick": "またはクリックしてファイルを選択",
+      "supportedFormats": "JPG, PNG, WebP (最大20MB)",
+      "delete": "アバターを削除"
+    },
+    "basicInfo": {
+      "title": "基本情報",
+      "description": "他のユーザーに表示される情報を設定してください"
+    },
+    "displayName": {
+      "label": "表示名",
+      "placeholder": "表示名を入力してください"
+    },
+    "bio": {
+      "label": "自己紹介",
+      "placeholder": "自己紹介を入力してください"
+    },
+    "saved": "保存しました"
+  },
+  "settings": {
+    "description": "アカウント設定とアプリケーション設定の管理",
+    "welcome": {
+      "title": "設定へようこそ",
+      "description": "左側のメニューから各種設定を変更できます。変更は自動的に保存されます。"
+    },
+    "basicDescription": "アカウントの基本情報を確認できます",
+    "overview": "概要",
+    "profile": {
+      "title": "プロフィール設定",
+      "description": "プロフィール情報とアバター画像を管理",
+      "updateSuccess": "プロフィールを更新しました",
+      "updateError": "プロフィールの更新に失敗しました",
+      "avatarDeleteSuccess": "プロフィール画像を削除しました",
+      "avatarDeleteError": "プロフィール画像の削除に失敗しました",
+      "avatarUploadSuccess": "プロフィール画像をアップロードしました",
+      "avatarUploadError": "プロフィール画像のアップロードに失敗しました",
+      "changeAvatar": "画像を変更",
+      "deleteAvatar": "画像を削除",
+      "uploading": "アップロード中...",
+      "deleting": "削除中...",
+      "invalidFileType": "画像ファイルを選択してください",
+      "fileTooLarge": "ファイルサイズは10MB以下にしてください",
+      "displayName": "表示名",
+      "displayNamePlaceholder": "表示名を入力してください",
+      "bio": "自己紹介",
+      "bioPlaceholder": "自己紹介を入力してください",
+      "saving": "保存中...",
+      "saveChanges": "変更を保存",
+      "avatar": {
+        "title": "プロフィール画像",
+        "description": "あなたのプロフィール画像を設定・変更できます",
+        "management": "プロフィール画像管理",
+        "managementDescription": "現在の画像の確認と新しい画像のアップロード",
+        "current": "現在の画像",
+        "currentDescription": "現在設定されているプロフィール画像",
+        "upload": "新しい画像をアップロード",
+        "uploadDescription": "新しいプロフィール画像をアップロードできます",
+        "dragAndDrop": "画像をドラッグ&ドロップ",
+        "orClickToSelect": "またはクリックしてファイルを選択",
+        "supportedFormats": "JPG, PNG, WebP (最大5MB)",
+        "delete": "アバターを削除",
+        "deleting": "削除中...",
+        "clickToUpload": "クリックしてアップロード",
+        "maxSize": "最大20MB",
+        "uploadButton": "アバターをアップロード",
+        "uploading": "アップロード中...",
+        "cropSuccess": "画像をクロップしました",
+        "noImageSelected": "アップロードする画像を選択してください",
+        "uploadSuccess": "アバター画像をアップロードしました",
+        "uploadProcessing": "画像を処理中です。完了すると通知されます。"
+      },
+      "info": {
+        "title": "プロフィール情報",
+        "description": "表示名と自己紹介を設定できます",
+        "form": "プロフィール編集",
+        "formDescription": "表示名と自己紹介を編集できます"
+      },
+      "notes": {
+        "title": "注意事項",
+        "description": "プロフィール設定に関する重要な情報",
+        "public": "プロフィール情報は他のユーザーに公開されます",
+        "username": "ユーザー名は変更できません",
+        "avatar": "プロフィール画像は最大5MBまでアップロード可能です",
+        "bio": "自己紹介は160文字以内で入力してください"
+      },
+      "displayName": {
+        "label": "表示名",
+        "placeholder": "表示名を入力してください",
+        "required": "表示名は必須です",
+        "tooLong": "表示名は50文字以内で入力してください",
+        "trim": "前後の空白は削除されます",
+        "maxLength": "表示名は20文字以内で入力してください",
+        "description": "他のユーザーに表示される名前です",
+        "help": "他のユーザーに表示される名前です"
+      },
+      "bio": {
+        "label": "自己紹介",
+        "placeholder": "自己紹介を入力してください",
+        "tooLong": "自己紹介は500文字以内で入力してください",
+        "maxLength": "自己紹介は500文字以内で入力してください",
+        "description": "改行も含めて500文字まで入力できます",
+        "help": "あなたについて簡単に紹介してください"
+      },
+      "username": {
+        "label": "ユーザー名",
+        "description": "変更できません"
+      },
+      "info": {
+        "title": "プロフィール情報",
+        "description": "表示名と自己紹介を設定できます"
+      },
+      "save": "変更を保存",
+      "saving": "保存中...",
+      "saved": "保存しました",
+      "hasChanges": "変更があります"
+    },
+    "account": {
+      "title": "アカウント設定",
+      "description": "セキュリティとアカウント情報を管理",
+      "basic": {
+        "title": "基本情報",
+        "description": "アカウントの基本情報を確認できます"
+      },
+      "username": {
+        "label": "ユーザー名",
+        "description": "ユーザー名は変更できません"
+      },
+      "email": {
+        "label": "メールアドレス",
+        "description": "現在登録されているメールアドレス",
+        "title": "メールアドレス変更",
+        "change": "メールアドレスを変更",
+        "changeDescription": "新しいメールアドレスに確認メールが送信されます",
+        "new": "新しいメールアドレス",
+        "password": "現在のパスワード",
+        "changeButton": "メールアドレスを変更",
+        "changing": "変更中...",
+        "changeSuccess": "メールアドレス変更の確認メールを送信しました",
+        "changeError": "メールアドレスの変更に失敗しました"
+      },
+      "password": {
+        "title": "パスワード変更",
+        "description": "セキュリティのため定期的にパスワードを変更してください",
+        "change": "パスワードを変更",
+        "changeDescription": "新しいパスワードは8文字以上で設定してください",
+        "current": "現在のパスワード",
+        "new": "新しいパスワード",
+        "confirm": "パスワード確認",
+        "changeButton": "パスワードを変更",
+        "changing": "変更中...",
+        "mismatch": "新しいパスワードが一致しません",
+        "tooShort": "パスワードは8文字以上で入力してください",
+        "changeSuccess": "パスワードを変更しました",
+        "changeError": "パスワードの変更に失敗しました"
+      },
+
+      "danger": {
+        "title": "危険な操作",
+        "description": "以下の操作は取り消すことができません"
+      },
+      "delete": {
+        "title": "アカウントを削除",
+        "description": "アカウントとすべてのデータが完全に削除されます。この操作は取り消せません。",
+        "button": "アカウントを削除",
+        "confirmTitle": "アカウントを削除しますか？",
+        "confirmDescription": "この操作は取り消すことができません。アカウントとすべてのデータが完全に削除されます。",
+        "confirm": "削除する",
+        "success": "アカウントを削除しました",
+        "error": "アカウントの削除に失敗しました"
+      }
+    },
+    "display": {
+      "title": "表示設定",
+      "description": "アプリの外観と表示方法をカスタマイズします",
+      "theme": {
+        "title": "テーマ設定",
+        "description": "アプリの外観テーマを選択できます",
+        "selection": "テーマ選択",
+        "selectionDescription": "ライト、ダーク、またはシステム設定に従うテーマを選択",
+        "light": "ライト",
+        "dark": "ダーク",
+        "system": "システム",
+        "current": "現在のテーマ",
+        "currentDescription": "現在適用されているテーマ",
+        "systemDetected": "システム設定",
+        "changeSuccess": "テーマを変更しました"
+      },
+      "language": {
+        "title": "言語設定",
+        "description": "アプリの表示言語を変更できます",
+        "select": "表示言語",
+        "selectDescription": "アプリ全体の表示言語を選択"
+      },
+      "animations": {
+        "title": "アニメーション設定",
+        "description": "アプリのアニメーション効果を制御できます",
+        "enable": "アニメーションを有効にする",
+        "enableDescription": "ページ遷移やUI要素のアニメーション効果を有効にします",
+        "enabled": "アニメーションを有効にしました",
+        "disabled": "アニメーションを無効にしました"
+      }
+    },
+    "notifications": {
+      "title": "通知設定",
+      "description": "通知の受信設定を管理"
+    }
+  },
+  "notFound": {
+    "title": "ページが見つかりません",
+    "description": "お探しのページは存在しないか、移動された可能性があります。"
+  },
+  "errors": {
+    "somethingWentWrong": "エラーが発生しました",
+    "tryAgain": "もう一度お試しください",
+    "pageNotFound": "ページが見つかりません",
+    "unauthorized": "権限がありません",
+    "invalidCredentials": "ユーザー名またはパスワードが無効です。",
+    "registrationFailed": "登録に失敗しました。入力内容を確認してください。",
+    "profileUpdateFailed": "プロフィールの更新に失敗しました",
+    "profileFetchFailed": "プロフィールの取得に失敗しました",
+    "followFailed": "フォローに失敗しました",
+    "unfollowFailed": "フォロー解除に失敗しました",
+    "followActionFailed": "フォロー処理に失敗しました"
+  },
+  "landing": {
+    "heroSubtitle": "LIBARKは、シンプルで使いやすいソーシャルネットワークプラットフォームです。自由な表現と、人とのつながりを大切にします。",
+    "featuresTitle": "主な機能",
+    "postShareTitle": "投稿とシェア",
+    "postShareDesc": "テキストや画像を投稿して、あなたの考えや経験をシェアしましょう。",
+    "likeCommentTitle": "いいねとコメント",
+    "likeCommentDesc": "投稿にいいねやコメントをつけて、他のユーザーと交流しましょう。",
+    "followTitle": "フォロー機能",
+    "followDesc": "興味のあるユーザーをフォローして、カスタムフィードを作成しましょう。",
+    "dmTitle": "ダイレクトメッセージ",
+    "dmDesc": "プライベートメッセージで他のユーザーと直接コミュニケーションを取りましょう。",
+    "ctaTitle": "今すぐLIBARKを始めましょう",
+    "ctaText": "無料で簡単に登録できます。今すぐ始めて、新しいつながりを見つけましょう。"
+  },
+  "theme": {
+    "toggle": "テーマ切替",
+    "light": "ライト",
+    "dark": "ダーク",
+    "system": "システム"
+  },
+  "footer": {
+    "description": "シンプルで使いやすいソーシャルネットワークプラットフォーム",
+    "company": "運営会社",
+    "legal": "法的情報",
+    "support": "サポート",
+    "help": "ヘルプ",
+    "faq": "よくある質問",
+    "community": "コミュニティ",
+    "rights": "すべての権利は保護されています",
+    "cookies": "Cookie ポリシー"
+  },
+  "language": {
+    "selectLanguage": "言語を選択",
+    "japanese": "日本語",
+    "english": "英語"
+  },
+  "timezone": {
+    "regions": {
+      "africa": "アフリカ",
+      "america": "アメリカ大陸",
+      "antarctica": "南極",
+      "arctic": "北極",
+      "asia": "アジア",
+      "atlantic": "大西洋",
+      "australia": "オーストラリア",
+      "europe": "ヨーロッパ",
+      "indian": "インド洋",
+      "pacific": "太平洋"
+    },
+    "cities": {
+      "tokyo": "東京",
+      "seoul": "ソウル",
+      "shanghai": "上海",
+      "hong_kong": "香港",
+      "singapore": "シンガポール",
+      "bangkok": "バンコク",
+      "jakarta": "ジャカルタ",
+      "manila": "マニラ",
+      "kolkata": "コルカタ",
+      "mumbai": "ムンバイ",
+      "delhi": "デリー",
+      "sydney": "シドニー",
+      "melbourne": "メルボルン",
+      "brisbane": "ブリスベン",
+      "perth": "パース",
+      "auckland": "オークランド",
+      "new_york": "ニューヨーク",
+      "chicago": "シカゴ",
+      "los_angeles": "ロサンゼルス",
+      "denver": "デンバー",
+      "toronto": "トロント",
+      "vancouver": "バンクーバー",
+      "mexico_city": "メキシコシティ",
+      "sao_paulo": "サンパウロ",
+      "buenos_aires": "ブエノスアイレス",
+      "london": "ロンドン",
+      "paris": "パリ",
+      "berlin": "ベルリン",
+      "rome": "ローマ",
+      "madrid": "マドリード",
+      "amsterdam": "アムステルダム",
+      "zurich": "チューリッヒ",
+      "moscow": "モスクワ",
+      "stockholm": "ストックホルム",
+      "cairo": "カイロ",
+      "lagos": "ラゴス",
+      "johannesburg": "ヨハネスブルグ",
+      "casablanca": "カサブランカ"
+    }
+  },
+  "admin": {
+    "title": "管理者ダッシュボード",
+    "description": "システムの管理とメンテナンス",
+    "systemStats": {
+      "title": "システム統計",
+      "description": "現在のシステム使用状況",
+      "loading": "統計を読み込み中...",
+      "error": "統計の読み込みに失敗しました: {message}",
+      "noData": "統計データがありません",
+      "refresh": "統計を更新",
+      "totalUsers": "総ユーザー数",
+      "totalPosts": "総投稿数",
+      "totalMedia": "総メディア数",
+      "totalComments": "総コメント数",
+      "totalLikes": "総いいね数",
+      "storageUsed": "ストレージ使用量",
+      "activeUsers24h": "24時間アクティブ",
+      "activeUsers7d": "7日間アクティブ",
+      "activeUsers30d": "30日間アクティブ"
+    },
+    "dangerousActions": {
+      "title": "危険な操作",
+      "description": "以下の操作は元に戻すことができません。実行前に十分ご注意ください。"
+    },
+    "resetPosts": {
+      "title": "投稿データのリセット",
+      "description": "この操作を実行すると、すべての投稿データとメディアデータが削除されます。この操作は元に戻せません。",
+      "button": "投稿データをリセット",
+      "processing": "リセット中...",
+      "confirmMessage": "すべての投稿をリセットしてもよろしいですか？この操作は元に戻せません。"
+    },
+    "resetPostsAndMedia": {
+      "title": "投稿データとS3バケットのリセット",
+      "description": "この操作を実行すると、すべての投稿データとS3バケット内のメディアデータが削除されます。S3バケット内のデータも完全に削除されるため、この操作は元に戻せません。",
+      "button": "投稿データとS3バケットをリセット",
+      "processing": "リセット中...",
+      "confirmMessage": "すべての投稿とS3バケット内のメディアデータをリセットしてもよろしいですか？この操作は元に戻せません。"
+    }
+  },
+  "notifications": {
+    "title": "通知",
+    "description": "通知の管理と確認",
+    "all": "全て",
+    "unread": "未読",
+    "markAllAsRead": "全て既読",
+    "markAsRead": "既読にする",
+    "unreadCount": "{{count}}件の未読通知",
+    "noNotifications": "通知はありません",
+    "noUnread": "未読の通知はありません",
+    "loading": "通知を読み込み中...",
+    "error": "エラー",
+    "loadError": "通知の読み込みに失敗しました",
+    "markAsReadError": "既読処理に失敗しました",
+    "markAllAsReadError": "全て既読処理に失敗しました"
+  },
+  "messages": {
+    "title": "メッセージ",
+    "description": "プライベートメッセージの管理",
+    "newMessage": "新しいメッセージ",
+    "searchPlaceholder": "ユーザーを検索...",
+    "conversations": "会話一覧",
+    "loading": "会話を読み込み中...",
+    "error": "エラー",
+    "unreadCount": "{{count}}件の未読メッセージ",
+    "noConversations": "会話がありません",
+    "noConversationsDesc": "新しいメッセージを送信して会話を始めましょう。",
+    "noSearchResults": "検索結果がありません",
+    "inbox": "受信箱",
+    "sent": "送信済み",
+    "archived": "アーカイブ",
+    "groups": "グループ",
+    "search": "検索",
+    "settings": "設定"
+  },
+  "wallet": {
+    "title": "ウォレット",
+    "description": "残高管理と取引履歴",
+    "overview": {
+      "title": "概要"
+    },
+    "balance": {
+      "title": "残高",
+      "description": "現在の残高と通貨情報"
+    },
+    "actions": {
+      "title": "入金・出金",
+      "description": "暗号通貨やP2P取引で入金、または出金を行えます",
+      "createPost": "投稿を作成"
+    },
+    "deposit": {
+      "title": "入金",
+      "description": "暗号通貨でウォレットに入金します",
+      "crypto": {
+        "title": "暗号通貨",
+        "description": "ビットコインやイーサリアムなどの暗号通貨で入金",
+        "features": {
+          "instant": "即座に反映",
+          "secure": "セキュアな処理",
+          "lowFees": "低い手数料"
+        },
+        "history": {
+          "title": "履歴"
+        }
+      },
+      "card": {
+        "title": "クレジットカード",
+        "description": "Visa、Mastercardで即座に入金",
+        "features": {
+          "instant": "即座に残高反映",
+          "secure": "セキュアな決済処理",
+          "convenient": "簡単で便利"
+        }
+      },
+      "p2p": {
+        "title": "P2P取引",
+        "description": "個人間での直接取引",
+        "features": {
+          "flexible": "柔軟な取引条件",
+          "competitive": "競争力のある価格",
+          "community": "コミュニティベース"
+        },
+        "deposit": {
+          "title": "P2P入金",
+          "description": "法定通貨でウォレットに入金できます",
+          "steps": {
+            "amountInput": {
+              "title": "入金額を入力",
+              "currencyLabel": "通貨",
+              "amountLabel": "金額",
+              "quickSelect": "クイック選択",
+              "minDeposit": "最小入金額",
+              "maxDeposit": "最大入金額",
+              "nextButton": "次へ: オファーを探す",
+              "backButton": "金額を変更"
+            },
+            "offerSelection": {
+              "title": "オファーを選択",
+              "depositing": "を入金",
+              "filterLabel": "フィルター",
+              "filterAll": "すべて",
+              "selectOffer": "このオファーを選択",
+              "noOffers": "利用可能なオファーがありません"
+            },
+            "payment": {
+              "title": "支払いを行ってください",
+              "timeRemaining": "残り時間",
+              "tradeInfo": "取引情報",
+              "tradeId": "取引ID",
+              "paymentAmount": "支払金額",
+              "rate": "レート",
+              "depositAmount": "入金額",
+              "paymentInfo": "支払い先情報",
+              "paymentMethod": "支払方法",
+              "bankName": "銀行名",
+              "branchName": "支店名",
+              "accountType": "口座種別",
+              "accountNumber": "口座番号",
+              "accountHolder": "口座名義",
+              "copy": "コピー",
+              "copied": "コピーしました",
+              "warning": "⚠️ 振込人名義に取引IDを含めてください",
+              "importantNotes": "📌 重要な注意事項",
+              "note1": "金額は正確に入力してください",
+              "note2": "支払い後、必ず「支払い完了」を押してください",
+              "note3": "30分以内に支払いが確認されない場合、取引はキャンセル",
+              "cancelTrade": "取引をキャンセル",
+              "paymentComplete": "✅ 支払いを完了しました"
+            },
+            "confirmation": {
+              "title": "🎉 入金が完了しました！",
+              "tradeDetails": "取引詳細",
+              "completedAt": "完了日時",
+              "status": "ステータス",
+              "statusCompleted": "✅ 完了",
+              "checkBalance": "💰 P2P残高を確認",
+              "transferToWallet": "ウォレット残高に移動",
+              "newDeposit": "新しい入金を開始",
+              "viewHistory": "取引履歴を見る",
+              "goToWallet": "ウォレットへ"
+            }
+          },
+          "offer": {
+            "rate": "レート",
+            "margin": "+{margin}%",
+            "paymentMethods": "支払方法",
+            "amountRange": "対応金額",
+            "completionRate": "取引完了率",
+            "trades": "件"
+          },
+          "trade": {
+            "tradeId": "取引ID",
+            "status": "ステータス",
+            "amount": "金額",
+            "timestamp": "日時"
+          },
+          "timeline": {
+            "tradeCreated": "取引作成",
+            "offerAccepted": "オファー承認",
+            "paymentConfirmed": "支払い確認待ち",
+            "depositCompleted": "入金完了",
+            "remainingTime": "残り時間",
+            "acceptedBy": "{seller} が取引を承認"
+          },
+          "seller": {
+            "title": "売り手オファー設定",
+            "description": "P2P売り手としてオファーを設定できます",
+            "minAmount": "最小金額 (USD)",
+            "maxAmount": "最大金額 (USD)",
+            "currency": "通貨",
+            "margin": "マージン (%)",
+            "paymentMethods": "支払い方法",
+            "saveButton": "オファーを保存",
+            "cancelButton": "キャンセル"
+          }
+        },
+        "tradeDetail": {
+          "title": "取引詳細",
+          "notFound": "取引が見つかりませんでした",
+          "loading": "読み込み中..."
+        },
+        "history": {
+          "title": "取引履歴",
+          "description": "あなたのP2P取引の履歴を確認できます",
+          "statusFilter": "ステータスフィルター",
+          "noTrades": "取引履歴がありません",
+          "loading": "読み込み中...",
+          "error": "エラーが発生しました"
+        },
+        "seller": {
+          "title": "売り手オファー設定",
+          "description": "P2P売り手としてオファーを設定できます"
+        },
+        "status": {
+          "PENDING": "待機中",
+          "MATCHED": "マッチ済み",
+          "PAYMENT_SENT": "支払い済み",
+          "CONFIRMED": "確認済み",
+          "COMPLETED": "完了",
+          "CANCELLED": "キャンセル",
+          "DISPUTED": "紛争中"
+        },
+        "paymentMethods": {
+          "bank_transfer": "銀行振込",
+          "paypay": "PayPay",
+          "line_pay": "LINE Pay",
+          "merpay": "メルペイ",
+          "rakuten_pay": "楽天ペイ",
+          "au_pay": "au PAY",
+          "d_pay": "d払い"
+        },
+        "currencies": {
+          "JPY": "日本円",
+          "USD": "米ドル",
+          "EUR": "ユーロ"
+        }
+      }
+    },
+    "withdraw": {
+      "title": "出金",
+      "description": "暗号通貨を外部ウォレットに出金します",
+      "crypto": {
+        "history": {
+          "title": "履歴"
+        }
+      },
+      "form": {
+        "title": "出金情報",
+        "description": "出金先と金額を入力してください"
+      }
+    },
+    "settings": {
+      "title": "ウォレット設定"
+    },
+    "totalBalance": "総資産",
+    "recentTransactions": "最近の取引",
+    "viewAll": "すべて表示",
+    "send": "送金",
+    "transactionTypes": {
+      "deposit": "入金",
+      "withdrawal": "出金",
+      "transfer_in": "受取",
+      "transfer_out": "送金",
+      "content_purchase": "コンテンツ購入",
+      "subscription": "サブスクリプション",
+      "refund": "返金",
+      "crypto_deposit": "暗号通貨入金",
+      "p2p_trade": "P2P取引",
+      "default": "取引"
+    },
+    "transactions": {
+      "title": "取引履歴",
+      "description": "過去の入金・出金履歴を確認できます",
+      "filter": {
+        "title": "フィルター",
+        "description": "取引履歴を絞り込んで表示します"
+      },
+      "list": {
+        "title": "取引一覧"
+      },
+      "columns": {
+        "type": "タイプ",
+        "description": "説明",
+        "amount": "金額",
+        "date": "日時",
+        "status": "ステータス",
+        "actions": "アクション"
+      },
+      "fee": "手数料",
+      "detailsButton": "詳細"
+    }
+  },
+  "post": {
+    "creator": {
+      "placeholder": "今何を考えていますか？"
+    }
+  },
+  "follow": {
+    "follow": "フォロー",
+    "following": "フォロー中",
+    "unfollow": "フォロー解除",
+    "followers": "フォロワー",
+    "followersCount": "フォロワー数",
+    "followingCount": "フォロー中",
+    "followSuccess": "フォローしました",
+    "unfollowSuccess": "フォローを解除しました",
+    "followError": "フォローに失敗しました",
+    "unfollowError": "フォロー解除に失敗しました",
+    "cannotFollowSelf": "自分自身をフォローすることはできません",
+    "loginRequired": "ログインが必要です",
+    "alreadyFollowing": "既にフォローしています",
+    "alreadyUnfollowed": "既にフォロー解除されています",
+    "notFollowing": "フォローしていません",
+    "rateLimitError": "フォロー操作が多すぎます。しばらく待ってから再試行してください",
+    "followersEmpty": "フォロワーがいません",
+    "followingEmpty": "フォローしているユーザーがいません",
+    "followToSeeMore": "他のユーザーをフォローして投稿を見てみましょう"
+  },
+  "timeline": {
+    "following": "フォロー中",
+    "recommended": "おすすめ",
+    "all": "すべて",
+    "loginRequired": "タイムラインを表示するにはログインが必要です",
+    "noPostsFollowing": "フォローしているユーザーの投稿がありません",
+    "noPostsRecommended": "おすすめの投稿がありません",
+    "noPostsAll": "投稿がありません",
+    "loadingFailed": "投稿の読み込みに失敗しました",
+    "loadMore": "さらに読み込む",
+    "loading": "読み込み中..."
+  }
+}

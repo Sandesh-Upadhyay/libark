@@ -1,0 +1,332 @@
+# 共通設定を定義
+x-app-common: &app-common
+  # PID 1 を init にして zombie を回収（healthcheck 等のプロセスが溜まるのを防ぐ）
+  init: true
+  networks:
+    - libark-net
+  env_file:
+    - .env.development
+
+# 共通ボリューム設定
+x-app-volumes: &app-volumes
+  volumes:
+    - .:/app:cached
+    - root_node_modules:/app/node_modules
+    - pnpm_store:/root/.pnpm-store
+
+services:
+  # 開発専用コンテナ（VS Code DevContainer用）- 依存関係インストールの中心
+  dev:
+    <<: *app-common
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+
+    volumes:
+      - .:/workspace:cached
+      - frontend_node_modules:/workspace/apps/frontend/node_modules
+      - frontend_next:/workspace/apps/frontend/.next
+      - backend_node_modules:/workspace/apps/backend/node_modules
+      - worker_node_modules:/workspace/apps/worker/node_modules
+      - s3_gateway_node_modules:/workspace/apps/s3-gateway/node_modules
+      - root_node_modules:/workspace/node_modules
+      - pnpm_store:/root/.pnpm-store
+    environment:
+      - NODE_ENV=development
+      - DOCKER_CONTAINER=true
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+      - NEXT_TELEMETRY_DISABLED=1
+      # Node.jsメモリ制限（ビルド時のOOM対策）
+      - NODE_OPTIONS=--max-old-space-size=4096
+      # Docker内部ネットワーク用設定（.envファイルの設定を上書き）
+      - REDIS_HOST=redis
+    # メモリ制限を追加（ビルド時のOOM対策）
+    deploy:
+      resources:
+        limits:
+          memory: 6G
+        reservations:
+          memory: 3G
+    command: sh -c "echo 'Dev container is ready. Run pnpm install, pnpm db:generate, pnpm db:deploy, and pnpm db:seed when bootstrapping.' && sleep infinity"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    healthcheck:
+      test: ['CMD-SHELL', 'test -d /workspace/node_modules/.pnpm']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  frontend:
+    <<: *app-common
+    profiles: ["apps"]
+    build:
+      context: .
+      dockerfile: ./Dockerfile.development
+      target: frontend-dev
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/app:cached
+      - frontend_node_modules:/app/apps/frontend/node_modules
+      - frontend_next:/app/apps/frontend/.next
+      - root_node_modules:/app/node_modules
+      - pnpm_store:/root/.pnpm-store
+    environment:
+      - NODE_ENV=development
+      - DOCKER_CONTAINER=true
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+      - NEXT_TELEMETRY_DISABLED=1
+      - NODE_OPTIONS=--max-old-space-size=4096
+      - REDIS_HOST=redis
+      - PORT=3000
+      # NGINX経由でのGraphQL接続用設定（.envファイルの設定を上書き）
+      - NEXT_PUBLIC_GRAPHQL_URL=/graphql
+      - NEXT_PUBLIC_BACKEND_URL=
+
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:3000/ || exit 1']
+      interval: 60s
+      timeout: 60s
+      retries: 3
+      start_period: 60s
+    depends_on:
+      dev:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+
+  # 統一Fastify + GraphQLバックエンド
+  backend:
+    <<: *app-common
+    profiles: ["apps"]
+    build:
+      context: .
+      dockerfile: ./Dockerfile.development
+      target: backend-dev
+    ports:
+      - '8000:8000'
+    volumes:
+      - .:/app:cached
+      - backend_node_modules:/app/apps/backend/node_modules
+      - root_node_modules:/app/node_modules
+      - pnpm_store:/root/.pnpm-store
+      - shared_uploads:/tmp/uploads
+    environment:
+      - NODE_ENV=development
+      - DOCKER_CONTAINER=true
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+      - NEXT_TELEMETRY_DISABLED=1
+      - NODE_OPTIONS=--max-old-space-size=4096
+      - REDIS_HOST=redis
+      - PORT=8000
+      # Docker内部通信用設定（.envファイルの設定を上書き）
+      - S3_GATEWAY_URL=http://s3-gateway:8080
+      - S3_ENDPOINT=http://s3-gateway:8080
+
+    depends_on:
+      dev:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      s3-gateway:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  worker:
+    <<: *app-common
+    profiles: ["apps"]
+    build:
+      context: .
+      dockerfile: ./Dockerfile.development
+      target: worker-dev
+    ports:
+      - '8100:8100'
+    volumes:
+      - .:/app:cached
+      - worker_node_modules:/app/apps/worker/node_modules
+      - root_node_modules:/app/node_modules
+      - pnpm_store:/root/.pnpm-store
+      - shared_uploads:/tmp/uploads
+    environment:
+      - NODE_ENV=development
+      - DOCKER_CONTAINER=true
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+      - NEXT_TELEMETRY_DISABLED=1
+      - NODE_OPTIONS=--max-old-space-size=4096
+      - REDIS_HOST=redis
+      - PORT=8100
+      # Docker内部通信用設定（.envファイルの設定を上書き）
+      - S3_GATEWAY_URL=http://s3-gateway:8080
+      - S3_ENDPOINT=http://s3-gateway:8080
+
+    depends_on:
+      dev:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      s3-gateway:
+        condition: service_healthy
+
+  redis:
+    image: 'redis:7.2-alpine'
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    networks:
+      - libark-net
+    # 開発環境用Redis設定（永続化エラー対策）
+    command: redis-server --save "" --appendonly no --stop-writes-on-bgsave-error no
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # S3 Gateway - メインS3プロキシ（POST/PUT プリサイン・暗号化対応）
+  # 注意: これがメインのS3サービスです。全メディア処理がこのサービス経由で行われます。
+  # セキュリティ強化: 外部ポート公開を停止し、Docker内部ネットワークのみでアクセス可能
+  s3-gateway:
+    <<: *app-common
+    profiles: ["apps"]
+    build:
+      context: .
+      dockerfile: ./Dockerfile.development
+      target: s3-gateway-dev
+    # ports: # 外部ポート公開を停止（セキュリティ強化）
+    #   - '8080:8080' # S3 Gateway API
+    volumes:
+      - .:/app:cached
+      - s3_gateway_node_modules:/app/apps/s3-gateway/node_modules
+      - root_node_modules:/app/node_modules
+      - pnpm_store:/root/.pnpm-store
+    environment:
+      # Redis設定（キャッシュ用）
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_URL=redis://redis:6379
+      # サーバー設定
+      - PORT=8080
+      - NODE_ENV=development
+      # CORS設定
+      - S3_GATEWAY_CORS_ORIGIN=http://localhost:3000,http://localhost:3001
+      - S3_GATEWAY_CORS_CREDENTIALS=true
+      # ログ設定
+      - LOG_LEVEL=debug
+      - AWS_SDK_JS_LOG_LEVEL=debug
+    depends_on:
+      dev:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8080/health']
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Nginx リバースプロキシ（本番環境と同じ構成）
+  nginx:
+    profiles: ["apps"]
+    image: nginx:1.27-alpine
+    ports:
+      - '80:80'
+    volumes:
+      - ./docker/nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/test-upload.html:/etc/nginx/html/test-upload.html:ro
+      - ./nginx/snippets:/etc/nginx/snippets:ro
+    networks:
+      - libark-net
+    depends_on:
+      - frontend
+      - backend
+      - s3-gateway
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost/health || exit 1']
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: libark_db
+      POSTGRES_USER: libark_db_admin
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me_postgres_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/postgres/init:/docker-entrypoint-initdb.d
+    networks:
+      - libark-net
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U libark_db_admin -d libark_db']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ================================
+  # 🔍 Prisma Studio
+  # ================================
+  prisma-studio:
+    <<: *app-common
+    profiles: ["tools"]
+    build:
+      context: .
+      dockerfile: ./Dockerfile.development
+      target: dev
+    container_name: libark-prisma-studio
+    ports:
+      - '5555:5555'
+    volumes:
+      - .:/app:cached
+      - root_node_modules:/app/node_modules
+      - pnpm_store:/root/.pnpm-store
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=${DATABASE_URL:-postgresql://libark_db_admin:change_me_postgres_password@postgres:5432/libark_db}
+      - POSTGRES_DB=libark_db
+      - POSTGRES_USER=libark_db_admin
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-change_me_postgres_password}
+    networks:
+      - libark-net
+    depends_on:
+      dev:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    command: sh -c "cd /app && pnpm --filter @libark/db exec prisma studio --port 5555 --browser none --url \"$DATABASE_URL\""
+
+networks:
+  libark-net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  frontend_node_modules:
+  frontend_next:
+  backend_node_modules:
+  worker_node_modules:
+  s3_gateway_node_modules:
+  root_node_modules:
+  pnpm_store:
+  redis_data:
+  shared_uploads:

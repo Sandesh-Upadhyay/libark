@@ -1,0 +1,122 @@
+# 🎯 管理者機能スキーマ定義
+# 管理者専用機能に関する型定義
+
+# ================================
+# 管理者機能の型定義
+# ================================
+type AdminResetResult {
+  success: Boolean!
+  message: String!
+  deletedCount: Int!
+}
+
+type SystemStats {
+  totalUsers: Int!
+  totalPosts: Int!
+  totalMedia: Int!
+  totalComments: Int!
+  totalLikes: Int!
+  storageUsed: String!
+  activeUsers24h: Int!
+  activeUsers7d: Int!
+  activeUsers30d: Int!
+}
+
+# ================================
+# 管理者用ユーザー管理型定義
+# ================================
+type AdminUserDetail {
+  id: UUID!
+  username: String!
+  email: String!
+  displayName: String
+  bio: String
+  profileImageId: UUID
+  coverImageId: UUID
+  isVerified: Boolean!
+  isActive: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  lastLoginAt: DateTime
+
+  # 統計情報
+  postsCount: Int!
+  followersCount: Int!
+  followingCount: Int!
+
+  # 権限情報
+  permissions: [UserPermission!]!
+}
+
+# ユーザー権限型
+type UserPermission {
+  id: UUID!
+  userId: UUID!
+  permissionId: UUID!
+  grantedBy: UUID
+  grantedAt: DateTime!
+  expiresAt: DateTime
+  isActive: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  # リレーション
+  permission: Permission!
+  grantedByUser: User
+}
+
+# 権限型
+type Permission {
+  id: UUID!
+  name: String!
+  description: String
+  createdAt: DateTime!
+}
+
+# 管理者用ユーザー接続型（ページネーション対応）
+type AdminUserConnection {
+  edges: [AdminUserEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type AdminUserEdge {
+  node: AdminUserDetail!
+  cursor: String!
+}
+
+# 管理者用ユーザー更新入力
+input AdminUpdateUserInput {
+  userId: UUID!
+  username: String
+  email: String
+  displayName: String
+  bio: String
+  isVerified: Boolean
+  isActive: Boolean
+}
+
+# 管理者用ユーザー更新結果
+type AdminUpdateUserPayload {
+  success: Boolean!
+  message: String!
+  user: AdminUserDetail
+}
+
+# 管理者用ユーザー削除結果
+type AdminDeleteUserPayload {
+  success: Boolean!
+  message: String!
+}
+
+# 管理者用パスワード変更入力
+input AdminChangeUserPasswordInput {
+  userId: UUID!
+  newPassword: String!
+}
+
+# 管理者用パスワード変更結果
+type AdminChangeUserPasswordPayload {
+  success: Boolean!
+  message: String!
+}

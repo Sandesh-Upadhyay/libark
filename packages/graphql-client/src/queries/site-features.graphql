@@ -1,0 +1,111 @@
+# 🎯 サイト機能管理GraphQLクエリ
+
+# ================================
+# フラグメント定義
+# ================================
+fragment SiteFeatureSettingInfo on SiteFeatureSetting {
+  id
+  featureName
+  isEnabled
+  description
+  updatedBy
+  createdAt
+  updatedAt
+  updatedByUser {
+    id
+    username
+    displayName
+  }
+}
+
+fragment UserFeaturePermissionInfo on UserFeaturePermission {
+  id
+  userId
+  featureName
+  isEnabled
+  grantedBy
+  grantedAt
+  expiresAt
+  isActive
+  createdAt
+  updatedAt
+  user {
+    id
+    username
+    displayName
+  }
+  grantedByUser {
+    id
+    username
+    displayName
+  }
+}
+
+# ================================
+# クエリ定義
+# ================================
+
+# サイト機能設定一覧取得（管理者のみ）
+query SiteFeatureSettings {
+  siteFeatureSettings {
+    ...SiteFeatureSettingInfo
+  }
+}
+
+# 特定のサイト機能設定取得（管理者のみ）
+query SiteFeatureSetting($featureName: String!) {
+  siteFeatureSetting(featureName: $featureName) {
+    ...SiteFeatureSettingInfo
+  }
+}
+
+# ユーザー機能権限一覧取得（管理者のみ）
+query UserFeaturePermissions($userId: UUID!) {
+  userFeaturePermissions(userId: $userId) {
+    ...UserFeaturePermissionInfo
+  }
+}
+
+# 自分の機能権限一覧取得
+query MyFeaturePermissions {
+  myFeaturePermissions {
+    ...UserFeaturePermissionInfo
+  }
+}
+
+# 全機能フラグ一括取得（最適化版）
+query GetFeatureFlags {
+  featureFlags {
+    POST_CREATE
+    POST_IMAGE_UPLOAD
+    POST_LIKE
+    MESSAGES_ACCESS
+    MESSAGES_SEND
+    WALLET_ACCESS
+    WALLET_DEPOSIT
+    WALLET_WITHDRAW
+  }
+}
+
+# ================================
+# ミューテーション定義
+# ================================
+
+# サイト機能設定更新（管理者のみ）
+mutation UpdateSiteFeature($input: UpdateSiteFeatureInput!) {
+  updateSiteFeature(input: $input) {
+    ...SiteFeatureSettingInfo
+  }
+}
+
+# ユーザー機能権限更新（管理者のみ）
+mutation UpdateUserFeaturePermission($input: UpdateUserFeaturePermissionInput!) {
+  updateUserFeaturePermission(input: $input) {
+    ...UserFeaturePermissionInfo
+  }
+}
+
+# ユーザー機能権限取り消し（管理者のみ）
+mutation RevokeUserFeaturePermission($input: RevokeUserFeaturePermissionInput!) {
+  revokeUserFeaturePermission(input: $input)
+}

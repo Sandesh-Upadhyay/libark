@@ -1,0 +1,9 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["@libark/redis-client#build"],
+      "outputs": ["dist/**"]
+    }
+  }
+}

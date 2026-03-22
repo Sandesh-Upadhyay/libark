@@ -1,0 +1,64 @@
+# コメント関連のGraphQLクエリ・ミューテーション
+
+# コメント情報フラグメント
+fragment CommentInfo on Comment {
+  id
+  content
+  isDeleted
+  createdAt
+  updatedAt
+  likesCount
+  isLikedByCurrentUser
+  user {
+    id
+    username
+    displayName
+    profileImageId
+  }
+}
+
+# 投稿のコメント一覧取得
+query Comments($postId: UUID!, $first: Int = 50, $after: String, $includeProcessing: Boolean) {
+  comments(postId: $postId, first: $first, after: $after, includeProcessing: $includeProcessing) {
+    ...CommentInfo
+  }
+}
+
+# コメント詳細取得
+query Comment($id: UUID!, $includeProcessing: Boolean) {
+  comment(id: $id, includeProcessing: $includeProcessing) {
+    ...CommentInfo
+    post {
+      id
+    }
+  }
+}
+
+# コメント詳細取得（処理中含む）
+query CommentDetail($id: UUID!) {
+  comment(id: $id, includeProcessing: true) {
+    ...CommentInfo
+    post {
+      id
+    }
+  }
+}
+
+# コメント作成
+mutation CreateComment($input: CommentCreateInput!) {
+  createComment(input: $input) {
+    ...CommentInfo
+  }
+}
+
+# コメント削除
+mutation DeleteComment($id: UUID!) {
+  deleteComment(id: $id)
+}
+
+# コメントいいねトグル
+mutation ToggleCommentLike($commentId: UUID!) {
+  toggleCommentLike(commentId: $commentId) {
+    ...CommentInfo
+  }
+}

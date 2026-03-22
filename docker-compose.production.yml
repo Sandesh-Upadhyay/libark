@@ -1,0 +1,392 @@
+# 🏭 本番環境用Docker Compose設定
+# リソース制限とログ管理を強化
+
+services:
+  # ================================
+  # Frontend Service
+  # ================================
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+      target: frontend-runtime
+      platforms:
+        - linux/amd64
+    image: ghcr.io/replicas-llc/libark/frontend:latest
+    platform: linux/amd64
+    restart: unless-stopped
+    ports:
+      - '3000:80'
+    env_file:
+      - .env.production
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DOCKER_CONTAINER=true
+      - NODE_OPTIONS=--max-old-space-size=4096
+      # Nginx経由でのGraphQL接続用設定
+      - NEXT_PUBLIC_GRAPHQL_URL=/graphql
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://127.0.0.1/']
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - libark-net
+
+
+  # ================================
+  # Redis - 本番環境最適化
+  # ================================
+  redis:
+    image: 'redis:7.2-alpine'
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    networks:
+      - libark-net
+    # 本番環境用Redis設定
+    command: >
+      redis-server
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+      --stop-writes-on-bgsave-error yes
+      --maxmemory 2gb
+      --maxmemory-policy allkeys-lru
+      --appendonly yes
+      --appendfsync everysec
+    # リソース制限
+    deploy:
+      resources:
+        limits:
+          memory: 2.5G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+    # ログ設定
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ================================
+  # PostgreSQL - 本番環境最適化
+  # ================================
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    env_file:
+      - .env.production
+    environment:
+      POSTGRES_DB: libark_db
+      POSTGRES_USER: libark_db_admin
+      # 本番環境用PostgreSQL設定
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/postgres/init:/docker-entrypoint-initdb.d
+    networks:
+      - libark-net
+    # リソース制限
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+        reservations:
+          memory: 2G
+          cpus: '1.0'
+    # ログ設定
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U libark_db_admin -d libark_db']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # ================================
+  # S3 Gateway - 本番環境最適化
+  # ================================
+  s3-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+      target: s3-gateway-runtime
+      platforms:
+        - linux/amd64
+    image: ghcr.io/replicas-llc/libark/s3-gateway:latest
+    platform: linux/amd64
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    env_file:
+      - .env.production
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+    volumes:
+      - s3_gateway_logs:/app/logs
+    networks:
+      - libark-net
+    # ヘルスチェック設定
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    # リソース制限
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+          cpus: '1.5'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+    # ログ設定
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+  # ================================
+  # Backend - 本番環境最適化
+  # ================================
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+      target: backend-runtime
+      platforms:
+        - linux/amd64
+    image: ghcr.io/replicas-llc/libark/backend:latest
+    platform: linux/amd64
+    restart: unless-stopped
+    ports:
+      - '8000:8000'
+    env_file:
+      - .env.production
+    environment:
+      - NODE_ENV=production
+      - PORT=8000
+      - DOCKER_CONTAINER=true
+      - NODE_OPTIONS=--max-old-space-size=4096
+      # フロントエンド公開URL設定
+      - NEXT_PUBLIC_FRONTEND_URL=https://libark.io
+      - NEXT_PUBLIC_BACKEND_URL=https://libark.io
+      - NEXT_PUBLIC_GRAPHQL_URL=https://libark.io/graphql
+      # Redis接続
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - S3_ENDPOINT=http://s3-gateway:8080
+      - S3_GATEWAY_URL=http://s3-gateway:8080
+      # NOWPayments設定（本番モード）
+      - NOWPAYMENTS_USE_MOCK=false
+      - NOWPAYMENTS_BASE_URL=https://api.nowpayments.io/v1
+      - NOWPAYMENTS_IS_SANDBOX=false
+    volumes:
+      - backend_logs:/app/logs
+    networks:
+      - libark-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+    # リソース制限
+    deploy:
+      resources:
+        limits:
+          memory: 6G
+          cpus: '2.0'
+        reservations:
+          memory: 2G
+          cpus: '1.0'
+    # ログ設定
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://127.0.0.1:8000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+  # ================================
+  # Nginx - リバースプロキシ（本番環境最適化）
+  # ================================
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./nginx/prod.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/snippets:/etc/nginx/snippets:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    networks:
+      - libark-net
+    # depends_on:
+    #   frontend:
+    #     condition: service_healthy
+    #   backend:
+    #     condition: service_healthy
+    #   s3-gateway:
+    #     condition: service_healthy
+    # リソース制限
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 128M
+          cpus: '0.1'
+    # ログ設定
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://127.0.0.1/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ================================
+  # Worker - 本番環境最適化
+  # ================================
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+      target: worker-runtime
+      platforms:
+        - linux/amd64
+    image: ghcr.io/replicas-llc/libark/worker:latest
+    platform: linux/amd64
+    restart: unless-stopped
+    ports:
+      - '8100:8100'
+    env_file:
+      - .env.production
+    environment:
+      - NODE_ENV=production
+      - PORT=8100
+      - DOCKER_CONTAINER=true
+      - NODE_OPTIONS=--max-old-space-size=4096
+    volumes:
+      - worker_logs:/app/logs
+    networks:
+      - libark-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      s3-gateway:
+        condition: service_healthy
+
+    # リソース制限
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '1.5'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+    # ログ設定
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+    healthcheck:
+      test: ['CMD-SHELL', 'ps aux | grep -v grep | grep "node apps/worker/dist/index.js" || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+# ================================
+# ボリューム設定
+# ================================
+volumes:
+  redis_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/libark/data/redis
+
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/libark/data/postgres
+
+  s3_gateway_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/libark/logs/s3-gateway
+
+  backend_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/libark/logs/backend
+
+  worker_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/libark/logs/worker
+
+# ================================
+# ネットワーク設定
+# ================================
+networks:
+  libark-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

@@ -1,0 +1,189 @@
+# 🎯 ユーザー関連スキーマ定義
+# ユーザー、認証、設定に関する型定義
+
+# ================================
+# ユーザー型
+# ================================
+type User @cacheControl(maxAge: 300) {
+  id: UUID!
+  username: String!
+  email: String! @cacheControl(scope: PRIVATE)
+  displayName: String
+  bio: String
+  profileImageId: UUID @cacheControl(maxAge: 600)
+  coverImageId: UUID @cacheControl(maxAge: 600)
+  isVerified: Boolean!
+  isActive: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  lastLoginAt: DateTime @cacheControl(scope: PRIVATE)
+
+  # 統計フィールド
+  postsCount: Int! @cacheControl(maxAge: 60)
+  followersCount: Int! @cacheControl(maxAge: 60)
+  followingCount: Int! @cacheControl(maxAge: 60)
+
+  # フォロー関係
+  isFollowing: Boolean @cacheControl(maxAge: 30)
+  isFollowedBy: Boolean @cacheControl(maxAge: 30)
+
+  # リレーション
+  posts: [Post!]! @cacheControl(maxAge: 60)
+  likes: [Like!]! @cacheControl(scope: PRIVATE)
+  comments: [Comment!]! @cacheControl(maxAge: 120)
+  notifications: [Notification!]! @cacheControl(scope: PRIVATE)
+  settings: UserSettings @cacheControl(scope: PRIVATE)
+  role: Role
+}
+
+# 役割型
+type Role {
+  id: UUID!
+  name: String!
+  description: String
+}
+
+# ================================
+# ユーザー設定型
+# ================================
+type UserSettings @cacheControl(scope: PRIVATE) {
+  userId: UUID!
+  theme: String!
+  animationsEnabled: Boolean!
+  locale: String!
+  contentFilter: String!
+  displayMode: String!
+  timezone: String!
+  updatedAt: DateTime!
+}
+
+# ================================
+# ユーザー接続型（ページネーション対応）
+# ================================
+type UserConnection {
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type UserEdge {
+  node: User!
+  cursor: String!
+}
+
+# ================================
+# 認証型
+# ================================
+type AuthPayload {
+  success: Boolean!
+  message: String!
+  user: User
+  accessToken: String
+  requiresTwoFactor: Boolean
+  tempUserId: String
+}
+
+type LogoutPayload {
+  success: Boolean!
+  message: String!
+}
+
+type UserUpdatePayload {
+  success: Boolean!
+  message: String!
+  user: User
+}
+
+# ================================
+# 入力型
+# ================================
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input RegisterInput {
+  username: String!
+  email: String!
+  password: String!
+  displayName: String
+  timezone: String
+}
+
+input ChangePasswordInput {
+  currentPassword: String!
+  newPassword: String!
+}
+
+input UpdateEmailInput {
+  newEmail: String!
+  password: String!
+}
+
+input UpdateUserAvatarInput {
+  mediaId: UUID!
+}
+
+input ProfileUpdateInput {
+  displayName: String
+  bio: String
+  coverImageId: UUID
+}
+
+input UserSettingsUpdateInput {
+  theme: String
+  animationsEnabled: Boolean
+  locale: String
+  contentFilter: String
+  displayMode: String
+  timezone: String
+}
+
+# ================================
+# フォロー関連型
+# ================================
+type Follow {
+  id: UUID!
+  follower: User!
+  following: User!
+  createdAt: DateTime!
+}
+
+type FollowConnection {
+  edges: [FollowEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type FollowEdge {
+  node: User!
+  cursor: String!
+  followedAt: DateTime!
+}
+
+type FollowPayload {
+  success: Boolean!
+  message: String!
+  follow: Follow
+}
+
+type UnfollowPayload {
+  success: Boolean!
+  message: String!
+}
+
+# ================================
+# タイムライン関連型
+# ================================
+enum TimelineType {
+  FOLLOWING
+  RECOMMENDED
+  ALL
+}
+
+type TimelineConnection {
+  edges: [PostEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+  timelineType: TimelineType!
+}

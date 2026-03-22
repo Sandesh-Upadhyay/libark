@@ -1,0 +1,211 @@
+# 🏭 LIBARK Production Multi-Stage Dockerfile
+# 統一マルチステージビルド - 本番環境最適化
+# ベース: Dockerfile.test-multi（成功実績）+ 個別Dockerfile最適化
+
+# ---- Build Stage ----
+FROM node:24-alpine AS builder
+
+ENV PNPM_HOME=/pnpm \
+    PATH=/pnpm:$PATH \
+    NODE_ENV=production
+
+# pnpm有効化
+RUN corepack enable && corepack prepare pnpm@10.11.0 --activate
+
+WORKDIR /app
+
+# 全ソースコードをコピー（統一ビルドのため）
+COPY . .
+
+# 依存関係インストール（段階的 - Dockerfile.testの成功パターン）
+RUN pnpm install --no-frozen-lockfile
+RUN pnpm --filter @libark/db exec prisma generate
+RUN pnpm install --frozen-lockfile
+
+# TypeScriptビルドキャッシュクリア
+RUN find . -name ".tsbuildinfo" -delete
+
+# 段階的ビルドプロセス（依存関係順序を明示的に制御）
+RUN echo "=== 段階的ビルドプロセス開始 ===" && \
+    echo "Step 1: core-shared ビルド" && \
+    pnpm --filter @libark/core-shared build && \
+    echo "Step 2: 基盤パッケージビルド" && \
+    pnpm --filter @libark/cache build && \
+    pnpm --filter @libark/redis-client build && \
+    pnpm --filter @libark/db build && \
+    echo "Step 3: サーバーパッケージビルド" && \
+    pnpm --filter @libark/core-server build && \
+    echo "Step 4: 残りのパッケージビルド" && \
+    pnpm --filter @libark/media build && \
+    pnpm --filter @libark/graphql build && \
+    pnpm --filter @libark/nowpayments-api build && \
+    pnpm --filter @libark/queues build && \
+    echo "Step 5: クライアントパッケージビルド" && \
+    pnpm --filter @libark/core-client build && \
+    echo "Step 5.1: TypeScript型キャッシュクリア" && \
+    find packages/graphql-client -name "*.tsbuildinfo" -delete && \
+    pnpm --filter @libark/graphql-client build && \
+    echo "Step 6: アプリケーションビルド" && \
+    pnpm --filter frontend build && \
+    pnpm --filter @libark/backend build && \
+    pnpm --filter @libark/s3-gateway build && \
+    pnpm --filter worker build && \
+    echo "🎉 Build stage completed successfully!"
+
+# ---- Backend Runtime Stage ----
+FROM node:24-alpine AS backend-runtime
+
+# ヘルスチェック用ツールインストール
+RUN apk add --no-cache wget
+
+ENV NODE_ENV=production \
+    NODE_OPTIONS="--max-old-space-size=4096"
+
+WORKDIR /app
+
+# 必要ファイルのコピー
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/pnpm-lock.yaml ./
+COPY --from=builder /app/pnpm-workspace.yaml ./
+
+# Backend必要パッケージのコピー
+COPY --from=builder /app/packages/core-shared ./packages/core-shared
+COPY --from=builder /app/packages/core-server ./packages/core-server
+COPY --from=builder /app/packages/cache ./packages/cache
+COPY --from=builder /app/packages/redis-client ./packages/redis-client
+COPY --from=builder /app/packages/db ./packages/db
+COPY --from=builder /app/packages/graphql ./packages/graphql
+COPY --from=builder /app/packages/media ./packages/media
+COPY --from=builder /app/packages/nowpayments-api ./packages/nowpayments-api
+COPY --from=builder /app/packages/queues ./packages/queues
+COPY --from=builder /app/apps/backend ./apps/backend
+
+# pnpm有効化と本番依存関係インストール
+RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN pnpm install --prod --frozen-lockfile
+
+# pnpmワークスペース依存関係の強制解決
+RUN echo "=== Force resolving workspace dependencies ===" && \
+    pnpm install --prod --frozen-lockfile --shamefully-hoist && \
+    echo "✅ Workspace dependencies resolved with hoisting"
+
+# Prismaクライアント生成
+RUN cd packages/db && pnpm prisma generate
+
+# 非rootユーザー作成
+RUN addgroup -g 1001 -S libark && \
+    adduser -S libark -u 1001
+RUN chown -R libark:libark /app
+USER libark
+
+# ヘルスチェック
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8000/health || exit 1
+
+EXPOSE 8000
+# 作業ディレクトリをpackages/core-serverに変更（otpauth依存関係解決のため）
+WORKDIR /app/packages/core-server
+CMD ["node", "../../apps/backend/dist/index.js"]
+
+# ---- Frontend Runtime Stage ----
+FROM nginx:alpine AS frontend-runtime
+
+# ヘルスチェック用ツールインストール
+RUN apk add --no-cache wget
+
+# ビルド済み静的ファイルをコピー
+COPY --from=builder /app/apps/frontend/dist/ /usr/share/nginx/html/
+
+# Nginx設定をコピー
+COPY apps/frontend/nginx.conf /etc/nginx/conf.d/default.conf
+
+# ヘルスチェック
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://127.0.0.1/ || exit 1
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
+# ---- S3 Gateway Runtime Stage ----
+FROM node:24-alpine AS s3-gateway-runtime
+
+# ヘルスチェック用ツールインストール
+RUN apk add --no-cache wget
+
+ENV NODE_ENV=production \
+    NODE_OPTIONS="--max-old-space-size=2048"
+
+WORKDIR /app
+
+# 必要ファイルのコピー
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/pnpm-lock.yaml ./
+COPY --from=builder /app/pnpm-workspace.yaml ./
+
+# S3 Gateway必要パッケージのコピー
+COPY --from=builder /app/packages/core-shared ./packages/core-shared
+COPY --from=builder /app/packages/core-server ./packages/core-server
+COPY --from=builder /app/apps/s3-gateway ./apps/s3-gateway
+
+# pnpm有効化と本番依存関係インストール
+RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN pnpm install --prod --frozen-lockfile
+
+# 非rootユーザー作成
+RUN addgroup -g 1001 -S libark && \
+    adduser -S libark -u 1001
+RUN chown -R libark:libark /app
+USER libark
+
+# ヘルスチェック
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
+
+EXPOSE 8080
+CMD ["node", "apps/s3-gateway/dist/index.js"]
+
+# ---- Worker Runtime Stage ----
+FROM node:24-alpine AS worker-runtime
+
+# プロセス監視用ツールインストール
+RUN apk add --no-cache procps
+
+ENV NODE_ENV=production \
+    NODE_OPTIONS="--max-old-space-size=4096"
+
+WORKDIR /app
+
+# 必要ファイルのコピー
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/pnpm-lock.yaml ./
+COPY --from=builder /app/pnpm-workspace.yaml ./
+
+# Worker必要パッケージのコピー
+COPY --from=builder /app/packages/core-shared ./packages/core-shared
+COPY --from=builder /app/packages/core-server ./packages/core-server
+COPY --from=builder /app/packages/cache ./packages/cache
+COPY --from=builder /app/packages/redis-client ./packages/redis-client
+COPY --from=builder /app/packages/db ./packages/db
+COPY --from=builder /app/packages/media ./packages/media
+COPY --from=builder /app/packages/queues ./packages/queues
+COPY --from=builder /app/apps/worker ./apps/worker
+
+# pnpm有効化と本番依存関係インストール
+RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN pnpm install --prod --frozen-lockfile
+
+# Prismaクライアント生成
+RUN cd packages/db && pnpm prisma generate
+
+# 非rootユーザー作成
+RUN addgroup -g 1001 -S libark && \
+    adduser -S libark -u 1001
+RUN chown -R libark:libark /app
+USER libark
+
+# ヘルスチェック（プロセス監視）
+HEALTHCHECK --interval=60s --timeout=10s --start-period=120s --retries=3 \
+    CMD pgrep -f "node.*worker" || exit 1
+
+EXPOSE 8100
+CMD ["node", "apps/worker/dist/index.js"]

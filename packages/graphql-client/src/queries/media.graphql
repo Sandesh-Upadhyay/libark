@@ -1,0 +1,103 @@
+# メディア関連のGraphQLクエリ・ミューテーション
+
+# メディア情報フラグメント（S3 Gateway最適化版）
+fragment MediaInfo on Media {
+  id
+  filename
+  s3Key
+  mimeType
+  fileSize
+  width
+  height
+  status
+  url
+  thumbnailUrl
+  createdAt
+  updatedAt
+  variants {
+    id
+    type
+    s3Key
+    width
+    height
+    fileSize
+    quality
+    url
+    createdAt
+  }
+  post {
+    id
+    visibility
+    isDeleted
+    userId
+  }
+}
+
+# メディア詳細取得
+query GetMedia($id: UUID!) {
+  media(id: $id) {
+    ...MediaInfo
+  }
+}
+
+# メディア基本情報取得（S3キー生成用）
+query GetMediaBasicInfo($id: UUID!) {
+  media(id: $id) {
+    id
+    filename
+    s3Key
+    mimeType
+    status
+    variants {
+      id
+      type
+      s3Key
+      width
+      height
+      fileSize
+    }
+  }
+}
+
+# メディアメタデータ取得（画像キャッシュ用）
+query GetMediaMetadata($id: UUID!) {
+  media(id: $id) {
+    id
+    filename
+    s3Key
+    mimeType
+    fileSize
+    width
+    height
+    status
+    url
+    thumbnailUrl
+    variants {
+      id
+      type
+      s3Key
+      width
+      height
+      fileSize
+      url
+    }
+    post {
+      id
+      visibility
+      isDeleted
+      userId
+    }
+  }
+}
+
+# 自分のメディア一覧取得
+query GetMyMedia($first: Int, $after: String) {
+  myMedia(first: $first, after: $after) {
+    ...MediaInfo
+  }
+}
+
+# メディア削除
+mutation DeleteMedia($id: UUID!) {
+  deleteMedia(id: $id)
+}

@@ -1,0 +1,79 @@
+# P2P取引関連のGraphQLミューテーション
+
+# P2P取引リクエストを作成
+mutation CreateP2PTradeRequest($input: CreateP2PTradeRequestInput!) {
+  createP2PTradeRequest(input: $input) {
+    ...P2PTradeInfo
+  }
+}
+
+# P2Pオファーを作成
+mutation CreateP2POffer($input: CreateP2POfferInput!) {
+  createP2POffer(input: $input) {
+    ...P2POfferInfo
+  }
+}
+
+# P2Pオファーを更新
+mutation UpdateP2POffer($input: UpdateP2POfferInput!) {
+  updateP2POffer(input: $input) {
+    ...P2POfferInfo
+  }
+}
+
+# P2Pオファーを削除
+mutation DeleteP2POffer($offerId: UUID!) {
+  deleteP2POffer(offerId: $offerId)
+}
+
+# P2P取引リクエストをキャンセル
+mutation CancelP2PTradeRequest($tradeId: UUID!) {
+  cancelP2PTradeRequest(tradeId: $tradeId)
+}
+
+# 支払い完了を通知
+mutation MarkP2PPaymentSent($tradeId: UUID!) {
+  markP2PPaymentSent(tradeId: $tradeId) {
+    ...P2PTradeInfo
+  }
+}
+
+# P2P取引リクエストを承認
+mutation AcceptP2PTradeRequest($tradeId: UUID!) {
+  acceptP2PTradeRequest(tradeId: $tradeId) {
+    ...P2PTradeInfo
+  }
+}
+
+# 支払い受領を確認
+mutation ConfirmP2PPaymentReceived($input: ConfirmP2PPaymentInput!) {
+  confirmP2PPaymentReceived(input: $input) {
+    ...P2PTradeInfo
+  }
+}
+
+# 紛争を作成
+mutation CreateP2PDispute($input: CreateP2PDisputeInput!) {
+  createP2PDispute(input: $input) {
+    ...P2PDisputeInfo
+  }
+}
+
+# 紛争を解決（管理者・モデレーター用）
+mutation ResolveP2PDispute($input: ResolveP2PDisputeInput!) {
+  resolveP2PDispute(input: $input) {
+    ...P2PDisputeInfo
+  }
+}
+
+# 買い手設定を更新（作成or更新）
+mutation UpdateP2PBuyerPreference($input: UpdateP2PBuyerPreferenceInput!) {
+  updateP2PBuyerPreference(input: $input) {
+    ...P2PBuyerPreferenceInfo
+  }
+}
+
+# 買い手設定を削除
+mutation DeleteP2PBuyerPreference($id: UUID!) {
+  deleteP2PBuyerPreference(id: $id)
+}

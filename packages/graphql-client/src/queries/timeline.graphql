@@ -1,0 +1,64 @@
+# タイムライン関連のGraphQLクエリ
+
+# 投稿情報フラグメント（統一版）
+fragment PostInfo on Post {
+  id
+  content
+  visibility
+  price
+  paidAt
+  createdAt
+  updatedAt
+  isProcessing
+  user {
+    id
+    username
+    displayName
+    profileImageId
+  }
+  media {
+    id
+    filename
+    s3Key
+    mimeType
+    fileSize
+    width
+    height
+    status
+    url
+    thumbnailUrl
+    variants {
+      id
+      type
+      s3Key
+      width
+      height
+      fileSize
+      quality
+      url
+    }
+  }
+  likesCount
+  commentsCount
+  isLikedByCurrentUser
+}
+
+# タイムライン取得クエリ
+query Timeline($type: TimelineType!, $first: Int!, $after: String) {
+  timeline(type: $type, first: $first, after: $after) {
+    edges {
+      node {
+        ...PostInfo
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+    timelineType
+  }
+}

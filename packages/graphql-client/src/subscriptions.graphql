@@ -1,0 +1,83 @@
+# GraphQLサブスクリプション定義
+# WebSocketからGraphQLサブスクリプションへの移行用
+
+# 通知関連サブスクリプション
+subscription NotificationAdded($userId: UUID!) {
+  notificationAdded(userId: $userId) {
+    id
+    type
+    content
+    isRead
+    createdAt
+    referenceId
+    user {
+      id
+      username
+      displayName
+    }
+    actor {
+      id
+      username
+      displayName
+      profileImageId
+    }
+  }
+}
+
+subscription NotificationCountUpdated($userId: UUID!) {
+  notificationCountUpdated(userId: $userId)
+}
+
+# 投稿関連サブスクリプション
+subscription PostAdded {
+  postAdded {
+    ...PostInfo
+  }
+}
+
+subscription PostUpdated($postId: UUID!) {
+  postUpdated(postId: $postId) {
+    ...PostInfo
+  }
+}
+
+# コメント関連サブスクリプション
+subscription CommentAdded($postId: UUID!) {
+  commentAdded(postId: $postId) {
+    id
+    content
+    createdAt
+    user {
+      id
+      username
+      displayName
+      profileImageId
+    }
+    post {
+      id
+    }
+  }
+}
+
+# いいね関連サブスクリプション
+subscription LikeToggled($postId: UUID!) {
+  likeToggled(postId: $postId) {
+    ...PostInfo
+  }
+}
+
+# P2P取引関連サブスクリプション
+
+# P2P取引の更新を購読
+subscription P2PTradeUpdated($userId: UUID!) {
+  p2pTradeUpdated(userId: $userId) {
+    ...P2PTradeInfo
+  }
+}
+
+# P2P紛争の更新を購読
+subscription P2PDisputeUpdated($tradeId: UUID!) {
+  p2pDisputeUpdated(tradeId: $tradeId) {
+    ...P2PDisputeInfo
+  }
+}

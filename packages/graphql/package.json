@@ -1,0 +1,53 @@
+{
+  "name": "@libark/graphql",
+  "version": "1.0.0",
+  "description": "LIBARK GraphQL Schema and Resolvers",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --build && mkdir -p dist/schema && cp src/schema/*.graphql dist/schema/",
+    "dev": "tsc --build --watch",
+    "clean": "rm -rf dist .tsbuildinfo",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run --reporter=verbose",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": [
+    "graphql",
+    "schema",
+    "resolvers"
+  ],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.11.0",
+  "dependencies": {
+    "@libark/core-shared": "workspace:*",
+    "@libark/db": "workspace:*",
+    "graphql": "^16.9.0",
+    "graphql-redis-subscriptions": "^2.6.0",
+    "graphql-scalars": "^1.23.0",
+    "graphql-subscriptions": "^2.0.0",
+    "graphql-tools": "^9.0.0"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.3",
+    "@graphql-codegen/typescript": "^4.1.0",
+    "@graphql-codegen/typescript-resolvers": "^4.3.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./schema": {
+      "import": "./dist/schema/index.js",
+      "types": "./dist/schema/index.d.ts"
+    },
+    "./resolvers": {
+      "import": "./dist/resolvers/index.js",
+      "types": "./dist/resolvers/index.d.ts"
+    }
+  }
+}

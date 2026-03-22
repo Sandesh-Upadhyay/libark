@@ -1,0 +1,94 @@
+# 🎯 サイト機能管理GraphQLスキーマ
+# サイト機能設定とユーザー機能権限の管理
+
+# ================================
+# サイト機能設定型定義
+# ================================
+type SiteFeatureSetting {
+  id: UUID!
+  featureName: String!
+  isEnabled: Boolean!
+  description: String
+  updatedBy: UUID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  # リレーション
+  updatedByUser: User!
+}
+
+# ユーザー機能権限型定義
+type UserFeaturePermission {
+  id: UUID!
+  userId: UUID!
+  featureName: String!
+  isEnabled: Boolean!
+  grantedBy: UUID!
+  grantedAt: DateTime!
+  expiresAt: DateTime
+  isActive: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  # リレーション
+  user: User!
+  grantedByUser: User!
+}
+
+# 機能フラグ一括取得用型定義
+type FeatureFlags {
+  POST_CREATE: Boolean!
+  POST_IMAGE_UPLOAD: Boolean!
+  POST_LIKE: Boolean!
+  MESSAGES_ACCESS: Boolean!
+  MESSAGES_SEND: Boolean!
+  WALLET_ACCESS: Boolean!
+  WALLET_DEPOSIT: Boolean!
+  WALLET_WITHDRAW: Boolean!
+}
+
+# ================================
+# 入力型定義
+# ================================
+input UpdateSiteFeatureInput {
+  featureName: String!
+  isEnabled: Boolean!
+  description: String
+}
+
+input UpdateUserFeaturePermissionInput {
+  userId: UUID!
+  featureName: String!
+  isEnabled: Boolean!
+  expiresAt: DateTime
+}
+
+input RevokeUserFeaturePermissionInput {
+  userId: UUID!
+  featureName: String!
+}
+
+# ================================
+# クエリ・ミューテーション拡張
+# ================================
+extend type Query {
+  # サイト機能設定
+  siteFeatureSettings: [SiteFeatureSetting!]!
+  siteFeatureSetting(featureName: String!): SiteFeatureSetting
+
+  # ユーザー機能権限
+  userFeaturePermissions(userId: UUID!): [UserFeaturePermission!]!
+  myFeaturePermissions: [UserFeaturePermission!]!
+
+  # 全機能フラグ一括取得（最適化版）
+  featureFlags: FeatureFlags!
+}
+
+extend type Mutation {
+  # サイト機能設定管理（管理者のみ）
+  updateSiteFeature(input: UpdateSiteFeatureInput!): SiteFeatureSetting!
+
+  # ユーザー機能権限管理（管理者のみ）
+  updateUserFeaturePermission(input: UpdateUserFeaturePermissionInput!): UserFeaturePermission!
+  revokeUserFeaturePermission(input: RevokeUserFeaturePermissionInput!): Boolean!
+}

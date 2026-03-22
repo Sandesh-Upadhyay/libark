@@ -1,0 +1,32 @@
+{
+  "extends": [
+    "@typescript-eslint/recommended",
+    "@typescript-eslint/recommended-requiring-type-checking"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    // 浮いているPromiseを検出（今回の問題を防ぐ）
+    "@typescript-eslint/no-floating-promises": "error",
+
+    // 未使用のawaitを検出
+    "@typescript-eslint/await-thenable": "error",
+
+    // Promiseを返す関数の戻り値型を強制
+    "@typescript-eslint/promise-function-async": "error",
+
+    // 非同期関数でのreturn await を要求
+    "@typescript-eslint/return-await": ["error", "always"],
+
+    // その他の推奨ルール
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/explicit-function-return-type": "warn",
+    "@typescript-eslint/no-explicit-any": "error"
+  },
+  "ignorePatterns": ["dist/", "node_modules/", "*.js"]
+}

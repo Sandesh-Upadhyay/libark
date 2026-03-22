@@ -1,0 +1,255 @@
+# ウォレット関連のGraphQLクエリ・ミューテーション・サブスクリプション
+
+# ウォレット情報フラグメント
+fragment WalletInfo on Wallet {
+  id
+  userId
+  balanceUsd
+  salesBalanceUsd
+  p2pBalanceUsd
+  isActive
+  createdAt
+  updatedAt
+}
+
+# ユーザーウォレット情報フラグメント
+fragment UserWalletInfo on UserWallet {
+  id
+  userId
+  walletName
+  currency
+  network
+  address
+  isVerified
+  isActive
+  createdAt
+  updatedAt
+}
+
+# 入金申請情報フラグメント
+fragment DepositRequestInfo on DepositRequest {
+  id
+  userId
+  requestedUsdAmount
+  currency
+  network
+  expectedCryptoAmount
+  exchangeRate
+  ourDepositAddress
+  status
+  expiresAt
+  completedAt
+  createdAt
+}
+
+# 出金申請情報フラグメント
+fragment WithdrawalRequestInfo on WithdrawalRequest {
+  id
+  userId
+  currency
+  amount
+  amountUsd
+  destinationAddress
+  memo
+  network
+  status
+  errorMessage
+  processedAt
+  createdAt
+  updatedAt
+}
+
+# ウォレット取引情報フラグメント
+fragment WalletTransactionInfo on WalletTransaction {
+  id
+  userId
+  paymentRequestId
+  type
+  balanceType
+  amountUsd
+  description
+  metadata
+  createdAt
+}
+
+# 為替レート情報フラグメント
+fragment ExchangeRateInfo on ExchangeRate {
+  id
+  currency
+  usdRate
+  source
+  isActive
+  createdAt
+}
+
+# クエリ
+
+# 自分のウォレット取得
+query MyWallet {
+  myWallet {
+    ...WalletInfo
+  }
+}
+
+# ウォレット取引履歴取得
+query MyWalletTransactions($first: Int, $after: String) {
+  myWalletTransactions(first: $first, after: $after) {
+    ...WalletTransactionInfo
+  }
+}
+
+# ユーザーウォレット一覧取得
+query MyUserWallets {
+  myUserWallets {
+    ...UserWalletInfo
+  }
+}
+
+# 入金申請一覧取得
+query MyDepositRequests {
+  myDepositRequests {
+    ...DepositRequestInfo
+  }
+}
+
+# 出金申請一覧取得
+query MyWithdrawalRequests {
+  myWithdrawalRequests {
+    ...WithdrawalRequestInfo
+  }
+}
+
+# 為替レート取得
+query GetExchangeRate($currency: String!) {
+  getExchangeRate(currency: $currency)
+}
+
+# サポート通貨一覧取得
+query GetSupportedCurrencies {
+  getSupportedCurrencies
+}
+
+# ミューテーション
+
+# 入金申請作成
+mutation CreateDepositRequest($input: CreateDepositRequestInput!) {
+  createDepositRequest(input: $input) {
+    ...DepositRequestInfo
+  }
+}
+
+# 出金申請作成
+mutation CreateWithdrawalRequest($input: CreateWithdrawalRequestInput!) {
+  createWithdrawalRequest(input: $input) {
+    ...WithdrawalRequestInfo
+  }
+}
+
+# ユーザーウォレット登録
+mutation RegisterUserWallet($input: RegisterUserWalletInput!) {
+  registerUserWallet(input: $input) {
+    ...UserWalletInfo
+  }
+}
+
+# サブスクリプション
+
+# ウォレット残高更新通知
+subscription WalletBalanceUpdated($userId: UUID!) {
+  walletBalanceUpdated(userId: $userId) {
+    ...WalletInfo
+  }
+}
+
+# ウォレット取引追加通知
+subscription WalletTransactionAdded($userId: UUID!) {
+  walletTransactionAdded(userId: $userId) {
+    ...WalletTransactionInfo
+  }
+}
+
+# 入金申請更新通知
+subscription DepositRequestUpdated($userId: UUID!) {
+  depositRequestUpdated(userId: $userId) {
+    ...DepositRequestInfo
+  }
+}
+
+# 出金申請更新通知
+subscription WithdrawalRequestUpdated($userId: UUID!) {
+  withdrawalRequestUpdated(userId: $userId) {
+    ...WithdrawalRequestInfo
+  }
+}
+
+# 権限情報フラグメント
+fragment PermissionInfo on Permission {
+  id
+  name
+  description
+  createdAt
+}
+
+fragment UserPermissionInfo on UserPermission {
+  id
+  userId
+  permissionId
+  grantedBy
+  grantedAt
+  expiresAt
+  isActive
+  createdAt
+  updatedAt
+  permission {
+    ...PermissionInfo
+  }
+  grantedByUser {
+    id
+    username
+    displayName
+  }
+}
+
+# 権限管理クエリ
+query MyPermissions {
+  myPermissions {
+    ...UserPermissionInfo
+  }
+}
+
+query AllPermissions {
+  allPermissions {
+    ...PermissionInfo
+  }
+}
+
+query UserPermissions($userId: UUID!) {
+  userPermissions(userId: $userId) {
+    ...UserPermissionInfo
+  }
+}
+
+# 残高種別別取引履歴取得
+query MyWalletTransactionsByBalance($balanceType: BalanceType!, $first: Int, $after: String) {
+  myWalletTransactionsByBalance(balanceType: $balanceType, first: $first, after: $after) {
+    ...WalletTransactionInfo
+  }
+}
+
+# 残高移動
+mutation TransferBalance($input: TransferBalanceInput!) {
+  transferBalance(input: $input) {
+    ...WalletTransactionInfo
+  }
+}
+
+# 権限管理ミューテーション
+mutation GrantPermission($input: GrantPermissionInput!) {
+  grantPermission(input: $input) {
+    ...UserPermissionInfo
+  }
+}
+
+mutation RevokePermission($input: RevokePermissionInput!) {
+  revokePermission(input: $input)
+}

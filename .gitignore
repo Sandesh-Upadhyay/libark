@@ -1,0 +1,112 @@
+# 依存関係
+node_modules/
+.pnp/
+.pnp.js
+
+# SSL証明書と秘密鍵（セキュリティ）
+*.key
+*.pem
+cloudflare-origin.key
+cloudflare-origin.crt
+
+# ビルド出力
+dist/
+build/
+.next/
+out/
+
+# TypeScriptビルド成果物（srcディレクトリ内に誤って生成されることを防ぐ）
+packages/*/src/**/*.d.ts
+packages/*/src/**/*.js
+packages/*/src/**/*.js.map
+packages/*/src/**/*.d.ts.map
+apps/*/src/**/*.d.ts
+apps/*/src/**/*.js
+apps/*/src/**/*.js.map
+apps/*/src/**/*.d.ts.map
+*.tsbuildinfo
+
+# Environment variables
+.env
+.env.*
+!.env.template
+!.env.example
+!apps/frontend/.env.example
+.env.local
+.env.development.local
+.env.production.local
+apps/frontend/.env.local
+
+# ログ
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# エディタ設定
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# テスト
+coverage/
+
+# キャッシュ
+.eslintcache
+.cache/
+.parcel-cache/
+# Turboキャッシュ
+.turbo/
+
+# その他
+.vercel
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# 認証情報
+doc/LIBARK_認証情報.md
+
+# pnpm store
+frontend/.pnpm-store/
+.pnpm-cache/
+.pnpm-store/
+
+# アップロードファイル
+uploads/
+
+# 一時ファイル
+*.tmp
+*.temp
+cookies.txt
+test-*.js
+apps/backend/test_output.txt
+apps/backend/type-check-output*.txt
+apps/frontend/coverage_report*.txt
+apps/frontend/p2p_table_test_output*.txt
+
+# 開発用ファイル
+.env.local.backup
+*.backup
+*storybook.log
+storybook-static
+apps/frontend/playwright-report/
+apps/frontend/test-results/
+apps/backend/temp/
+
+# 一時的な分析レポートファイル
+*-report.md
+*-analysis-report.md
+*-detection-report.md
+
+# バックアップ成果物
+backups/*.bundle

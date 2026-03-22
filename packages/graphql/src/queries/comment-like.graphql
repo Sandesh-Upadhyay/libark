@@ -1,0 +1,8 @@
+# コメントいいねトグルミューテーション
+mutation ToggleCommentLike($commentId: UUID!) {
+  toggleCommentLike(commentId: $commentId) {
+    id
+    likesCount
+    isLikedByCurrentUser
+  }
+}

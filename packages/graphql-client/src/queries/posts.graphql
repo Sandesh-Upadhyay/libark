@@ -1,0 +1,86 @@
+# 投稿関連のGraphQLクエリ・ミューテーション
+
+# PostInfoフラグメントはpost.graphqlから使用
+
+# 投稿一覧取得（カーソルベースページネーション）
+query Posts(
+  $first: Int
+  $after: String
+  $userId: UUID
+  $visibility: PostVisibility
+  $includeProcessing: Boolean
+) {
+  posts(
+    first: $first
+    after: $after
+    userId: $userId
+    visibility: $visibility
+    includeProcessing: $includeProcessing
+  ) {
+    edges {
+      node {
+        ...PostInfo
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+# 投稿詳細取得
+query Post($id: UUID!, $includeProcessing: Boolean) {
+  post(id: $id, includeProcessing: $includeProcessing) {
+    ...PostInfo
+  }
+}
+
+# 投稿詳細取得（処理中含む）
+query PostDetail($id: UUID!, $includeProcessing: Boolean) {
+  post(id: $id, includeProcessing: $includeProcessing) {
+    ...PostInfo
+  }
+}
+
+# 投稿作成
+mutation CreatePost($input: PostCreateInput!) {
+  createPost(input: $input) {
+    ...PostInfo
+  }
+}
+
+# 投稿更新
+mutation UpdatePost($id: UUID!, $input: PostUpdateInput!) {
+  updatePost(id: $id, input: $input) {
+    ...PostInfo
+  }
+}
+
+# 投稿削除
+mutation DeletePost($id: UUID!) {
+  deletePost(id: $id)
+}
+
+# メディアを含む投稿一覧取得
+query MediaPosts($first: Int, $after: String, $userId: UUID) {
+  mediaPosts(first: $first, after: $after, userId: $userId) {
+    edges {
+      node {
+        ...PostInfo
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}

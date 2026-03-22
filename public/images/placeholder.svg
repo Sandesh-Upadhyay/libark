@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="600px" viewBox="0 0 800 600" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Image Placeholder</title>
+    <g id="Image-Placeholder" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect fill="#F3F4F6" x="0" y="0" width="800" height="600"></rect>
+        <g id="Icon" transform="translate(350.000000, 250.000000)" fill="#9CA3AF">
+            <path d="M100,0 C111.046,0 120,8.95431 120,20 L120,80 C120,91.0457 111.046,100 100,100 L20,100 C8.95431,100 0,91.0457 0,80 L0,20 C0,8.95431 8.95431,0 20,0 L100,0 Z M100,10 L20,10 C14.4772,10 10,14.4772 10,20 L10,80 C10,85.5228 14.4772,90 20,90 L100,90 C105.523,90 110,85.5228 110,80 L110,20 C110,14.4772 105.523,10 100,10 Z M30,30 C35.5228,30 40,34.4772 40,40 C40,45.5228 35.5228,50 30,50 C24.4772,50 20,45.5228 20,40 C20,34.4772 24.4772,30 30,30 Z M100,70 L100,80 L20,80 L20,70 L40,50 L50,60 L80,30 L100,50 L100,70 Z"></path>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,71 @@
+{
+  "name": "@libark/core-server",
+  "version": "1.0.0",
+  "description": "LIBARKサーバー専用基盤パッケージ - Node.js専用機能",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./security/server-crypto": {
+      "types": "./dist/security/server-crypto.d.ts",
+      "import": "./dist/security/server-crypto.js"
+    },
+    "./security/csrf": {
+      "types": "./dist/security/csrf.d.ts",
+      "import": "./dist/security/csrf.js",
+      "require": "./dist/security/csrf.cjs"
+    },
+    "./crypto": {
+      "types": "./dist/crypto/index.d.ts",
+      "import": "./dist/crypto/index.js"
+    },
+    "./security": {
+      "types": "./dist/security/index.d.ts",
+      "import": "./dist/security/index.js"
+    },
+    "./security/password": {
+      "types": "./dist/security/password.d.ts",
+      "import": "./dist/security/password.js"
+    },
+    "./security/totp": {
+      "types": "./dist/security/totp.d.ts",
+      "import": "./dist/security/totp.js"
+    },
+    "./security/ogp-signature": {
+      "types": "./dist/security/ogp-signature.d.ts",
+      "import": "./dist/security/ogp-signature.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "dev": "tsc --build --watch",
+    "clean": "rm -rf dist .tsbuildinfo",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run --reporter=verbose",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@libark/core-shared": "workspace:*",
+    "bcrypt": "^5.1.1",
+    "otpauth": "^9.3.7",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/node": "^22.10.2",
+    "typescript": "^5.9.0"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

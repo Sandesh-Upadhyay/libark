@@ -1,0 +1,223 @@
+# 🎯 GraphQL操作定義
+# クエリ、ミューテーション、サブスクリプションの定義
+
+# ================================
+# クエリ
+# ================================
+type Query {
+  # 認証
+  me: User @cacheControl(maxAge: 0)
+
+  # ユーザー
+  user(id: UUID!): User
+  userByUsername(username: String!): User
+  users(first: Int = 20, after: String, search: String): UserConnection!
+
+  # 管理者用ユーザー管理
+  adminUsers(first: Int = 20, after: String, search: String): AdminUserConnection!
+  adminUser(id: UUID!): AdminUserDetail
+
+  # フォロー関係
+  followers(userId: UUID!, first: Int = 20, after: String): FollowConnection!
+  following(userId: UUID!, first: Int = 20, after: String): FollowConnection!
+  isFollowing(userId: UUID!): Boolean!
+
+  # タイムライン
+  timeline(type: TimelineType = FOLLOWING, first: Int = 20, after: String): TimelineConnection!
+    @cacheControl(maxAge: 0)
+
+  # 投稿
+  post(id: UUID!, includeProcessing: Boolean = false): Post
+  posts(
+    first: Int = 20
+    after: String
+    userId: UUID
+    visibility: PostVisibility
+    includeProcessing: Boolean = false
+  ): PostConnection! @cacheControl(maxAge: 0)
+
+  # ユーザーがいいねした投稿
+  likedPosts(first: Int = 20, after: String, userId: UUID!): PostConnection!
+    @cacheControl(maxAge: 0)
+
+  # メディアを含む投稿
+  mediaPosts(first: Int = 20, after: String, userId: UUID): PostConnection! @cacheControl(maxAge: 0)
+
+  # コメント
+  comment(id: UUID!, includeProcessing: Boolean = false): Comment
+  comments(
+    postId: UUID!
+    first: Int = 50
+    after: String
+    includeProcessing: Boolean = false
+  ): [Comment!]!
+
+  # 通知
+  notifications(
+    first: Int = 20
+    after: String
+    isRead: Boolean
+    type: NotificationType
+  ): [Notification!]! @cacheControl(maxAge: 0)
+  unreadNotificationsCount: Int! @cacheControl(maxAge: 0)
+
+  # メディア
+  media(id: UUID!): Media
+  myMedia(first: Int = 20, after: String): [Media!]! @cacheControl(maxAge: 0)
+
+  # ユーザー設定
+  mySettings: UserSettings @cacheControl(maxAge: 0)
+
+  # メッセージ機能
+  conversations(
+    first: Int = 20
+    after: String
+    includeArchived: Boolean = false
+  ): ConversationConnection! @cacheControl(maxAge: 0)
+  conversation(id: UUID!): Conversation @cacheControl(maxAge: 0)
+  messageStats: MessageStats! @cacheControl(maxAge: 0)
+  searchMessages(
+    query: String!
+    conversationId: UUID
+    first: Int = 20
+    after: String
+  ): MessageConnection! @cacheControl(maxAge: 0)
+
+  # 管理者機能
+  systemStats: SystemStats!
+
+  # キャッシュ統計情報（開発環境のみ）
+  authCacheStats: CacheStats!
+
+  # レート制限統計情報（開発環境のみ）
+  rateLimitStats: RateLimitStats!
+
+  # ウォレット機能
+  myWallet: Wallet @cacheControl(maxAge: 0)
+  myWalletTransactions(first: Int = 20, after: String): [WalletTransaction!]!
+    @cacheControl(maxAge: 0)
+  myUserWallets: [UserWallet!]! @cacheControl(maxAge: 0)
+  myDepositRequests: [DepositRequest!]! @cacheControl(maxAge: 0)
+  myWithdrawalRequests: [WithdrawalRequest!]! @cacheControl(maxAge: 0)
+  getExchangeRate(currency: String!): Float!
+  getSupportedCurrencies: [String!]!
+}
+
+# ================================
+# ミューテーション
+# ================================
+type Mutation {
+  # 認証
+  login(input: LoginInput!): AuthPayload!
+  register(input: RegisterInput!): AuthPayload!
+  logout: LogoutPayload!
+
+  # 投稿
+  createPost(input: PostCreateInput!): Post!
+  updatePost(id: UUID!, input: PostUpdateInput!): Post!
+  deletePost(id: UUID!): Boolean!
+
+  # Paid投稿機能
+  purchasePost(input: PurchasePostInput!): PostPurchase!
+  updatePostToPaid(input: UpdatePostToPaidInput!): Post!
+
+  # いいね
+  toggleLike(postId: UUID!): Post!
+  toggleCommentLike(commentId: UUID!): Comment!
+
+  # コメント
+  createComment(input: CommentCreateInput!): Comment!
+  deleteComment(id: UUID!): Boolean!
+
+  # プロフィール
+  updateProfile(input: ProfileUpdateInput!): User!
+
+  # フォロー
+  followUser(userId: UUID!): FollowPayload!
+  unfollowUser(userId: UUID!): UnfollowPayload!
+
+  # ユーザー設定
+  updateUserSettings(input: UserSettingsUpdateInput!): UserSettings!
+  changePassword(input: ChangePasswordInput!): UserUpdatePayload!
+  updateEmail(input: UpdateEmailInput!): UserUpdatePayload!
+
+  # 管理者用ユーザー管理
+  adminUpdateUser(input: AdminUpdateUserInput!): AdminUpdateUserPayload!
+  adminDeleteUser(userId: UUID!): AdminDeleteUserPayload!
+  adminChangeUserPassword(input: AdminChangeUserPasswordInput!): AdminChangeUserPasswordPayload!
+
+  # 管理者用システム管理
+  resetDatabase: AdminResetResult!
+
+  # 通知
+  markNotificationAsRead(id: UUID!): Notification!
+  markNotificationsAsRead(ids: [UUID!]!): [Notification!]!
+  markAllNotificationsAsRead: Int!
+  createTestNotification(userId: UUID!, message: String): Notification!
+
+  # メディア
+  deleteMedia(id: UUID!): Boolean!
+
+  # 管理者機能
+  resetPosts: AdminResetResult!
+  resetPostsAndMedia: AdminResetResult!
+  getSystemStats: SystemStats!
+
+  # キャッシュ管理（開発環境のみ）
+  invalidateUserCache(userId: UUID!): Boolean!
+
+  # ウォレット機能
+  createDepositRequest(input: CreateDepositRequestInput!): DepositRequest!
+  createWithdrawalRequest(input: CreateWithdrawalRequestInput!): WithdrawalRequest!
+  registerUserWallet(input: RegisterUserWalletInput!): UserWallet!
+
+  # メッセージ機能
+  sendMessage(input: SendMessageInput!): SendMessagePayload!
+  createConversation(input: CreateConversationInput!): CreateConversationPayload!
+  markAsRead(input: MarkAsReadInput!): MarkAsReadPayload!
+  updateConversation(input: UpdateConversationInput!): UpdateConversationPayload!
+  addParticipant(input: AddParticipantInput!): AddParticipantPayload!
+  removeParticipant(input: RemoveParticipantInput!): RemoveParticipantPayload!
+  muteConversation(input: MuteConversationInput!): MuteConversationPayload!
+  deleteMessage(input: DeleteMessageInput!): DeleteMessagePayload!
+  hideMessage(input: HideMessageInput!): HideMessagePayload!
+}
+
+# ================================
+# サブスクリプション
+# ================================
+type Subscription {
+  # 通知
+  notificationAdded(userId: UUID!): Notification
+  notificationCountUpdated(userId: UUID!): Int
+
+  # 投稿
+  postAdded: Post!
+  postUpdated(postId: UUID!): Post!
+  postProcessingCompleted(postId: UUID!): Post!
+  allPostsProcessingUpdated: Post!
+
+  # コメント
+  commentAdded(postId: UUID!): Comment!
+
+  # いいね
+  likeToggled(postId: UUID!): Post!
+
+  # メディア（Media V2）
+  uploadProgress(mediaId: UUID!): UploadProgressUpdate!
+
+  # ウォレット機能
+  walletBalanceUpdated(userId: UUID!): Wallet!
+  walletTransactionAdded(userId: UUID!): WalletTransaction!
+  depositRequestUpdated(userId: UUID!): DepositRequest!
+  withdrawalRequestUpdated(userId: UUID!): WithdrawalRequest!
+
+  # メッセージ機能
+  messageAdded(conversationId: UUID!): Message!
+  messageRead(conversationId: UUID!): MessageRead!
+  messageDeleted(conversationId: UUID!): Message!
+  messageHidden(conversationId: UUID!): Message!
+  conversationUpdated(userId: UUID!): Conversation!
+  participantAdded(conversationId: UUID!): ConversationParticipant!
+  participantRemoved(conversationId: UUID!): ConversationParticipant!
+}

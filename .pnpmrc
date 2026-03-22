@@ -1,0 +1,5 @@
+allow-scripts=@prisma/client,@prisma/engines,prisma,msgpackr-extract,sharp
+auto-install-peers=true
+strict-peer-dependencies=false
+hoist=true
+shamefully-hoist=true

@@ -1,0 +1,45 @@
+# 🏭 本番環境用Crontab設定
+# LIBARK自動メンテナンススケジュール
+
+# 環境変数
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+ENVIRONMENT=production
+
+# ================================
+# Dockerメンテナンス
+# ================================
+
+# 毎日午前2時: 軽量クリーンアップ
+0 2 * * * /opt/libark/scripts/maintenance/docker-cleanup.sh
+
+# 毎週日曜午前3時: より積極的なクリーンアップ
+0 3 * * 0 CLEANUP_LEVEL=aggressive /opt/libark/scripts/maintenance/docker-cleanup.sh
+
+# ================================
+# ディスク監視
+# ================================
+
+# 毎時: ディスク使用量監視
+0 * * * * /opt/libark/scripts/monitoring/disk-monitor.sh
+
+# ================================
+# ログローテーション
+# ================================
+
+# 毎日午前1時: ログローテーション
+0 1 * * * /opt/libark/scripts/maintenance/log-rotation.sh
+
+# ================================
+# データベースメンテナンス
+# ================================
+
+# 毎週日曜午前4時: PostgreSQL VACUUM
+0 4 * * 0 /opt/libark/scripts/maintenance/db-maintenance.sh
+
+# ================================
+# Redis最適化
+# ================================
+
+# 毎日午前5時: Redis最適化
+0 5 * * * /opt/libark/scripts/maintenance/redis-optimize.sh

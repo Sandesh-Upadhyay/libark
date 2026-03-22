@@ -1,0 +1,299 @@
+# 🎯 メッセージ関連スキーマ定義
+# ベストプラクティス設計による拡張可能なメッセージシステム
+
+# ================================
+# 列挙型
+# ================================
+enum ConversationType {
+  DIRECT # 1対1の会話
+  GROUP # グループチャット（将来実装）
+}
+
+enum MessageType {
+  TEXT # テキストメッセージ
+  IMAGE # 画像メッセージ（将来実装）
+  FILE # ファイルメッセージ（将来実装）
+  SYSTEM # システムメッセージ（将来実装）
+}
+
+enum ParticipantRole {
+  MEMBER # 一般メンバー
+  ADMIN # 管理者（将来実装）
+}
+
+# ================================
+# メッセージ型
+# ================================
+type Message @cacheControl(maxAge: 60) {
+  id: UUID!
+  conversationId: UUID!
+  senderId: UUID!
+  content: String!
+  type: MessageType!
+  replyToId: UUID
+  editedAt: DateTime
+  deletedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  # リレーション
+  conversation: Conversation! @cacheControl(inheritMaxAge: true)
+  sender: User! @cacheControl(inheritMaxAge: true)
+  replyTo: Message @cacheControl(inheritMaxAge: true)
+  replies: [Message!]! @cacheControl(maxAge: 30)
+  reads: [MessageRead!]! @cacheControl(maxAge: 10)
+
+  # 計算フィールド
+  isRead: Boolean! @cacheControl(maxAge: 10) # 現在のユーザーが既読かどうか
+  readCount: Int! @cacheControl(maxAge: 10) # 既読者数
+  isHidden: Boolean! @cacheControl(maxAge: 10) # 現在のユーザーが非表示にしているかどうか
+  canDelete: Boolean! @cacheControl(maxAge: 10) # 現在のユーザーが削除可能かどうか
+}
+
+# ================================
+# 会話型
+# ================================
+type Conversation @cacheControl(maxAge: 120) {
+  id: UUID!
+  type: ConversationType!
+  title: String # グループチャット用タイトル
+  createdBy: UUID!
+  isArchived: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  # リレーション
+  creator: User! @cacheControl(inheritMaxAge: true)
+  participants: [ConversationParticipant!]! @cacheControl(maxAge: 60)
+  messages(first: Int = 50, after: String, includeDeleted: Boolean = false): MessageConnection!
+
+  # 計算フィールド
+  lastMessage: Message @cacheControl(maxAge: 30)
+  unreadCount: Int! @cacheControl(maxAge: 10) # 現在のユーザーの未読数
+  participantCount: Int! @cacheControl(maxAge: 60)
+  activeParticipants: [User!]! @cacheControl(maxAge: 60) # 退出していない参加者
+}
+
+# ================================
+# 参加者型
+# ================================
+type ConversationParticipant @cacheControl(maxAge: 120) {
+  id: UUID!
+  conversationId: UUID!
+  userId: UUID!
+  role: ParticipantRole!
+  joinedAt: DateTime!
+  leftAt: DateTime
+  isMuted: Boolean!
+  lastReadAt: DateTime
+
+  # リレーション
+  conversation: Conversation! @cacheControl(inheritMaxAge: true)
+  user: User! @cacheControl(inheritMaxAge: true)
+
+  # 計算フィールド
+  isActive: Boolean! # leftAtがnullかどうか
+  unreadCount: Int! @cacheControl(maxAge: 10) # この参加者の未読数
+}
+
+# ================================
+# 既読状況型
+# ================================
+type MessageRead @cacheControl(maxAge: 60) {
+  id: UUID!
+  messageId: UUID!
+  userId: UUID!
+  readAt: DateTime!
+
+  # リレーション
+  message: Message! @cacheControl(inheritMaxAge: true)
+  user: User! @cacheControl(inheritMaxAge: true)
+}
+
+# ================================
+# ページネーション型
+# ================================
+type MessageConnection {
+  edges: [MessageEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type MessageEdge {
+  node: Message!
+  cursor: String!
+}
+
+type ConversationConnection {
+  edges: [ConversationEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type ConversationEdge {
+  node: Conversation!
+  cursor: String!
+}
+
+# ================================
+# 入力型
+# ================================
+input SendMessageInput {
+  conversationId: UUID
+  recipientId: UUID
+  content: String!
+  type: MessageType = TEXT
+  replyToId: UUID
+}
+
+input CreateConversationInput {
+  participantIds: [UUID!]!
+  title: String # グループチャット用
+  type: ConversationType = DIRECT
+  initialMessage: String
+}
+
+input MarkAsReadInput {
+  conversationId: UUID!
+  messageIds: [UUID!] # 指定しない場合は全未読メッセージを既読にする
+}
+
+input UpdateConversationInput {
+  conversationId: UUID!
+  title: String
+  isArchived: Boolean
+}
+
+input AddParticipantInput {
+  conversationId: UUID!
+  userId: UUID!
+  role: ParticipantRole = MEMBER
+}
+
+input RemoveParticipantInput {
+  conversationId: UUID!
+  userId: UUID!
+}
+
+input MuteConversationInput {
+  conversationId: UUID!
+  isMuted: Boolean!
+}
+
+# メッセージ削除用入力型
+input DeleteMessageInput {
+  messageId: UUID!
+  deleteType: MessageDeleteType!
+}
+
+# メッセージ削除タイプ
+enum MessageDeleteType {
+  UNSEND # 送信取り消し（全員から削除）
+  HIDE # トーク削除（自分のみ削除）
+}
+
+# メッセージ非表示用入力型
+input HideMessageInput {
+  messageId: UUID!
+}
+
+# ================================
+# レスポンス型
+# ================================
+type SendMessagePayload {
+  success: Boolean!
+  message: String!
+  messageData: Message
+  conversation: Conversation
+}
+
+type CreateConversationPayload {
+  success: Boolean!
+  message: String!
+  conversation: Conversation
+}
+
+type MarkAsReadPayload {
+  success: Boolean!
+  message: String!
+  conversation: Conversation
+  readCount: Int!
+}
+
+type UpdateConversationPayload {
+  success: Boolean!
+  message: String!
+  conversation: Conversation
+}
+
+type AddParticipantPayload {
+  success: Boolean!
+  message: String!
+  conversation: Conversation
+  participant: ConversationParticipant
+}
+
+type RemoveParticipantPayload {
+  success: Boolean!
+  message: String!
+  conversation: Conversation
+}
+
+type MuteConversationPayload {
+  success: Boolean!
+  message: String!
+  conversation: Conversation
+}
+
+type DeleteMessagePayload {
+  success: Boolean!
+  message: String!
+  deletedMessage: Message
+  deleteType: MessageDeleteType!
+}
+
+type HideMessagePayload {
+  success: Boolean!
+  message: String!
+  hiddenMessage: Message
+}
+
+# ================================
+# 統計型
+# ================================
+type MessageStats {
+  totalConversations: Int!
+  activeConversations: Int! # アーカイブされていない会話数
+  unreadConversations: Int!
+  totalUnreadMessages: Int!
+  totalMessages: Int!
+  archivedConversations: Int!
+}
+
+# ================================
+# Query拡張（operations.graphqlに統合される）
+# ================================
+# conversations(first: Int = 20, after: String, includeArchived: Boolean = false): ConversationConnection!
+# conversation(id: UUID!): Conversation
+# messageStats: MessageStats!
+# searchMessages(query: String!, conversationId: UUID, first: Int = 20, after: String): MessageConnection!
+
+# ================================
+# Mutation拡張（operations.graphqlに統合される）
+# ================================
+# sendMessage(input: SendMessageInput!): SendMessagePayload!
+# createConversation(input: CreateConversationInput!): CreateConversationPayload!
+# markAsRead(input: MarkAsReadInput!): MarkAsReadPayload!
+# updateConversation(input: UpdateConversationInput!): UpdateConversationPayload!
+# addParticipant(input: AddParticipantInput!): AddParticipantPayload!
+# removeParticipant(input: RemoveParticipantInput!): RemoveParticipantPayload!
+# muteConversation(input: MuteConversationInput!): MuteConversationPayload!
+
+# ================================
+# Subscription拡張（operations.graphqlに統合される）
+# ================================
+# messageAdded(conversationId: UUID!): Message!
+# messageRead(conversationId: UUID!): MessageRead!
+# conversationUpdated(userId: UUID!): Conversation!
+# participantAdded(conversationId: UUID!): ConversationParticipant!
+# participantRemoved(conversationId: UUID!): ConversationParticipant!

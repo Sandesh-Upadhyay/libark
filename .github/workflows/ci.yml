@@ -1,0 +1,240 @@
+name: 🚀 LIBARK Simplified Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  NODE_VERSION: '24'
+  PNPM_VERSION: '10.11.0'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: replicas-llc/libark
+
+jobs:
+  # 🧪 テスト段階
+  checks:
+    name: 🔍 Static Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - run: pnpm install --frozen-lockfile
+
+      # 軽いチェックから先に実行（生成物不要）
+      - name: Prettier Format Check
+        run: pnpm format:check
+
+      - name: ESLint Check
+        run: pnpm lint
+
+      # 重いが最重要な型チェック（生成物必要）
+      - run: cd packages/db && pnpm prisma generate
+      - run: pnpm build:libs
+
+      - name: TypeScript Type Check
+        run: pnpm type-check
+
+  test:
+    name: 🧪 Tests
+    runs-on: ubuntu-latest
+    needs: checks
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - run: pnpm install --frozen-lockfile
+      - run: cd packages/db && pnpm prisma generate
+      - run: pnpm build:libs
+
+      - name: Run tests
+        run: SKIP_DB_RESET=true pnpm test
+
+      - name: Run tests with coverage
+        run: SKIP_DB_RESET=true pnpm test:coverage:report
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: |
+            coverage/
+            **/coverage/
+            packages/**/coverage/
+            apps/**/coverage/
+          retention-days: 30
+
+  # 🏗️ ビルド段階 - 統一マルチステージビルド
+  build:
+    name: 🏗️ Build Multi-Stage Docker Images
+    runs-on: ubuntu-latest
+    needs: [checks, test]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Build and push Frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.production
+          target: frontend-runtime
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/frontend:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/frontend:${{ github.sha }}
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,mode=max,scope=frontend
+          platforms: linux/amd64
+
+      - name: Build and push Backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.production
+          target: backend-runtime
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/backend:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/backend:${{ github.sha }}
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+          platforms: linux/amd64
+
+      - name: Build and push S3 Gateway image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.production
+          target: s3-gateway-runtime
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/s3-gateway:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/s3-gateway:${{ github.sha }}
+          cache-from: type=gha,scope=s3-gateway
+          cache-to: type=gha,mode=max,scope=s3-gateway
+          platforms: linux/amd64
+
+      - name: Build and push Worker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.production
+          target: worker-runtime
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/worker:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/worker:${{ github.sha }}
+          cache-from: type=gha,scope=worker
+          cache-to: type=gha,mode=max,scope=worker
+          platforms: linux/amd64
+
+  # 🚀 デプロイ段階
+  deploy:
+    name: 🚀 Deploy to VPS
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -euo pipefail
+
+            # プロジェクトディレクトリに移動
+            cd /root/LIBARK || exit 1
+
+            # 最新のコードを取得（docker-compose.production.ymlの更新のため）
+            echo "📥 Pulling latest source code..."
+            git fetch origin
+            git reset --hard origin/main
+
+            # GitHub Container Registryにログイン
+            echo "🔐 Logging in to GitHub Container Registry..."
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # 最新のDockerイメージを取得
+            echo "🐳 Pulling latest Docker images..."
+            docker compose -f docker-compose.production.yml pull
+
+            # サービスを再起動（ダウンタイム最小化）
+            echo "🔄 Restarting services..."
+            docker compose -f docker-compose.production.yml up -d
+
+            # 🔧 Nginx DNS キャッシュクリア（動的DNS解決対応）
+            echo "🔄 Clearing Nginx DNS cache..."
+            sleep 10  # サービス起動待機
+            docker compose -f docker-compose.production.yml exec -T nginx nginx -s reload || echo "⚠️ Nginx reload failed, but continuing..."
+
+            # 🏥 ヘルスチェック実行
+            echo "🏥 Performing health checks..."
+
+            # Frontend health check
+            for i in {1..30}; do
+              if curl -f -s http://localhost/health > /dev/null 2>&1; then
+                echo "✅ Frontend health check passed"
+                break
+              fi
+              echo "⏳ Waiting for frontend... ($i/30)"
+              sleep 2
+            done
+
+            # Backend health check
+            for i in {1..30}; do
+              if curl -f -s http://localhost/api/health > /dev/null 2>&1; then
+                echo "✅ Backend health check passed"
+                break
+              fi
+              echo "⏳ Waiting for backend... ($i/30)"
+              sleep 2
+            done
+
+            # Final HTTPS health check
+            echo "🔐 Final HTTPS health check..."
+            if curl -f -s https://libark.io/health > /dev/null 2>&1; then
+              echo "✅ HTTPS health check passed"
+            else
+              echo "⚠️ HTTPS health check failed, but deployment completed"
+            fi
+
+            # 不要なイメージをクリーンアップ
+            echo "🧹 Cleaning up old images..."
+            docker image prune -f
+
+            echo "✅ Deployment completed successfully!"

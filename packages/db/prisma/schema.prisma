@@ -1,0 +1,1103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username           String              @unique @db.VarChar(30)
+  email              String              @unique @db.VarChar(255)
+  passwordHash       String              @map("password_hash") @db.VarChar(255)
+  displayName        String?             @map("display_name") @db.VarChar(50)
+  bio                String?
+  profileImageId     String?             @map("profile_image_id") @db.Uuid
+  coverImageId       String?             @map("cover_image_id") @db.Uuid
+  createdAt          DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime            @default(now()) @map("updated_at") @db.Timestamptz(6)
+  lastLoginAt        DateTime?           @map("last_login_at") @db.Timestamptz(6)
+  isVerified         Boolean             @default(false) @map("is_verified")
+  isActive           Boolean             @default(true) @map("is_active")
+
+  // 🔐 2FA (Two-Factor Authentication) 関連フィールド
+  twoFactorEnabled   Boolean             @default(false) @map("two_factor_enabled")
+  twoFactorSecret    String?             @map("two_factor_secret") @db.VarChar(255)
+  backupCodes        String[]            @default([]) @map("backup_codes")
+  twoFactorEnabledAt DateTime?           @map("two_factor_enabled_at") @db.Timestamptz(6)
+
+  // 🎯 新しいロールベースシステム
+  role               Role?               @relation(fields: [roleId], references: [id])
+  roleId             String?             @map("role_id") @db.Uuid
+  permissionOverrides UserPermissionOverride[]
+  grantedPermissions UserPermissionOverride[] @relation("GrantedPermissions")
+  comments           Comment[]
+  depositRequests    DepositRequest[]
+  likes              Like[]
+  media              Media[]              // メディア
+  messages           Message[]
+  messageReads       MessageRead[]
+  messageHidden      MessageHidden[]     // 個人削除したメッセージ
+  conversationParticipants ConversationParticipant[]
+  createdConversations Conversation[]    @relation("ConversationCreator")
+  actorNotifications Notification[]      @relation("NotificationActor")
+  notifications      Notification[]
+  posts              Post[]
+  postPurchases      PostPurchase[]      // 購入記録
+  settings           UserSettings?
+  userWallets        UserWallet[]
+  walletTransactions WalletTransaction[]
+  wallet             Wallet?
+  withdrawalRequests WithdrawalRequest[]
+  nowpaymentsPayments NOWPaymentsPayment[]
+  paymentRequests    PaymentRequest[]
+
+  // P2P取引リレーション
+  p2pTradeRequestsAsBuyer  P2PTradeRequest[]  @relation("P2PBuyer")
+  p2pTradeRequestsAsSeller P2PTradeRequest[]  @relation("P2PSeller")
+  p2pOffers                P2POffer[]          @relation("P2POffer")
+  p2pBuyerPreferences      P2PBuyerPreference[] @relation("P2PBuyerPreference")
+  p2pDisputesInitiated     P2PDispute[]       @relation("DisputeInitiator")
+  p2pDisputesResolved      P2PDispute[]       @relation("DisputeResolver")
+
+  // サイト機能設定関係
+  updatedSiteFeatures SiteFeatureSetting[] @relation("SiteFeatureUpdatedBy")
+  userFeaturePermissions UserFeaturePermission[] @relation("UserFeaturePermissions")
+  grantedFeaturePermissions UserFeaturePermission[] @relation("GrantedFeaturePermissions")
+
+  // フォロー関係
+  following          Follow[]            @relation("UserFollowing")
+  followers          Follow[]            @relation("UserFollowers")
+
+  // アバター・カバー画像のリレーション
+  profileImage       Media?              @relation("UserProfileImage", fields: [profileImageId], references: [id])
+  coverImage         Media?              @relation("UserCoverImage", fields: [coverImageId], references: [id])
+
+  @@map("users")
+}
+
+model Post {
+  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String         @map("user_id") @db.Uuid
+  content      String?
+  isProcessing Boolean        @default(true) @map("is_processing")
+  isDeleted    Boolean        @default(false) @map("is_deleted")
+  createdAt    DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime       @default(now()) @map("updated_at") @db.Timestamptz(6)
+  deletedAt    DateTime?      @map("deleted_at") @db.Timestamptz(6)
+  visibility   PostVisibility @default(PUBLIC)
+
+  // Paid投稿設定
+  price        Decimal?       @db.Decimal(10,2) // Paid投稿の価格（必須：PAID時）
+  paidAt       DateTime?      @map("paid_at") @db.Timestamptz(6) // Paid化された日時
+
+  comments     Comment[]
+  likes        Like[]
+  media        Media[]        // メディア
+  user         User           @relation(fields: [userId], references: [id])
+  purchases    PostPurchase[] // 購入記録
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([visibility, isDeleted])
+  @@map("posts")
+}
+
+// 🎯 有料投稿購入システム
+model PostPurchase {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid // 購入者
+  postId      String    @map("post_id") @db.Uuid // 購入対象投稿
+  price       Decimal   @db.Decimal(10,2) // 購入価格
+  purchasedAt DateTime  @default(now()) @map("purchased_at") @db.Timestamptz(6) // 購入日時
+  expiresAt   DateTime? @map("expires_at") @db.Timestamptz(6) // 有効期限（オプション）
+  isActive    Boolean   @default(true) @map("is_active") // 購入の有効性
+
+  // リレーション
+  user        User      @relation(fields: [userId], references: [id])
+  post        Post      @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId]) // 同一ユーザー・投稿の重複購入防止
+  @@index([userId])
+  @@index([postId])
+  @@index([purchasedAt])
+  @@index([expiresAt])
+  @@map("post_purchases")
+}
+
+// 🎯 統一メディアシステム（責任分離最適化版）
+model Media {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String      @map("user_id") @db.Uuid
+  postId      String?     @map("post_id") @db.Uuid
+
+  // 基本情報（シンプル化）
+  filename    String      @db.VarChar(255)
+  s3Key       String      @map("s3_key") @db.VarChar(500)  // s3Key → s3Key
+  mimeType    String      @map("mime_type") @db.VarChar(100)
+  fileSize    Int         @map("file_size")
+  width       Int?
+  height      Int?
+
+  // メディアタイプ
+  type        MediaType   @default(POST)
+
+  // 処理ステータス（シンプル化）
+  status      MediaStatus @default(PROCESSING)
+
+  // タイムスタンプ
+  createdAt   DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // リレーション
+  user        User        @relation(fields: [userId], references: [id])
+  post        Post?       @relation(fields: [postId], references: [id])
+  variants    MediaVariant[]
+  ogpPublicMedia OgpPublicMedia[]
+
+  // アバター・カバー画像の逆方向リレーション
+  userProfileImage User[] @relation("UserProfileImage")
+  userCoverImage   User[] @relation("UserCoverImage")
+
+  @@index([userId])
+  @@index([postId])
+  @@index([status])
+  @@index([type])
+  @@index([s3Key])
+  @@index([createdAt])
+  @@map("media")
+}
+
+
+
+// 🎨 メディアバリアント管理（責任分離最適化版）
+model MediaVariant {
+  id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  mediaId   String      @map("media_id") @db.Uuid
+  type      VariantType // 統一バリアントタイプ
+  s3Key     String      @map("s3_key") @db.VarChar(500)  // s3Key → s3Key
+  width     Int
+  height    Int
+  fileSize  Int         @map("file_size")
+  quality   Int         // WebP品質設定
+  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  media     Media       @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@unique([mediaId, type])
+  @@index([mediaId])
+  @@index([type])
+  @@index([s3Key])
+  @@map("media_variants")
+}
+
+
+
+// 🎯 OGP匿名配信用メディアテーブル
+model OgpPublicMedia {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  mediaId     String   @map("media_id") @db.Uuid
+  bucket      String   @db.VarChar(100)
+  backendId   String   @map("backend_id") @db.VarChar(100)
+  ogpKey      String   @map("ogp_key") @db.VarChar(500)
+  contentHash String   @map("content_hash") @db.VarChar(64)
+  contentType String   @map("content_type") @db.VarChar(100)
+  ext         String   @db.VarChar(10)
+  variant     String   @db.VarChar(50)
+  salt        String   @db.VarChar(64)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  media       Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@unique([mediaId, variant])
+  @@index([mediaId])
+  @@index([ogpKey])
+  @@index([contentHash])
+  @@index([backendId])
+  @@index([createdAt])
+  @@map("ogp_public_media")
+}
+
+
+// 📝 移行ログテーブル
+model MigrationLog {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  operation        String    @db.VarChar(100)
+  tableName        String    @map("table_name") @db.VarChar(100)
+  recordsProcessed Int       @default(0) @map("records_processed")
+  recordsSuccess   Int       @default(0) @map("records_success")
+  recordsFailed    Int       @default(0) @map("records_failed")
+  errorDetails     String?   @map("error_details")
+  startedAt        DateTime  @default(now()) @map("started_at") @db.Timestamptz(6)
+  completedAt      DateTime? @map("completed_at") @db.Timestamptz(6)
+  status           String    @default("RUNNING") @db.VarChar(20)
+
+  @@map("migration_log")
+}
+
+// メッセージ機能の列挙型
+enum ConversationType {
+  DIRECT // 1対1の会話
+  GROUP  // グループチャット（将来実装）
+
+  @@map("conversation_type")
+}
+
+enum MessageType {
+  TEXT   // テキストメッセージ
+  IMAGE  // 画像メッセージ（将来実装）
+  FILE   // ファイルメッセージ（将来実装）
+  SYSTEM // システムメッセージ（将来実装）
+
+  @@map("message_type")
+}
+
+enum ParticipantRole {
+  MEMBER // 一般メンバー
+  ADMIN  // 管理者（将来実装）
+
+  @@map("participant_role")
+}
+
+// 会話テーブル
+model Conversation {
+  id          String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  type        ConversationType          @default(DIRECT)
+  title       String?                   @db.VarChar(100) // グループチャット用タイトル
+  createdBy   String                    @map("created_by") @db.Uuid
+  isArchived  Boolean                   @default(false) @map("is_archived")
+  createdAt   DateTime                  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime                  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  // リレーション
+  creator      User                     @relation("ConversationCreator", fields: [createdBy], references: [id])
+  messages     Message[]
+  participants ConversationParticipant[]
+
+  @@index([type])
+  @@index([createdBy])
+  @@index([updatedAt])
+  @@index([isArchived])
+  @@map("conversations")
+}
+
+// 会話参加者テーブル
+model ConversationParticipant {
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  conversationId String           @map("conversation_id") @db.Uuid
+  userId         String           @map("user_id") @db.Uuid
+  role           ParticipantRole  @default(MEMBER)
+  joinedAt       DateTime         @default(now()) @map("joined_at") @db.Timestamptz(6)
+  leftAt         DateTime?        @map("left_at") @db.Timestamptz(6) // 退出時刻
+  isMuted        Boolean          @default(false) @map("is_muted")
+  lastReadAt     DateTime?        @map("last_read_at") @db.Timestamptz(6) // 最後に読んだ時刻
+
+  // リレーション
+  conversation   Conversation     @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@index([userId, leftAt]) // ユーザーの参加中会話を高速取得
+  @@index([conversationId, leftAt]) // アクティブ参加者取得用
+  @@index([lastReadAt]) // 既読管理用
+  @@map("conversation_participants")
+}
+
+// メッセージテーブル
+model Message {
+  id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  conversationId String      @map("conversation_id") @db.Uuid
+  senderId       String      @map("sender_id") @db.Uuid
+  content        String      @db.Text
+  type           MessageType @default(TEXT)
+  replyToId      String?     @map("reply_to_id") @db.Uuid // 返信機能用
+  editedAt       DateTime?   @map("edited_at") @db.Timestamptz(6) // 編集機能用
+  deletedAt      DateTime?   @map("deleted_at") @db.Timestamptz(6) // ソフトデリート
+  createdAt      DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime    @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  // リレーション
+  conversation   Conversation    @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User            @relation(fields: [senderId], references: [id])
+  replyTo        Message?        @relation("MessageReply", fields: [replyToId], references: [id])
+  replies        Message[]       @relation("MessageReply")
+  reads          MessageRead[]
+  hiddenBy       MessageHidden[] // 個人削除（トーク削除）
+
+  @@index([conversationId, createdAt]) // 会話のメッセージ一覧用
+  @@index([senderId, createdAt]) // 送信者のメッセージ履歴用
+  @@index([replyToId]) // 返信機能用
+  @@index([deletedAt]) // ソフトデリート対応
+  @@index([type])
+  @@map("messages")
+}
+
+// メッセージ既読状況テーブル
+model MessageRead {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  messageId String   @map("message_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  readAt    DateTime @default(now()) @map("read_at") @db.Timestamptz(6)
+
+  // リレーション
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId]) // 同じメッセージを同じユーザーが複数回既読にできない
+  @@index([userId, readAt]) // ユーザーの既読履歴用
+  @@index([messageId]) // メッセージの既読状況用
+  @@map("message_reads")
+}
+
+// メッセージ個人削除テーブル（トーク削除用）
+model MessageHidden {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  messageId String   @map("message_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  hiddenAt  DateTime @default(now()) @map("hidden_at") @db.Timestamptz(6)
+
+  // リレーション
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@unique([messageId, userId]) // 同じメッセージを同じユーザーが複数回非表示にしない
+  @@index([userId, hiddenAt]) // ユーザーの非表示履歴用
+  @@index([messageId]) // メッセージの非表示状況確認用
+  @@map("message_hidden")
+}
+
+model Like {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  postId    String?  @map("post_id") @db.Uuid
+  commentId String?  @map("comment_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@unique([userId, commentId])
+  @@index([postId])
+  @@index([commentId])
+  @@index([userId])
+  @@map("likes")
+}
+
+model Follow {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  followerId  String   @map("follower_id") @db.Uuid  // フォローする人
+  followingId String   @map("following_id") @db.Uuid // フォローされる人
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // リレーション
+  follower    User     @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  // 同じユーザーを複数回フォローできないようにする
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+  @@index([createdAt])
+  @@map("follows")
+}
+
+model Comment {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String    @map("user_id") @db.Uuid
+  postId       String    @map("post_id") @db.Uuid
+  content      String
+  isDeleted    Boolean   @default(false) @map("is_deleted")
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz(6)
+  isProcessing Boolean   @default(true) @map("is_processing")
+  post         Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes        Like[]
+
+  @@index([postId])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([isProcessing])
+  @@map("comments")
+}
+
+model Notification {
+  id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String           @map("user_id") @db.Uuid
+  type        NotificationType
+  actorId     String?          @map("actor_id") @db.Uuid
+  referenceId String?          @map("reference_id") @db.Uuid
+  content     String?
+  isRead      Boolean          @default(false) @map("is_read")
+  createdAt   DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  readAt      DateTime?        @map("read_at") @db.Timestamptz(6)
+  actor       User?            @relation("NotificationActor", fields: [actorId], references: [id])
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([actorId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([isRead])
+  @@map("notifications")
+}
+
+model UserSettings {
+  userId            String   @id @map("user_id") @db.Uuid
+  theme             String   @default("system") @db.VarChar(10)
+  animationsEnabled Boolean  @default(true) @map("animations_enabled")
+  locale            String   @default("ja") @db.VarChar(10)
+  contentFilter     String   @default("all") @map("content_filter") @db.VarChar(20)
+  displayMode       String   @default("card") @map("display_mode") @db.VarChar(10)
+  timezone          String   @default("Asia/Tokyo") @db.VarChar(50)
+  updatedAt         DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_settings")
+}
+
+model Wallet {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId          String   @unique @map("user_id") @db.Uuid
+  balanceUsd      Decimal  @default(0) @map("balance_usd") @db.Decimal(20, 8)
+  salesBalanceUsd Decimal  @default(0) @map("sales_balance_usd") @db.Decimal(20, 8)
+  p2pBalanceUsd   Decimal  @default(0) @map("p2p_balance_usd") @db.Decimal(20, 8)
+  p2pLockedUsd    Decimal  @default(0) @map("p2p_locked_usd") @db.Decimal(20, 8)
+  isActive        Boolean  @default(true) @map("is_active")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("wallets")
+}
+
+model UserWallet {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  walletName String   @map("wallet_name") @db.VarChar(100)
+  currency   String   @db.VarChar(10)
+  network    String   @db.VarChar(50)
+  address    String   @db.VarChar(255)
+  isVerified Boolean  @default(false) @map("is_verified")
+  isActive   Boolean  @default(true) @map("is_active")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, address, currency, network])
+  @@index([address, currency, network])
+  @@map("user_wallets")
+}
+
+// 🎯 新しい汎用決済システム
+
+// 決済プロバイダー管理
+model PaymentProvider {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String      @unique @db.VarChar(50) // "nowpayments", "mexc", "coinpayments", "bybit"
+  displayName String      @db.VarChar(100) // "NOWPayments", "MEXC", "CoinPayments", "Bybit"
+  type        ProviderType // CRYPTO_DEPOSIT, CRYPTO_WITHDRAWAL, P2P
+  isActive    Boolean     @default(true)
+  config      Json?       // プロバイダー固有の設定
+  createdAt   DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime    @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  paymentRequests PaymentRequest[]
+
+  @@index([type, isActive])
+  @@map("payment_providers")
+}
+
+// 統一リクエスト管理
+model PaymentRequest {
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String        @map("user_id") @db.Uuid
+  providerId    String        @map("provider_id") @db.Uuid
+  type          RequestType   // DEPOSIT, WITHDRAWAL
+  method        PaymentMethod // CRYPTO, P2P
+  amountUsd     Decimal       @map("amount_usd") @db.Decimal(20, 8)
+  currency      String?       @db.VarChar(10)
+  currencyAmount Decimal?     @map("currency_amount") @db.Decimal(20, 8)
+  status        RequestStatus @default(PENDING)
+  metadata      Json?
+  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  provider      PaymentProvider @relation(fields: [providerId], references: [id])
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  externalTransactions ExternalTransaction[]
+  walletTransactions   WalletTransaction[]
+
+  @@index([userId, createdAt])
+  @@index([status, type])
+  @@index([providerId, status])
+  @@map("payment_requests")
+}
+
+// 外部取引詳細（プロバイダー固有データ）
+model ExternalTransaction {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  paymentRequestId String  @map("payment_request_id") @db.Uuid
+  externalId      String   @map("external_id") @db.VarChar(255) // プロバイダー側のID
+  status          String   @db.VarChar(50)
+  data            Json     // プロバイダー固有データ
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  paymentRequest  PaymentRequest @relation(fields: [paymentRequestId], references: [id], onDelete: Cascade)
+
+  @@unique([paymentRequestId, externalId])
+  @@index([externalId])
+  @@map("external_transactions")
+}
+
+// NOWPayments決済情報（ユーザー・管理者目線で最適化）
+model NOWPaymentsPayment {
+  // 基本識別情報
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId          String   @map("user_id") @db.Uuid
+  paymentId       String   @unique @map("payment_id") @db.VarChar(100)        // NOWPayments Payment ID
+  orderId         String   @map("order_id") @db.VarChar(100)                  // 内部注文ID
+  purchaseId      String?  @map("purchase_id") @db.VarChar(100)               // NOWPayments Purchase ID
+
+  // 決済ステータス・タイプ
+  paymentStatus   NOWPaymentsStatus @map("payment_status")                    // 決済ステータス
+  paymentType     NOWPaymentsType   @default(CRYPTO2CRYPTO) @map("payment_type") // 決済タイプ
+
+  // 価格情報（ユーザーが支払う予定の金額）
+  priceAmount     Decimal  @map("price_amount") @db.Decimal(18, 8)            // 元の価格
+  priceCurrency   String   @map("price_currency") @db.VarChar(10)             // 元の通貨（通常USD）
+
+  // 支払い情報（実際の暗号通貨での支払い）
+  payAmount       Decimal  @map("pay_amount") @db.Decimal(18, 8)              // 支払い予定額（暗号通貨）
+  payCurrency     String   @map("pay_currency") @db.VarChar(10)               // 支払い通貨（XRP, BTC等）
+  actuallyPaid    Decimal? @map("actually_paid") @db.Decimal(18, 8)           // 実際に支払われた額
+
+  // アドレス情報
+  payAddress      String   @map("pay_address") @db.VarChar(255)               // 支払い先アドレス
+  payinExtraId    String?  @map("payin_extra_id") @db.VarChar(100)            // Extra ID (XRP等で必要)
+  payoutAddress   String?  @map("payout_address") @db.VarChar(255)            // 出金先アドレス
+
+  // 結果情報
+  outcomeAmount   Decimal? @map("outcome_amount") @db.Decimal(18, 8)          // 最終的な受取額
+  outcomeCurrency String?  @map("outcome_currency") @db.VarChar(10)           // 最終的な受取通貨
+
+  // レート・手数料情報
+  fixedRate       Boolean  @default(false) @map("fixed_rate")                 // 固定レートかどうか
+  feePaidByUser   Boolean  @default(false) @map("fee_paid_by_user")           // ユーザーが手数料を負担するか
+
+  // メタ情報
+  orderDescription String? @map("order_description") @db.Text                 // 注文説明
+
+  // タイムスタンプ
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // NOWPayments側のタイムスタンプ
+  nowpaymentsCreatedAt DateTime? @map("nowpayments_created_at") @db.Timestamptz(6)
+  nowpaymentsUpdatedAt DateTime? @map("nowpayments_updated_at") @db.Timestamptz(6)
+
+  // リレーション
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // インデックス（パフォーマンス最適化）
+  @@index([userId])                    // ユーザー別検索
+  @@index([paymentStatus])             // ステータス別検索
+  @@index([createdAt])                 // 時系列検索
+  @@index([paymentId])                 // Payment ID検索
+  @@index([payCurrency])               // 通貨別検索
+  @@index([userId, paymentStatus])     // ユーザー×ステータス複合検索
+  @@index([userId, createdAt])         // ユーザー×時系列複合検索
+  @@map("nowpayments_payments")
+}
+
+model DepositRequest {
+  id                   String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId               String              @map("user_id") @db.Uuid
+  requestedUsdAmount   Decimal             @map("requested_usd_amount") @db.Decimal(20, 8)
+  currency             String              @db.VarChar(10)
+  network              String              @db.VarChar(50)
+  expectedCryptoAmount Decimal             @map("expected_crypto_amount") @db.Decimal(20, 8)
+  exchangeRate         Decimal             @map("exchange_rate") @db.Decimal(20, 8)
+  ourDepositAddress    String              @map("our_deposit_address") @db.VarChar(255)
+  status               DepositStatus       @default(PENDING)
+  expiresAt            DateTime            @map("expires_at") @db.Timestamptz(6)
+  completedAt          DateTime?           @map("completed_at") @db.Timestamptz(6)
+  createdAt            DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  user                 User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([ourDepositAddress, currency, network])
+  @@index([status, expiresAt])
+  @@map("deposit_requests")
+}
+
+model WithdrawalRequest {
+  id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId             String              @map("user_id") @db.Uuid
+  currency           String              @db.VarChar(10)
+  amount             Decimal             @db.Decimal(20, 8)
+  amountUsd          Decimal             @map("amount_usd") @db.Decimal(20, 8)
+  destinationAddress String              @map("destination_address") @db.VarChar(255)
+  memo               String?             @db.VarChar(255)
+  network            String              @db.VarChar(50)
+  status             WithdrawalStatus    @default(PENDING)
+  mexcWithdrawId     String?             @map("mexc_withdraw_id") @db.VarChar(255)
+  errorMessage       String?             @map("error_message")
+  processedAt        DateTime?           @map("processed_at") @db.Timestamptz(6)
+  createdAt          DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([status])
+  @@index([mexcWithdrawId])
+  @@map("withdrawal_requests")
+}
+
+// 残高変更記録（確定した取引のみ）
+model WalletTransaction {
+  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId          String         @map("user_id") @db.Uuid
+  paymentRequestId String?       @map("payment_request_id") @db.Uuid
+  type            TransactionType @map("transaction_type") // DEPOSIT, WITHDRAWAL, PAYMENT, RECEIVE, TRANSFER
+  balanceType     BalanceType    @map("balance_type") @default(WALLET) // 対象残高種別
+  amountUsd       Decimal        @map("amount_usd") @db.Decimal(20, 8)
+  description     String         @db.VarChar(255)
+  metadata        Json?          // 追加情報（必要に応じて）
+  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  paymentRequest PaymentRequest? @relation(fields: [paymentRequestId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([type])
+  @@index([balanceType])
+  @@map("wallet_transactions")
+}
+
+model ExchangeRate {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  currency  String   @db.VarChar(10)
+  usdRate   Decimal  @map("usd_rate") @db.Decimal(20, 8)
+  source    String   @default("mexc") @db.VarChar(50)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@unique([currency, source])
+  @@index([currency, isActive])
+  @@map("exchange_rates")
+}
+
+
+
+// 🎯 新しいロールベース権限システム
+
+// ロール定義
+model Role {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String   @unique @db.VarChar(50) // ADMIN, CONTENT_SELLER, P2P_TRADER, PREMIUM_USER, BASIC_USER
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // リレーション
+  users       User[]
+  permissions RolePermission[]
+
+  @@map("roles")
+}
+
+// 権限定義
+model Permission {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String   @unique @db.VarChar(50) // READ_POSTS, CREATE_POSTS, ADMIN_PANEL, CONTENT_SALES, P2P_TRADING
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // リレーション
+  rolePermissions RolePermission[]
+  userOverrides   UserPermissionOverride[]
+
+  @@map("permissions")
+}
+
+// ロール-権限関係
+model RolePermission {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roleId       String     @map("role_id") @db.Uuid
+  permissionId String     @map("permission_id") @db.Uuid
+  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // リレーション
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
+// ユーザー個別権限上書き
+model UserPermissionOverride {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String     @map("user_id") @db.Uuid
+  permissionId String     @map("permission_id") @db.Uuid
+  allowed      Boolean    // true: 明示的に許可, false: 明示的に拒否
+  grantedBy    String?    @map("granted_by") @db.Uuid // 権限付与者
+  grantedAt    DateTime   @default(now()) @map("granted_at") @db.Timestamptz(6)
+  expiresAt    DateTime?  @map("expires_at") @db.Timestamptz(6) // 権限有効期限
+  isActive     Boolean    @default(true) @map("is_active")
+  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // リレーション
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  grantedByUser User?     @relation("GrantedPermissions", fields: [grantedBy], references: [id], onDelete: SetNull)
+
+  @@unique([userId, permissionId])
+  @@index([userId, isActive])
+  @@index([permissionId, isActive])
+  @@map("user_permission_overrides")
+}
+
+// 🎯 サイト機能設定システム
+model SiteFeatureSetting {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  featureName String   @unique @map("feature_name") @db.VarChar(50) // WALLET, MESSAGES, POSTS, IMAGE_UPLOADS
+  isEnabled   Boolean  @default(true) @map("is_enabled")
+  description String?  @db.Text
+  updatedBy   String   @map("updated_by") @db.Uuid // 管理者ID
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // リレーション
+  updatedByUser User @relation("SiteFeatureUpdatedBy", fields: [updatedBy], references: [id])
+
+  @@index([featureName])
+  @@index([isEnabled])
+  @@map("site_feature_settings")
+}
+
+// 🎯 ユーザー機能権限システム
+model UserFeaturePermission {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  featureName String    @map("feature_name") @db.VarChar(50) // WALLET, MESSAGES, POSTS, IMAGE_UPLOADS
+  isEnabled   Boolean   @default(true) @map("is_enabled")
+  grantedBy   String    @map("granted_by") @db.Uuid // 管理者ID
+  grantedAt   DateTime  @default(now()) @map("granted_at") @db.Timestamptz(6)
+  expiresAt   DateTime? @map("expires_at") @db.Timestamptz(6) // 権限有効期限
+  isActive    Boolean   @default(true) @map("is_active")
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // リレーション
+  user          User @relation("UserFeaturePermissions", fields: [userId], references: [id], onDelete: Cascade)
+  grantedByUser User @relation("GrantedFeaturePermissions", fields: [grantedBy], references: [id])
+
+  @@unique([userId, featureName])
+  @@index([userId, isActive])
+  @@index([featureName, isActive])
+  @@index([expiresAt])
+  @@map("user_feature_permissions")
+}
+
+// 🎯 S3 Gateway専用簡素化ステータス
+enum MediaStatus {
+  PROCESSING  // 処理中（アップロード〜バリアント生成）
+  READY      // 利用可能
+  FAILED     // 失敗
+}
+
+
+
+
+
+
+
+
+
+enum PostVisibility {
+  PUBLIC
+  PRIVATE
+  FOLLOWERS_ONLY
+  PAID          // 有料投稿（購入者のみ実画像、未購入者はブラー）
+}
+
+enum MediaType {
+  POST    // 投稿画像
+  AVATAR  // アバター画像
+  COVER   // カバー画像
+  OGP     // OGP画像
+}
+
+enum VariantType {
+  THUMB   // サムネイル (300x300)
+  MEDIUM  // 中サイズ (800x800)
+  LARGE   // 大サイズ (1200x1200)
+  BLUR    // ブラー用 (20x20) - Paid画像用
+  OGP     // OGP画像 (1200x630) - 投稿画像用
+}
+
+enum NotificationType {
+  LIKE
+  COMMENT
+  POST_PROCESSING_COMPLETED
+  POST_PROCESSING_FAILED
+  AVATAR_PROCESSING_COMPLETED
+  AVATAR_PROCESSING_FAILED
+  FOLLOW
+  COMMENT_PROCESSING_COMPLETED
+  COMMENT_PROCESSING_FAILED
+  WALLET_DEPOSIT_COMPLETED
+  WALLET_WITHDRAWAL_COMPLETED
+  WALLET_WITHDRAWAL_FAILED
+  P2P_TRADE_CREATED
+  P2P_TRADE_MATCHED
+  P2P_PAYMENT_SENT
+  P2P_TRADE_COMPLETED
+  P2P_TRADE_CANCELLED
+  P2P_TRADE_TIMEOUT
+  P2P_DISPUTE_CREATED
+  P2P_DISPUTE_RESOLVED
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  PAYMENT
+  RECEIVE
+  TRANSFER  // 残高間移動用
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+// 残高種別
+enum BalanceType {
+  WALLET    // 通常ウォレット残高
+  SALES     // 売上残高
+  P2P       // P2P残高
+}
+
+enum DepositStatus {
+  PENDING
+  COMPLETED
+  EXPIRED
+}
+
+// NOWPayments決済ステータス
+enum NOWPaymentsStatus {
+  WAITING        // 支払い待ち
+  CONFIRMING     // 確認中
+  CONFIRMED      // 確認済み
+  SENDING        // 送金中
+  PARTIALLY_PAID // 一部支払い済み
+  FINISHED       // 完了
+  FAILED         // 失敗
+  REFUNDED       // 返金済み
+  EXPIRED        // 期限切れ
+}
+
+// NOWPayments決済タイプ
+enum NOWPaymentsType {
+  CRYPTO2CRYPTO  // 暗号通貨→暗号通貨
+  FIAT2CRYPTO    // 法定通貨→暗号通貨
+}
+
+enum WithdrawalStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+// 新しい汎用Enum
+enum ProviderType {
+  CRYPTO_DEPOSIT    // 暗号通貨入金
+  CRYPTO_WITHDRAWAL // 暗号通貨出金
+  P2P              // P2P取引
+}
+
+enum RequestType {
+  DEPOSIT
+  WITHDRAWAL
+}
+
+enum PaymentMethod {
+  CRYPTO
+  P2P
+}
+
+enum RequestStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+// P2P取引ステータス
+enum P2PTradeStatus {
+  PENDING
+  MATCHED
+  PAYMENT_SENT
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  DISPUTED
+
+  @@map("p2p_trade_status")
+}
+
+// 支払い方法種別
+enum P2PPaymentMethodType {
+  BANK_TRANSFER
+  PAYPAY
+  PAYPAL
+  WISE
+  LINE_PAY
+  RAKUTEN_PAY
+
+  @@map("p2p_payment_method_type")
+}
+
+// P2P取引リクエスト
+model P2PTradeRequest {
+  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  buyerId         String          @map("buyer_id") @db.Uuid
+  sellerId        String?         @map("seller_id") @db.Uuid
+  amountUsd       Decimal         @map("amount_usd") @db.Decimal(20, 8)
+  fiatCurrency    String          @map("fiat_currency") @db.VarChar(10)
+  fiatAmount      Decimal         @map("fiat_amount") @db.Decimal(20, 8)
+  exchangeRate    Decimal         @map("exchange_rate") @db.Decimal(20, 8)
+  status          P2PTradeStatus  @default(PENDING)
+  paymentMethod   P2PPaymentMethodType? @map("payment_method") // Enumに変更
+  paymentDetails  String?         @map("payment_details")  // 暗号化
+  escrowAmount    Decimal?        @map("escrow_amount") @db.Decimal(20, 8)
+  expiresAt       DateTime        @map("expires_at") @db.Timestamptz(6)
+  completedAt     DateTime?       @map("completed_at") @db.Timestamptz(6)
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  offerId         String?         @map("offer_id") @db.Uuid
+  p2pOffer        P2POffer?       @relation(fields: [offerId], references: [id])
+
+  buyer           User            @relation("P2PBuyer", fields: [buyerId], references: [id])
+  seller          User?           @relation("P2PSeller", fields: [sellerId], references: [id])
+  dispute         P2PDispute?
+
+  @@index([buyerId, status])
+  @@index([sellerId, status])
+  @@index([status, expiresAt])
+  @@index([offerId])
+  @@map("p2p_trade_requests")
+}
+
+// P2Pオファー（支払い方法単位）
+model P2POffer {
+  id                 String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sellerId           String  @map("seller_id") @db.Uuid
+
+  paymentMethod      P2PPaymentMethodType @map("payment_method")
+  minAmountUsd       Decimal @map("min_amount_usd") @db.Decimal(20, 8)
+  maxAmountUsd       Decimal @map("max_amount_usd") @db.Decimal(20, 8)
+  fiatCurrency       String  @map("fiat_currency") @db.VarChar(10)
+  exchangeRateMargin Decimal @map("exchange_rate_margin") @db.Decimal(20, 8)
+  isActive           Boolean @default(true)
+
+  // 将来拡張枠（最小）
+  instructions       String?  @map("instructions") @db.Text
+  priority           Int      @default(0) @map("priority")
+
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  seller             User     @relation("P2POffer", fields: [sellerId], references: [id])
+  tradeRequests      P2PTradeRequest[]
+
+  @@index([sellerId])
+  @@index([paymentMethod, fiatCurrency, isActive])
+  @@index([fiatCurrency, isActive, priority])
+  @@unique([sellerId, paymentMethod, fiatCurrency])
+  @@map("p2p_offers")
+}
+
+// 通貨マスタ
+model FiatCurrency {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code      String   @unique @db.VarChar(3)
+  name      String   @db.VarChar(100)
+  symbol    String   @db.VarChar(10)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([isActive])
+  @@map("fiat_currencies")
+}
+
+// P2P買い手設定
+model P2PBuyerPreference {
+  id            String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  buyerId       String               @map("buyer_id") @db.Uuid
+  paymentMethod P2PPaymentMethodType @map("payment_method")
+  fiatCurrency  String               @map("fiat_currency") @db.VarChar(10)
+  minAmountUsd  Decimal              @map("min_amount_usd") @db.Decimal(20, 8)
+  maxAmountUsd  Decimal              @map("max_amount_usd") @db.Decimal(20, 8)
+  createdAt     DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime             @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  buyer User @relation("P2PBuyerPreference", fields: [buyerId], references: [id], onDelete: Cascade)
+
+  @@unique([buyerId, paymentMethod, fiatCurrency])
+  @@index([buyerId])
+  @@map("p2p_buyer_preferences")
+}
+
+// P2P紛争ステータス
+enum P2PDisputeStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED_BUYER_WIN
+  RESOLVED_SELLER_WIN
+  RESOLVED_SPLIT
+  CLOSED
+
+  @@map("p2p_dispute_status")
+}
+
+// P2P紛争
+model P2PDispute {
+  id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tradeId     String           @unique @map("trade_id") @db.Uuid
+  initiatorId String           @map("initiator_id") @db.Uuid
+  reason      String           @db.Text
+  evidence    String?          @db.Text
+  status      P2PDisputeStatus @default(OPEN)
+  resolution  String?          @db.Text
+  resolvedBy  String?          @map("resolved_by") @db.Uuid
+  resolvedAt  DateTime?        @map("resolved_at") @db.Timestamptz(6)
+  createdAt   DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  trade     P2PTradeRequest @relation(fields: [tradeId], references: [id])
+  initiator User            @relation("DisputeInitiator", fields: [initiatorId], references: [id])
+  resolver  User?           @relation("DisputeResolver", fields: [resolvedBy], references: [id])
+
+  @@index([status])
+  @@index([initiatorId])
+  @@map("p2p_disputes")
+}

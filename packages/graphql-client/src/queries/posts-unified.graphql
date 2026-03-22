@@ -1,0 +1,83 @@
+# 統一投稿クエリ・ミューテーション
+
+# 投稿フラグメントをインポート
+# fragment PostInfo on Post { ... } は post.graphql で定義
+
+# 統一投稿一覧取得クエリ
+query GetPosts($first: Int!, $after: String, $userId: UUID, $visibility: PostVisibility) {
+  posts(first: $first, after: $after, userId: $userId, visibility: $visibility) {
+    edges {
+      node {
+        ...PostInfo
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    totalCount
+  }
+}
+
+# メディア投稿一覧取得クエリ
+query GetMediaPosts($first: Int!, $after: String, $userId: UUID) {
+  mediaPosts(first: $first, after: $after, userId: $userId) {
+    edges {
+      node {
+        ...PostInfo
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    totalCount
+  }
+}
+
+# いいね投稿一覧取得クエリ
+query GetLikedPosts($first: Int!, $after: String, $userId: UUID!) {
+  likedPosts(first: $first, after: $after, userId: $userId) {
+    edges {
+      node {
+        ...PostInfo
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    totalCount
+  }
+}
+
+# 投稿詳細取得
+query GetPost($id: UUID!) {
+  post(id: $id) {
+    ...PostInfo
+  }
+}
+
+# 投稿作成
+mutation CreatePost($input: PostCreateInput!) {
+  createPost(input: $input) {
+    ...PostInfo
+  }
+}
+
+# いいねトグル
+mutation ToggleLike($postId: UUID!) {
+  toggleLike(postId: $postId) {
+    id
+    isLikedByCurrentUser
+    likesCount
+  }
+}
+
+# 投稿削除
+mutation DeletePost($id: UUID!) {
+  deletePost(id: $id)
+}

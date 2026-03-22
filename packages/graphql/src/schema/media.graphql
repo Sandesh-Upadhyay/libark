@@ -1,0 +1,313 @@
+# 🚀 Media V2 GraphQL Schema - Zenko統合版
+# プリサインドURL、マルチパートアップロード、透明暗号化対応
+
+# ================================
+# スカラー型定義
+# ================================
+# JSON scalar is defined in base.graphql
+
+# ================================
+# Enum定義
+# ================================
+
+# MediaStatus, UploadProgressStatus, UploadSessionStatus are defined in base.graphql
+
+# ================================
+# 入力型定義
+# ================================
+
+# プリサインドアップロード入力（統一仕様）
+input PresignedUploadInput {
+  filename: String!
+  contentType: String!
+  size: Int!
+  mediaType: MediaType! # 必須に変更（統一仕様）
+}
+
+# プロキシアップロード入力（責任分離対応）
+input ProxyUploadInput {
+  filename: String!
+  contentType: String!
+  size: Int!
+  mediaType: MediaType!
+  fileData: String! # Base64エンコードされたファイルデータ
+}
+
+# マルチパートアップロード入力
+input MultipartUploadInput {
+  filename: String!
+  contentType: String!
+  size: Int!
+  partCount: Int!
+  mediaType: MediaType = POST
+}
+
+# マルチパート完了入力
+input CompletedPart {
+  partNumber: Int!
+  etag: String!
+}
+
+# ユーザーアバター更新入力
+input UpdateUserAvatarInput {
+  mediaId: UUID!
+}
+
+# ユーザーカバー画像更新入力
+input UpdateUserCoverInput {
+  mediaId: UUID!
+}
+
+# 🚀 UploadSession用入力型
+input CreateUploadSessionInput {
+  kind: MediaType!
+  filename: String!
+  contentType: String!
+  byteSize: Int!
+  width: Int
+  height: Int
+}
+
+# 🚀 UploadSession用出力型
+type UploadSession {
+  uploadId: ID!
+  uploadPath: String!
+  uploadAuthToken: String! # Authorization: Bearer 用トークン
+  expiresAt: DateTime!
+  requiredHeaders: [HeaderPair!]! # Content-Type 等の必須ヘッダ
+  maxBytes: Int!
+}
+
+# ヘッダーペア型
+type HeaderPair {
+  key: String!
+  value: String!
+}
+
+
+# ================================
+# 出力型定義
+# ================================
+
+# プリサインドアップロードデータ
+type PresignedUploadData {
+  uploadUrl: String!
+  downloadUrl: String!
+  s3Key: String!
+  mediaId: UUID!
+  expiresAt: DateTime!
+  fields: JSON
+}
+
+# プリサインドダウンロード出力
+type PresignedDownloadData {
+  downloadUrl: String!
+  expiresAt: DateTime!
+}
+
+# プロキシアップロードレスポンス（責任分離対応）
+type ProxyUploadResponse {
+  success: Boolean!
+  mediaId: UUID!
+  filename: String!
+  contentType: String!
+  size: Int!
+  downloadUrl: String!
+  encrypted: Boolean!
+}
+
+# マルチパートアップロードデータ
+type MultipartUploadData {
+  uploadId: String!
+  s3Key: String!
+  partUrls: [PartUploadUrl!]!
+  mediaId: UUID!
+  expiresAt: DateTime!
+}
+
+# パートアップロードURL
+type PartUploadUrl {
+  partNumber: Int!
+  uploadUrl: String!
+}
+
+# アップロード完了レスポンス
+type UploadCompleteResponse {
+  media: Media!
+  success: Boolean!
+  message: String
+}
+
+# UserUpdatePayload is defined in user.graphql
+
+# ================================
+# Mutation拡張
+# ================================
+
+extend type Mutation {
+  # プリサインドURL生成
+  generatePresignedUpload(input: PresignedUploadInput!): PresignedUploadData!
+  generatePresignedDownload(s3Key: String!): PresignedDownloadData!
+
+  # プロキシアップロード（責任分離対応）
+  uploadFileProxy(input: ProxyUploadInput!): ProxyUploadResponse!
+
+  # 🚀 Phase 2: 統一メディアアップロード
+  uploadMediaUnified(input: UnifiedUploadInput!): UnifiedUploadResponse!
+
+  # マルチパートアップロード
+  initiateMultipartUpload(input: MultipartUploadInput!): MultipartUploadData!
+  completeMultipartUpload(uploadId: String!, parts: [CompletedPart!]!): UploadCompleteResponse!
+  abortMultipartUpload(uploadId: String!): Boolean!
+
+  # アップロード完了通知（フロントエンド責任分離版）
+  notifyUploadComplete(mediaId: UUID!, s3Key: String!): UploadCompleteResponse!
+
+  # 直接Zenkoアップロード（小さなファイル用）
+  uploadToZenko(file: Upload!, mediaType: MediaType = POST): UploadCompleteResponse!
+
+  # 🚫 generatePresignedDownloadByKey は削除されました（generatePresignedDownloadを使用）
+
+  # ユーザーアバター更新
+  updateUserAvatar(input: UpdateUserAvatarInput!): UserUpdatePayload!
+  deleteUserAvatar: UserUpdatePayload!
+
+  # ユーザーカバー画像更新
+  updateUserCover(input: UpdateUserCoverInput!): UserUpdatePayload!
+  deleteUserCover: UserUpdatePayload!
+
+  # 🚀 S3 Gateway Presigned URL 移行
+  createUploadSession(input: CreateUploadSessionInput!): UploadSession!
+  completeUploadSession(uploadId: ID!): Media!
+}
+
+# ================================
+# Query拡張
+# ================================
+
+extend type Query {
+  # 統一メディア取得（統一仕様）
+  getUnifiedMedia(mediaId: UUID!): UnifiedMediaResponse!
+
+  # 統一メディア一覧取得
+  getUnifiedMediaList(
+    mediaType: MediaType
+    userId: UUID
+    limit: Int = 20
+    offset: Int = 0
+  ): UnifiedMediaListResponse!
+
+  # Paid投稿購入状況確認
+  checkPostPurchaseStatus(postId: UUID!): PostPurchaseStatusResponse!
+
+  # ユーザーの購入済み投稿一覧
+  getUserPurchasedPosts(userId: UUID, limit: Int = 20, offset: Int = 0): PurchasedPostsResponse!
+}
+
+# ================================
+# 状態確認型
+# ================================
+
+# ================================
+# Media型拡張
+# ================================
+
+extend type Media {
+  # OGP署名付きURL（単一バリアント）
+  ogpUrl(variant: String = "summary"): String
+
+  # OGP署名付きURL（複数バリアント）
+  ogpUrls: MediaOgpUrls!
+}
+
+# OGPバリアントURL
+type MediaOgpUrls {
+  summary: String
+  large: String
+}
+
+# ================================
+# Subscription型（メインスキーマに統合済み）
+# ================================
+
+# uploadProgress(mediaId: UUID!): UploadProgressUpdate!
+# 上記のサブスクリプションはメインスキーマのSubscription型に統合されています
+
+# アップロード進捗更新
+type UploadProgressUpdate {
+  mediaId: UUID!
+  status: UploadProgressStatus!
+  progress: Int!
+  message: String
+  error: String
+}
+
+# ================================
+# 統一メディア関連型定義
+# ================================
+
+# 統一メディアレスポンス
+type UnifiedMediaResponse {
+  media: Media!
+  variants: [MediaVariant!]!
+  isPaid: Boolean!
+  hasBlurVariant: Boolean!
+  accessGranted: Boolean! # ユーザーがアクセス可能かどうか
+}
+
+# 統一メディア一覧レスポンス
+type UnifiedMediaListResponse {
+  media: [UnifiedMediaResponse!]!
+  totalCount: Int!
+  hasNextPage: Boolean!
+}
+
+# Paid投稿購入状況レスポンス
+type PostPurchaseStatusResponse {
+  postId: UUID!
+  isPaid: Boolean!
+  price: Float
+  isPurchased: Boolean!
+  purchasedAt: DateTime
+  canAccess: Boolean! # アクセス可能かどうか
+}
+
+# 購入済み投稿一覧レスポンス
+type PurchasedPostsResponse {
+  posts: [PostWithPurchaseInfo!]!
+  totalCount: Int!
+  hasNextPage: Boolean!
+}
+
+# 購入情報付き投稿
+type PostWithPurchaseInfo {
+  post: Post!
+  purchaseInfo: PostPurchase!
+}
+
+# ================================
+# 🚀 Phase 2: 統一メディアアップロードシステム
+# ================================
+
+# 統一アップロード入力型
+input UnifiedUploadInput {
+  filename: String!
+  contentType: String!
+  size: Int!
+  mediaType: MediaType!
+  fileData: String!
+}
+
+# 統一アップロード応答型
+type UnifiedUploadResponse {
+  success: Boolean!
+  mediaId: String!
+  filename: String!
+  contentType: String!
+  size: Int!
+  downloadUrl: String!
+  status: MediaStatus!
+  message: String
+}
+
+# MediaType and MediaStatus are defined in base.graphql

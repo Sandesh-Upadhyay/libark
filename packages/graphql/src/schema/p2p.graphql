@@ -1,0 +1,306 @@
+# 🎯 P2P取引スキーマ定義
+# P2Pウォレット入金機能に関する型定義
+
+# ================================
+# P2P取引ステータス
+# ================================
+enum P2PTradeStatus {
+  PENDING
+  MATCHED
+  PAYMENT_SENT
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  DISPUTED
+}
+
+# 支払い方法種別
+enum P2PPaymentMethodType {
+  BANK_TRANSFER
+  PAYPAY
+  PAYPAL
+  WISE
+  LINE_PAY
+  RAKUTEN_PAY
+}
+
+# ================================
+# P2P取引リクエスト
+# ================================
+type P2PTradeRequest {
+  id: UUID!
+  buyerId: UUID!
+  sellerId: UUID
+  offerId: UUID
+  offer: P2POffer
+  amountUsd: Decimal!
+  fiatCurrency: String!
+  fiatAmount: Decimal!
+  exchangeRate: Decimal!
+  status: P2PTradeStatus!
+  paymentMethod: P2PPaymentMethodType
+  paymentDetails: String
+  escrowAmount: Decimal
+  expiresAt: DateTime!
+  completedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  buyer: User!
+  seller: User
+}
+
+# ================================
+# P2Pオファー（支払い方法単位）
+# ================================
+type P2POffer {
+  id: UUID!
+  sellerId: UUID!
+  paymentMethod: P2PPaymentMethodType!
+  minAmountUsd: Decimal!
+  maxAmountUsd: Decimal!
+  fiatCurrency: String!
+  exchangeRateMargin: Decimal!
+  isActive: Boolean!
+  instructions: String
+  priority: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  seller: User!
+}
+
+# ================================
+# P2Pオファー 接続型 (Relay方式)
+# ================================
+type P2POfferEdge {
+  cursor: String!
+  node: P2POffer!
+}
+
+type P2POfferConnection {
+  edges: [P2POfferEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+# ================================
+# ソート定義
+# ================================
+enum P2POfferSortField {
+  RATE
+  MIN_AMOUNT
+  MAX_AMOUNT
+  CREATED_AT
+}
+
+enum SortOrder {
+  ASC
+  DESC
+}
+
+input P2POfferSortInput {
+  field: P2POfferSortField!
+  order: SortOrder!
+}
+
+# ================================
+# 入力型
+# ================================
+input CreateP2PTradeRequestInput {
+  offerId: UUID!
+  amountUsd: Decimal!
+}
+
+input CreateP2POfferInput {
+  paymentMethod: P2PPaymentMethodType!
+  minAmountUsd: Decimal!
+  maxAmountUsd: Decimal!
+  fiatCurrency: String!
+  exchangeRateMargin: Decimal!
+  instructions: String
+  priority: Int
+}
+
+input UpdateP2POfferInput {
+  offerId: UUID!
+  minAmountUsd: Decimal
+  maxAmountUsd: Decimal
+  exchangeRateMargin: Decimal
+  isActive: Boolean
+  instructions: String
+  priority: Int
+}
+
+input ConfirmP2PPaymentInput {
+  tradeId: UUID!
+  paymentDetails: String!
+}
+
+# ================================
+# クエリ拡張
+# ================================
+extend type Query {
+  myP2PTradeRequests(status: P2PTradeStatus, first: Int, after: String): [P2PTradeRequest!]!
+  p2pTradeRequest(tradeId: UUID!): P2PTradeRequest
+
+  # P2POfferベースのクエリ
+  availableP2POffers(
+    fiatCurrency: String
+    paymentMethod: P2PPaymentMethodType
+    amountUsd: Decimal
+    first: Int
+    after: String
+    orderBy: P2POfferSortInput
+  ): P2POfferConnection!
+
+  myP2POffers(
+    fiatCurrency: String
+    paymentMethod: P2PPaymentMethodType
+    isActive: Boolean
+  ): [P2POffer!]!
+}
+
+# ================================
+# ミューテーション拡張
+# ================================
+extend type Mutation {
+  # 買い手用
+  createP2PTradeRequest(input: CreateP2PTradeRequestInput!): P2PTradeRequest!
+  cancelP2PTradeRequest(tradeId: UUID!): Boolean!
+  markP2PPaymentSent(tradeId: UUID!): P2PTradeRequest!
+
+  # 売り手用
+  createP2POffer(input: CreateP2POfferInput!): P2POffer!
+  updateP2POffer(input: UpdateP2POfferInput!): P2POffer!
+  deleteP2POffer(offerId: UUID!): Boolean!
+  acceptP2PTradeRequest(tradeId: UUID!): P2PTradeRequest!
+  confirmP2PPaymentReceived(input: ConfirmP2PPaymentInput!): P2PTradeRequest!
+
+  # 紛争
+  createP2PDispute(input: CreateP2PDisputeInput!): P2PDispute!
+  resolveP2PDispute(input: ResolveP2PDisputeInput!): P2PDispute!
+
+  # 買い手設定
+  updateP2PBuyerPreference(input: UpdateP2PBuyerPreferenceInput!): P2PBuyerPreference!
+  deleteP2PBuyerPreference(id: UUID!): Boolean!
+
+  # 法定通貨管理（管理者用）
+  createFiatCurrency(input: CreateFiatCurrencyInput!): FiatCurrency!
+  updateFiatCurrency(input: UpdateFiatCurrencyInput!): FiatCurrency!
+}
+
+# ================================
+# サブスクリプション拡張
+# ================================
+extend type Subscription {
+  p2pTradeUpdated(userId: UUID!): P2PTradeRequest!
+  p2pDisputeUpdated(tradeId: UUID!): P2PDispute!
+}
+
+# ================================
+# 紛争関連
+# ================================
+enum P2PDisputeStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED_BUYER_WIN
+  RESOLVED_SELLER_WIN
+  RESOLVED_SPLIT
+  CLOSED
+}
+
+type P2PDispute {
+  id: UUID!
+  tradeId: UUID!
+  initiatorId: UUID!
+  reason: String!
+  evidence: String
+  status: P2PDisputeStatus!
+  resolution: String
+  resolvedBy: UUID
+  resolvedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  trade: P2PTradeRequest!
+  initiator: User!
+  resolver: User
+}
+
+input CreateP2PDisputeInput {
+  tradeId: UUID!
+  reason: String!
+  evidence: String
+}
+
+input ResolveP2PDisputeInput {
+  disputeId: UUID!
+  resolution: P2PDisputeStatus!
+  notes: String
+}
+
+# ================================
+# 通貨マスタ
+# ================================
+type FiatCurrency {
+  id: UUID!
+  code: String!
+  name: String!
+  symbol: String!
+  isActive: Boolean!
+}
+
+input CreateFiatCurrencyInput {
+  code: String!
+  name: String!
+  symbol: String!
+  isActive: Boolean
+}
+
+input UpdateFiatCurrencyInput {
+  id: UUID!
+  name: String
+  symbol: String
+  isActive: Boolean
+}
+
+# ================================
+# 買い手設定
+# ================================
+type P2PBuyerPreference {
+  id: UUID!
+  buyerId: UUID!
+  paymentMethod: P2PPaymentMethodType!
+  fiatCurrency: String!
+  minAmountUsd: Decimal!
+  maxAmountUsd: Decimal!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  buyer: User!
+}
+
+input UpdateP2PBuyerPreferenceInput {
+  paymentMethod: P2PPaymentMethodType!
+  fiatCurrency: String!
+  minAmountUsd: Decimal!
+  maxAmountUsd: Decimal!
+}
+
+# ================================
+# 追加クエリ
+# ================================
+extend type Query {
+  # 管理者用：全紛争一覧
+  adminP2PDisputes(status: P2PDisputeStatus, limit: Int, offset: Int): [P2PDispute!]!
+
+  # 通貨一覧
+  fiatCurrencies(isActive: Boolean): [FiatCurrency!]!
+
+  # 買い手設定
+  myP2PBuyerPreferences: [P2PBuyerPreference!]!
+
+  # 紛争
+  p2pDispute(disputeId: UUID!): P2PDispute
+  myP2PDisputes: [P2PDispute!]!
+
+  # リアルタイム為替レート
+  currentExchangeRate(currency: String!): Float!
+}

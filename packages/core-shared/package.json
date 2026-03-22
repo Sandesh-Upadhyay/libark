@@ -1,0 +1,62 @@
+{
+  "name": "@libark/core-shared",
+  "version": "1.0.0",
+  "description": "LIBARK共有基盤パッケージ - 型定義、スキーマ、設定管理",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./config": {
+      "types": "./dist/config/index.d.ts",
+      "import": "./dist/config/index.js"
+    },
+    "./schemas": {
+      "types": "./dist/schemas/index.d.ts",
+      "import": "./dist/schemas/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js"
+    },
+    "./logger": {
+      "types": "./dist/logger/index.d.ts",
+      "import": "./dist/logger/index.js"
+    }
+  },
+  "scripts": {
+    "build": "../../node_modules/.bin/tsc --build",
+    "dev": "../../node_modules/.bin/tsc --build --watch",
+    "clean": "rm -rf dist .tsbuildinfo",
+    "type-check": "../../node_modules/.bin/tsc --noEmit",
+    "test": "../../node_modules/.bin/vitest run --reporter=verbose",
+    "test:watch": "../../node_modules/.bin/vitest",
+    "test:coverage": "../../node_modules/.bin/vitest run --coverage"
+  },
+  "dependencies": {
+    "pino": "^9.5.0",
+    "pino-pretty": "^11.3.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@vitest/coverage-v8": "^3.2.4",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.4"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "publishConfig": {
+    "access": "restricted"
+  }
+}
