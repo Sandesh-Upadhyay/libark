@@ -7,7 +7,6 @@ import { DEFAULT_FILTERS, PARAM_KEYS } from '@/features/p2p/types';
 
 import { useP2PFilters } from '../useP2PFilters';
 
-
 // Wrapper component to provide routing context
 const wrapper = ({ children }: { children: React.ReactNode }) => (
   <MemoryRouter>{children}</MemoryRouter>
@@ -26,12 +25,14 @@ describe('useP2PFilters', () => {
   });
 
   it('URLパラメータから初期値を復元できること', () => {
-    const initialEntries = [`/p2p?${PARAM_KEYS.fiatCurrency}=USD&${PARAM_KEYS.paymentMethod}=BANK_TRANSFER&${PARAM_KEYS.amountUsd}=100&${PARAM_KEYS.sortBy}=minAmount&${PARAM_KEYS.sortOrder}=desc`];
+    const initialEntries = [
+      `/p2p?${PARAM_KEYS.fiatCurrency}=USD&${PARAM_KEYS.paymentMethod}=BANK_TRANSFER&${PARAM_KEYS.amountUsd}=100&${PARAM_KEYS.sortBy}=minAmount&${PARAM_KEYS.sortOrder}=desc`,
+    ];
 
     const { result } = renderHook(() => useP2PFilters(), {
       wrapper: ({ children }) => (
         <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
-      )
+      ),
     });
 
     expect(result.current.filters).toEqual({
@@ -112,7 +113,7 @@ describe('useP2PFilters', () => {
     const { result } = renderHook(() => useP2PFilters(), {
       wrapper: ({ children }) => (
         <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
-      )
+      ),
     });
 
     expect(result.current.filters.fiatCurrency).toBe('USD');
@@ -125,11 +126,13 @@ describe('useP2PFilters', () => {
   });
 
   it('不正なパラメータ値は DEFAULT_FILTERS の値にフォールバックすること', () => {
-    const initialEntries = [`/p2p?${PARAM_KEYS.sortBy}=invalid_sort&${PARAM_KEYS.sortOrder}=invalid_order`];
+    const initialEntries = [
+      `/p2p?${PARAM_KEYS.sortBy}=invalid_sort&${PARAM_KEYS.sortOrder}=invalid_order`,
+    ];
     const { result } = renderHook(() => useP2PFilters(), {
       wrapper: ({ children }) => (
         <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
-      )
+      ),
     });
 
     expect(result.current.filters.sortBy).toBe(DEFAULT_FILTERS.sortBy);

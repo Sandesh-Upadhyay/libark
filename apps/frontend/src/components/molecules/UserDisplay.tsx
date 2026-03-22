@@ -51,8 +51,7 @@ const userDisplayVariants = cva('flex items-center transition-all duration-200',
 });
 
 export interface UserDisplayProps
-  extends Omit<BaseUserInfoProps, 'layout' | 'onClick'>,
-    VariantProps<typeof userDisplayVariants> {
+  extends Omit<BaseUserInfoProps, 'layout' | 'onClick'>, VariantProps<typeof userDisplayVariants> {
   /** アバター設定 */
   avatarVariant?: 'default' | 'primary' | 'secondary' | 'outline';
   /** テキスト設定 */

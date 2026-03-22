@@ -448,11 +448,7 @@ describe('uploadViaGateway', () => {
 
   const wrapper = function createWrapper(testMocks: any[]) {
     return function Wrapper({ children }: { children: ReactNode }) {
-      return React.createElement(
-        MockedProvider,
-        { mocks: testMocks },
-        children
-      );
+      return React.createElement(MockedProvider, { mocks: testMocks }, children);
     };
   };
 
@@ -547,11 +543,7 @@ describe('uploadViaGateway - 異常系', () => {
 
   const wrapper = function createWrapper(testMocks: any[]) {
     return function Wrapper({ children }: { children: ReactNode }) {
-      return React.createElement(
-        MockedProvider,
-        { mocks: testMocks },
-        children
-      );
+      return React.createElement(MockedProvider, { mocks: testMocks }, children);
     };
   };
 
@@ -726,11 +718,7 @@ describe('useProxyUpload', () => {
 
   const wrapper = function createWrapper(testMocks: any[]) {
     return function Wrapper({ children }: { children: ReactNode }) {
-      return React.createElement(
-        MockedProvider,
-        { mocks: testMocks },
-        children
-      );
+      return React.createElement(MockedProvider, { mocks: testMocks }, children);
     };
   };
 

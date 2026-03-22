@@ -3,7 +3,6 @@
 import React from 'react';
 import { useAuth } from '@libark/graphql-client';
 
-
 import { TabNavigation } from '@/components/atoms/tabs/TabNavigation';
 import { TabContent } from '@/components/atoms/tabs/TabContent';
 import { useTabs, createTypedTabs } from '@/hooks/tabs';

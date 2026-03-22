@@ -214,7 +214,7 @@ export const createFormDataTransformer = {
     username: data.username,
     email: data.email,
     password: data.password,
-    displayName: data.displayName || undefined,  // Maps empty string to undefined
+    displayName: data.displayName || undefined, // Maps empty string to undefined
     timezone: data.timezone || detectBrowserTimezone(), // Auto-detect if not provided
   }),
 };

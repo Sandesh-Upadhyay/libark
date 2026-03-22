@@ -33,8 +33,7 @@ const badgeVariants = cva(
 );
 
 export interface BadgeProps
-  extends Omit<BaseBadgeProps, 'size' | 'variant'>,
-    VariantProps<typeof badgeVariants> {}
+  extends Omit<BaseBadgeProps, 'size' | 'variant'>, VariantProps<typeof badgeVariants> {}
 
 function Badge({ className, variant, size, ...props }: BadgeProps) {
   return <div className={cn(badgeVariants({ variant, size }), className)} {...props} />;

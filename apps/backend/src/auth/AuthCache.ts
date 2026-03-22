@@ -266,10 +266,12 @@ export class AuthCache {
       });
 
       // ロールから権限を取得
-      const rolePermissions = (user?.role?.permissions || []).map((rp: { permission: { id: string; name: string } }) => ({
-        id: rp.permission.id,
-        name: rp.permission.name,
-      }));
+      const rolePermissions = (user?.role?.permissions || []).map(
+        (rp: { permission: { id: string; name: string } }) => ({
+          id: rp.permission.id,
+          name: rp.permission.name,
+        })
+      );
 
       // 個別権限上書きを取得
       const userPermissionOverrides = await this.prisma.userPermissionOverride.findMany({
@@ -301,7 +303,9 @@ export class AuthCache {
         },
       });
 
-      const featurePermissions = userFeaturePermissions.map((ufp: { featureName: string }) => ufp.featureName);
+      const featurePermissions = userFeaturePermissions.map(
+        (ufp: { featureName: string }) => ufp.featureName
+      );
 
       // 重複を除去して結合
       return [

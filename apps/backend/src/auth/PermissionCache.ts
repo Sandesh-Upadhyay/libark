@@ -233,15 +233,17 @@ export class PermissionCache {
       if (!user) return null;
 
       // ロールから継承される権限
-      const rolePermissions = (user.role?.permissions || []).map((rp: { permission: { name: string } }) =>
-        rp.permission.name
+      const rolePermissions = (user.role?.permissions || []).map(
+        (rp: { permission: { name: string } }) => rp.permission.name
       );
 
       // ユーザー個別の上書き権限
       const overrides = new Map<string, boolean>();
-      (user.permissionOverrides || []).forEach((override: { permission: { name: string }; allowed: boolean }) => {
-        overrides.set(override.permission.name, override.allowed);
-      });
+      (user.permissionOverrides || []).forEach(
+        (override: { permission: { name: string }; allowed: boolean }) => {
+          overrides.set(override.permission.name, override.allowed);
+        }
+      );
 
       // 最終的な権限リスト（上書きを適用）
       const finalPermissions = new Set<string>();

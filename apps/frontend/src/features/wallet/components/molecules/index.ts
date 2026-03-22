@@ -25,7 +25,10 @@ export {
 } from './CryptoDepositSteps';
 
 // P2P関連Molecules
-export { P2POfferCard, type P2POfferCardProps } from '@/features/p2p/components/molecules/P2POfferCard';
+export {
+  P2POfferCard,
+  type P2POfferCardProps,
+} from '@/features/p2p/components/molecules/P2POfferCard';
 export { P2PTradeCard, type P2PTradeCardProps } from './P2PTradeCard';
 export { P2PPaymentInfo, type P2PPaymentInfoProps } from './P2PPaymentInfo';
 export { P2PTradeTimeline, type P2PTradeTimelineProps } from './P2PTradeTimeline';

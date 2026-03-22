@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { LogOut } from 'lucide-react';
 import { useAuth } from '@libark/graphql-client';
 
-
 import { usePermissions } from '@/hooks';
 import { cn } from '@/lib/utils';
 import { getComponentZIndexClass } from '@/lib/constants/z-index';

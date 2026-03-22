@@ -96,7 +96,11 @@ export function P2PSettingsForm() {
   const paymentMethods = Object.values(P2PPaymentMethodType);
 
   if (prefLoading) {
-    return <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>;
+    return (
+      <div className='flex justify-center p-8'>
+        <Loader2 className='animate-spin' />
+      </div>
+    );
   }
 
   return (
@@ -105,35 +109,39 @@ export function P2PSettingsForm() {
         <h2 className='text-lg font-semibold'>購入設定</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setFormData({
-              paymentMethod: P2PPaymentMethodType.BankTransfer,
-              fiatCurrency: 'JPY',
-              minAmountUsd: '',
-              maxAmountUsd: '',
-            })}>
-              <Plus className="mr-2 h-4 w-4" /> 新規設定を追加
+            <Button
+              onClick={() =>
+                setFormData({
+                  paymentMethod: P2PPaymentMethodType.BankTransfer,
+                  fiatCurrency: 'JPY',
+                  minAmountUsd: '',
+                  maxAmountUsd: '',
+                })
+              }
+            >
+              <Plus className='mr-2 h-4 w-4' /> 新規設定を追加
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>購入設定の編集</DialogTitle>
-              <DialogDescription>
-                支払い方法ごとの優先設定を保存します。
-              </DialogDescription>
+              <DialogDescription>支払い方法ごとの優先設定を保存します。</DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="currency" className="text-right">通貨</Label>
-                <div className="col-span-3">
+            <div className='grid gap-4 py-4'>
+              <div className='grid grid-cols-4 items-center gap-4'>
+                <Label htmlFor='currency' className='text-right'>
+                  通貨
+                </Label>
+                <div className='col-span-3'>
                   <Select
                     value={formData.fiatCurrency}
-                    onValueChange={(v) => setFormData({ ...formData, fiatCurrency: v })}
+                    onValueChange={v => setFormData({ ...formData, fiatCurrency: v })}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="通貨を選択" />
+                      <SelectValue placeholder='通貨を選択' />
                     </SelectTrigger>
                     <SelectContent>
-                      {currencies.map((c) => (
+                      {currencies.map(c => (
                         <SelectItem key={c.code} value={c.code}>
                           {c.code} ({c.symbol}) - {c.name}
                         </SelectItem>
@@ -142,49 +150,61 @@ export function P2PSettingsForm() {
                   </Select>
                 </div>
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="payment" className="text-right">支払い方法</Label>
-                <div className="col-span-3">
+              <div className='grid grid-cols-4 items-center gap-4'>
+                <Label htmlFor='payment' className='text-right'>
+                  支払い方法
+                </Label>
+                <div className='col-span-3'>
                   <Select
                     value={formData.paymentMethod}
-                    onValueChange={(v) => setFormData({ ...formData, paymentMethod: v as P2PPaymentMethodType })}
+                    onValueChange={v =>
+                      setFormData({ ...formData, paymentMethod: v as P2PPaymentMethodType })
+                    }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="支払い方法を選択" />
+                      <SelectValue placeholder='支払い方法を選択' />
                     </SelectTrigger>
                     <SelectContent>
-                      {paymentMethods.map((m) => (
-                        <SelectItem key={m} value={m}>{m}</SelectItem>
+                      {paymentMethods.map(m => (
+                        <SelectItem key={m} value={m}>
+                          {m}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="minAmount" className="text-right">最小金額(USD)</Label>
+              <div className='grid grid-cols-4 items-center gap-4'>
+                <Label htmlFor='minAmount' className='text-right'>
+                  最小金額(USD)
+                </Label>
                 <Input
-                  id="minAmount"
-                  type="number"
-                  className="col-span-3"
+                  id='minAmount'
+                  type='number'
+                  className='col-span-3'
                   value={formData.minAmountUsd}
-                  onChange={(e) => setFormData({ ...formData, minAmountUsd: e.target.value })}
-                  placeholder="制限なし"
+                  onChange={e => setFormData({ ...formData, minAmountUsd: e.target.value })}
+                  placeholder='制限なし'
                 />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="maxAmount" className="text-right">最大金額(USD)</Label>
+              <div className='grid grid-cols-4 items-center gap-4'>
+                <Label htmlFor='maxAmount' className='text-right'>
+                  最大金額(USD)
+                </Label>
                 <Input
-                  id="maxAmount"
-                  type="number"
-                  className="col-span-3"
+                  id='maxAmount'
+                  type='number'
+                  className='col-span-3'
                   value={formData.maxAmountUsd}
-                  onChange={(e) => setFormData({ ...formData, maxAmountUsd: e.target.value })}
-                  placeholder="制限なし"
+                  onChange={e => setFormData({ ...formData, maxAmountUsd: e.target.value })}
+                  placeholder='制限なし'
                 />
               </div>
             </div>
             <DialogFooter>
-              <Button onClick={handleSave} disabled={updating} loading={updating}>保存</Button>
+              <Button onClick={handleSave} disabled={updating} loading={updating}>
+                保存
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -192,13 +212,13 @@ export function P2PSettingsForm() {
 
       <div className='grid gap-4'>
         {preferences.length === 0 ? (
-          <p className="text-muted-foreground text-center py-8">設定がありません</p>
+          <p className='text-muted-foreground text-center py-8'>設定がありません</p>
         ) : (
           preferences.map((pref: any) => (
             <Card key={pref.id}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <div className="space-y-1">
-                  <CardTitle className="text-base font-medium">
+              <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+                <div className='space-y-1'>
+                  <CardTitle className='text-base font-medium'>
                     {pref.fiatCurrency} - {pref.paymentMethod}
                   </CardTitle>
                   <CardDescription>
@@ -206,12 +226,18 @@ export function P2PSettingsForm() {
                     {pref.maxAmountUsd ? `$${pref.maxAmountUsd}` : '制限なし'}
                   </CardDescription>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Button variant="ghost" size="icon" onClick={() => handleEdit(pref)}>
-                    <Edit2 className="h-4 w-4" />
+                <div className='flex items-center space-x-2'>
+                  <Button variant='ghost' size='icon' onClick={() => handleEdit(pref)}>
+                    <Edit2 className='h-4 w-4' />
                   </Button>
-                  <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => handleDelete(pref.id)} disabled={deleting}>
-                    <Trash2 className="h-4 w-4" />
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    className='text-destructive hover:text-destructive'
+                    onClick={() => handleDelete(pref.id)}
+                    disabled={deleting}
+                  >
+                    <Trash2 className='h-4 w-4' />
                   </Button>
                 </div>
               </CardHeader>

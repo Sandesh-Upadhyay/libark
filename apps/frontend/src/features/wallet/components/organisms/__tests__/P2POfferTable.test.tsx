@@ -51,7 +51,7 @@ const mockOffers = [
       profileImageId: null,
     },
     __typename: 'P2POffer',
-  }
+  },
 ];
 
 const variables = {
@@ -159,7 +159,9 @@ describe('P2POfferTable', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getAllByText('利用可能なオファーが見つかりませんでした')[0]).toBeInTheDocument();
+      expect(
+        screen.getAllByText('利用可能なオファーが見つかりませんでした')[0]
+      ).toBeInTheDocument();
     });
   });
 
@@ -173,7 +175,9 @@ describe('P2POfferTable', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('データの読み込みに失敗しました。再試行してください。')).toBeInTheDocument();
+      expect(
+        screen.getByText('データの読み込みに失敗しました。再試行してください。')
+      ).toBeInTheDocument();
     });
   });
 

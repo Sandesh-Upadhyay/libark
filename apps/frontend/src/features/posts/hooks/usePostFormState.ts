@@ -159,14 +159,14 @@ export function usePostFormState(): UsePostFormStateReturn {
     () =>
       Boolean(
         !isSubmitting &&
-          !isUploading &&
-          !formState.isSubmitting &&
-          (content.trim().length > 0 || hasImages) &&
-          !formState.errors?.content &&
-          !formState.errors?.visibility &&
-          !formState.errors?.price &&
-          // Paid投稿の場合は価格が必須
-          (visibility !== 'PAID' || (price && price > 0))
+        !isUploading &&
+        !formState.isSubmitting &&
+        (content.trim().length > 0 || hasImages) &&
+        !formState.errors?.content &&
+        !formState.errors?.visibility &&
+        !formState.errors?.price &&
+        // Paid投稿の場合は価格が必須
+        (visibility !== 'PAID' || (price && price > 0))
       ),
     [
       isSubmitting,
@@ -267,7 +267,7 @@ export function usePostFormState(): UsePostFormStateReturn {
       // priceをnumberに正規化（watchがstringを返す可能性があるため）
       let normalizedPrice: number | undefined = undefined;
 
-              if (visibility === 'PAID' && price !== undefined && price !== null) {
+      if (visibility === 'PAID' && price !== undefined && price !== null) {
         if (typeof price === 'string') {
           const parsed = parseFloat(price);
           if (!isNaN(parsed) && parsed > 0) {
@@ -278,7 +278,7 @@ export function usePostFormState(): UsePostFormStateReturn {
         }
       }
 
-              return {
+      return {
         content: content.trim() || '',
         visibility,
         price: normalizedPrice,

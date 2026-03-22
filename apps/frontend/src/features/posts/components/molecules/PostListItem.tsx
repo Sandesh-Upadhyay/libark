@@ -31,7 +31,6 @@ import { useAuth } from '@libark/graphql-client';
 import { formatDistanceToNow } from 'date-fns';
 import { ja } from 'date-fns/locale';
 
-
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/atoms';
 import { UserAvatar } from '@/components/molecules/UserAvatar';
@@ -109,7 +108,7 @@ const PostListItemComponent: React.FC<PostListItemProps> = ({
     <article
       className={cn(UNIFIED_ITEM_CLASSES, 'cursor-pointer space-y-3', className)}
       onClick={handlePostClick}
-      data-testid="post-item"
+      data-testid='post-item'
       data-post-id={post.id}
     >
       {/* ユーザー情報ヘッダー */}
@@ -149,7 +148,11 @@ const PostListItemComponent: React.FC<PostListItemProps> = ({
       </div>
 
       {/* 投稿内容 */}
-      {post.content && <div className='text-sm leading-relaxed' data-post-content={post.content}>{post.content}</div>}
+      {post.content && (
+        <div className='text-sm leading-relaxed' data-post-content={post.content}>
+          {post.content}
+        </div>
+      )}
 
       {/* 画像表示（PostImageDisplay使用） */}
       <PostImageDisplay

@@ -8,7 +8,12 @@ import { PrismaClient } from '@libark/db';
 import { Redis } from 'ioredis';
 
 import { createTestApp, cleanupTestApp } from '../../__tests__/helpers/test-app.js';
-import { createTestUser, cleanupTestData, createTestPermission, grantPermissionToUser } from '../../__tests__/helpers/test-data.js';
+import {
+  createTestUser,
+  cleanupTestData,
+  createTestPermission,
+  grantPermissionToUser,
+} from '../../__tests__/helpers/test-data.js';
 
 describe('🛡️ 管理者リゾルバー統合テスト', () => {
   let app: FastifyInstance & { prisma: PrismaClient; redis: Redis };
@@ -167,7 +172,7 @@ describe('🛡️ 管理者リゾルバー統合テスト', () => {
         url: '/graphql',
         payload: {
           query,
-          variables: { search: normalUser.username }
+          variables: { search: normalUser.username },
         },
         headers: { cookie: adminToken, 'content-type': 'application/json' },
       });
@@ -203,9 +208,9 @@ describe('🛡️ 管理者リゾルバー統合テスト', () => {
             input: {
               userId: normalUser.id,
               isVerified: true,
-              displayName: 'Updated Name'
-            }
-          }
+              displayName: 'Updated Name',
+            },
+          },
         },
         headers: { cookie: adminToken, 'content-type': 'application/json' },
       });
@@ -233,7 +238,7 @@ describe('🛡️ 管理者リゾルバー統合テスト', () => {
         url: '/graphql',
         payload: {
           query: mutation,
-          variables: { userId: normalUser.id }
+          variables: { userId: normalUser.id },
         },
         headers: { cookie: adminToken, 'content-type': 'application/json' },
       });
@@ -254,7 +259,7 @@ describe('🛡️ 管理者リゾルバー統合テスト', () => {
         url: '/graphql',
         payload: {
           query: mutation,
-          variables: { userId: adminUser.id }
+          variables: { userId: adminUser.id },
         },
         headers: { cookie: adminToken, 'content-type': 'application/json' },
       });

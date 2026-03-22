@@ -13,7 +13,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-
 import { UserAvatar } from '@/components/molecules/UserAvatar';
 import { ImageDisplay } from '@/components/atoms';
 import { Button } from '@/components/atoms';

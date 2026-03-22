@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useMyP2PTradeRequestsQuery } from '@libark/graphql-client';
 import type { P2PTradeStatus } from '@libark/graphql-client';
 
-
 import { PageLayoutTemplate } from '@/components/templates/layout-templates';
 import { Header } from '@/components/molecules/Header';
 import { Button } from '@/components/atoms/button';
@@ -11,7 +10,11 @@ import { Skeleton } from '@/components/atoms/skeleton';
 
 import { P2PTradeCard } from '../../../features/wallet/components/molecules/P2PTradeCard';
 
-const STATUS_FILTERS: { value: P2PTradeStatus | 'all'; label: string; variant?: 'default' | 'success' | 'destructive' | 'warning' }[] = [
+const STATUS_FILTERS: {
+  value: P2PTradeStatus | 'all';
+  label: string;
+  variant?: 'default' | 'success' | 'destructive' | 'warning';
+}[] = [
   { value: 'all', label: 'すべて' },
   { value: 'PENDING' as P2PTradeStatus, label: '待機中' },
   { value: 'MATCHED' as P2PTradeStatus, label: 'マッチ済み' },
@@ -124,12 +127,9 @@ export function P2PTradeHistoryPage() {
           <div className='text-center py-12'>
             <p className='text-muted-foreground mb-4'>取引履歴がありません</p>
             {cursorStack.length > 0 ? (
-               <Button onClick={handlePrev}>前のページに戻る</Button>
+              <Button onClick={handlePrev}>前のページに戻る</Button>
             ) : (
-              <Button
-                variant='default'
-                onClick={() => navigate('/wallet/p2p')}
-              >
+              <Button variant='default' onClick={() => navigate('/wallet/p2p')}>
                 P2P取引を始める
               </Button>
             )}
@@ -155,14 +155,8 @@ export function P2PTradeHistoryPage() {
           >
             &larr; 前へ
           </Button>
-          <span className="text-sm text-muted-foreground">
-            ページ {cursorStack.length + 1}
-          </span>
-          <Button
-            variant='outline'
-            onClick={handleNext}
-            disabled={!hasNextPage || loading}
-          >
+          <span className='text-sm text-muted-foreground'>ページ {cursorStack.length + 1}</span>
+          <Button variant='outline' onClick={handleNext} disabled={!hasNextPage || loading}>
             次へ &rarr;
           </Button>
         </div>

@@ -341,11 +341,9 @@ export class AuthService {
    */
   async authenticate(request: FastifyRequest): Promise<AuthenticationResult> {
     try {
-
       const accessToken = request.cookies?.[this.config?.cookieName || 'accessToken'];
 
       if (!accessToken) {
-
         return {
           success: false,
           error: new AuthError(
@@ -901,7 +899,9 @@ export class AuthService {
 
           if (isValidBackupCode) {
             // バックアップコードを使用済みにする（削除）
-            const updatedBackupCodes = user.backupCodes.filter((_code: string, index: number) => index !== i);
+            const updatedBackupCodes = user.backupCodes.filter(
+              (_code: string, index: number) => index !== i
+            );
 
             await this.prisma.user.update({
               where: { id: userId },

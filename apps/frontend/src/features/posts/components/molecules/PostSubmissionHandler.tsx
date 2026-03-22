@@ -13,7 +13,6 @@
 import React, { useCallback } from 'react';
 import { Send } from 'lucide-react';
 
-
 import { Button } from '@/components/atoms';
 import { usePosts } from '@/features/posts/hooks/usePosts';
 import { cn } from '@/lib/utils';

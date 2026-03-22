@@ -89,7 +89,8 @@ export const walletQueries = {
    * ユーザーウォレット一覧取得
    */
   myUserWallets: async (_parent: unknown, _args: unknown, context: GraphQLContext) => {
-    if (!context.user) throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
+    if (!context.user)
+      throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
 
     try {
       return await context.prisma.userWallet.findMany({
@@ -106,7 +107,8 @@ export const walletQueries = {
    * 入金申請一覧取得
    */
   myDepositRequests: async (_parent: unknown, _args: unknown, context: GraphQLContext) => {
-    if (!context.user) throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
+    if (!context.user)
+      throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
 
     try {
       const depositRequests = await context.prisma.depositRequest.findMany({
@@ -130,7 +132,8 @@ export const walletQueries = {
    * 出金申請一覧取得
    */
   myWithdrawalRequests: async (_parent: unknown, _args: unknown, context: GraphQLContext) => {
-    if (!context.user) throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
+    if (!context.user)
+      throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
 
     try {
       const withdrawalRequests = await context.prisma.withdrawalRequest.findMany({
@@ -173,28 +176,49 @@ export const walletQueries = {
    * 権限管理クエリ
    */
   myPermissions: async (_parent: unknown, _args: unknown, context: GraphQLContext) => {
-    if (!context.user) throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
+    if (!context.user)
+      throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
 
     try {
       const user = await context.prisma.user.findUnique({
         where: { id: context.user.id },
         include: {
           role: { include: { permissions: { include: { permission: true } } } },
-          permissionOverrides: { include: { permission: true, grantedByUser: { select: { id: true, username: true, displayName: true } } } },
+          permissionOverrides: {
+            include: {
+              permission: true,
+              grantedByUser: { select: { id: true, username: true, displayName: true } },
+            },
+          },
         },
       });
 
       if (!user) throw new GraphQLError('ユーザーが見つかりません');
 
-      const rolePermissions = user.role?.permissions.map((rp: any) => ({
-        id: rp.permission.id, userId: user.id, permissionId: rp.permission.id, isActive: true,
-        grantedAt: user.createdAt, expiresAt: null, permission: rp.permission, grantedByUser: null,
-      })) || [];
+      const rolePermissions =
+        user.role?.permissions.map((rp: any) => ({
+          id: rp.permission.id,
+          userId: user.id,
+          permissionId: rp.permission.id,
+          isActive: true,
+          grantedAt: user.createdAt,
+          expiresAt: null,
+          permission: rp.permission,
+          grantedByUser: null,
+        })) || [];
 
-      const overridePermissions = user.permissionOverrides.filter((o: any) => o.allowed).map((o: any) => ({
-        id: o.id, userId: user.id, permissionId: o.permission.id, isActive: true,
-        grantedAt: o.grantedAt, expiresAt: o.expiresAt, permission: o.permission, grantedByUser: o.grantedByUser,
-      }));
+      const overridePermissions = user.permissionOverrides
+        .filter((o: any) => o.allowed)
+        .map((o: any) => ({
+          id: o.id,
+          userId: user.id,
+          permissionId: o.permission.id,
+          isActive: true,
+          grantedAt: o.grantedAt,
+          expiresAt: o.expiresAt,
+          permission: o.permission,
+          grantedByUser: o.grantedByUser,
+        }));
 
       const all = [...rolePermissions, ...overridePermissions];
       return all.filter((p, i, s) => i === s.findIndex(p2 => p2.permissionId === p.permissionId));
@@ -205,7 +229,8 @@ export const walletQueries = {
   },
 
   allPermissions: async (_parent: unknown, _args: unknown, context: GraphQLContext) => {
-    if (!context.user) throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
+    if (!context.user)
+      throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
 
     const user = await context.prisma.user.findUnique({
       where: { id: context.user.id },
@@ -215,10 +240,16 @@ export const walletQueries = {
       },
     });
 
-    const hasAdmin = user?.role?.permissions.some((rp: any) => ['ADMIN_PANEL', 'MANAGE_USERS'].includes(rp.permission.name)) ||
-                     user?.permissionOverrides.some((o: any) => ['ADMIN_PANEL', 'MANAGE_USERS'].includes(o.permission.name) && o.allowed);
+    const hasAdmin =
+      user?.role?.permissions.some((rp: any) =>
+        ['ADMIN_PANEL', 'MANAGE_USERS'].includes(rp.permission.name)
+      ) ||
+      user?.permissionOverrides.some(
+        (o: any) => ['ADMIN_PANEL', 'MANAGE_USERS'].includes(o.permission.name) && o.allowed
+      );
 
-    if (!hasAdmin) throw new GraphQLError('管理者権限が必要です', { extensions: { code: 'FORBIDDEN' } });
+    if (!hasAdmin)
+      throw new GraphQLError('管理者権限が必要です', { extensions: { code: 'FORBIDDEN' } });
 
     try {
       return await context.prisma.permission.findMany({ orderBy: { name: 'asc' } });
@@ -229,7 +260,8 @@ export const walletQueries = {
   },
 
   userPermissions: async (_parent: unknown, args: { userId: string }, context: GraphQLContext) => {
-    if (!context.user) throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
+    if (!context.user)
+      throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
 
     const admin = await context.prisma.user.findUnique({
       where: { id: context.user.id },
@@ -239,31 +271,57 @@ export const walletQueries = {
       },
     });
 
-    const hasAdmin = admin?.role?.permissions.some((rp: any) => ['ADMIN_PANEL', 'MANAGE_USERS'].includes(rp.permission.name)) ||
-                     admin?.permissionOverrides.some((o: any) => ['ADMIN_PANEL', 'MANAGE_USERS'].includes(o.permission.name) && o.allowed);
+    const hasAdmin =
+      admin?.role?.permissions.some((rp: any) =>
+        ['ADMIN_PANEL', 'MANAGE_USERS'].includes(rp.permission.name)
+      ) ||
+      admin?.permissionOverrides.some(
+        (o: any) => ['ADMIN_PANEL', 'MANAGE_USERS'].includes(o.permission.name) && o.allowed
+      );
 
-    if (!hasAdmin) throw new GraphQLError('管理者権限が必要です', { extensions: { code: 'FORBIDDEN' } });
+    if (!hasAdmin)
+      throw new GraphQLError('管理者権限が必要です', { extensions: { code: 'FORBIDDEN' } });
 
     try {
       const targetUser = await context.prisma.user.findUnique({
         where: { id: args.userId },
         include: {
           role: { include: { permissions: { include: { permission: true } } } },
-          permissionOverrides: { include: { permission: true, grantedByUser: { select: { id: true, username: true, displayName: true } } } },
+          permissionOverrides: {
+            include: {
+              permission: true,
+              grantedByUser: { select: { id: true, username: true, displayName: true } },
+            },
+          },
         },
       });
 
       if (!targetUser) throw new GraphQLError('ユーザーが見つかりません');
 
-      const rolePermissions = targetUser.role?.permissions.map((rp: any) => ({
-        id: rp.permission.id, userId: targetUser.id, permissionId: rp.permission.id, isActive: true,
-        grantedAt: targetUser.createdAt, expiresAt: null, permission: rp.permission, grantedByUser: null,
-      })) || [];
+      const rolePermissions =
+        targetUser.role?.permissions.map((rp: any) => ({
+          id: rp.permission.id,
+          userId: targetUser.id,
+          permissionId: rp.permission.id,
+          isActive: true,
+          grantedAt: targetUser.createdAt,
+          expiresAt: null,
+          permission: rp.permission,
+          grantedByUser: null,
+        })) || [];
 
-      const overridePermissions = targetUser.permissionOverrides.filter((o: any) => o.allowed).map((o: any) => ({
-        id: o.id, userId: targetUser.id, permissionId: o.permission.id, isActive: true,
-        grantedAt: o.grantedAt, expiresAt: o.expiresAt, permission: o.permission, grantedByUser: o.grantedByUser,
-      }));
+      const overridePermissions = targetUser.permissionOverrides
+        .filter((o: any) => o.allowed)
+        .map((o: any) => ({
+          id: o.id,
+          userId: targetUser.id,
+          permissionId: o.permission.id,
+          isActive: true,
+          grantedAt: o.grantedAt,
+          expiresAt: o.expiresAt,
+          permission: o.permission,
+          grantedByUser: o.grantedByUser,
+        }));
 
       const all = [...rolePermissions, ...overridePermissions];
       return all.filter((p, i, s) => i === s.findIndex(p2 => p2.permissionId === p.permissionId));
@@ -278,7 +336,8 @@ export const walletQueries = {
     args: { balanceType: string; first?: number; after?: string },
     context: GraphQLContext
   ) => {
-    if (!context.user) throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
+    if (!context.user)
+      throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
 
     try {
       const transactions = await context.prisma.walletTransaction.findMany({
@@ -290,10 +349,12 @@ export const walletQueries = {
         orderBy: { createdAt: 'desc' },
       });
 
-      return transactions.map((transaction: { amountUsd: { toString: () => string } } & Record<string, unknown>) => ({
-        ...transaction,
-        amountUsd: parseFloat(transaction.amountUsd?.toString() || '0'),
-      }));
+      return transactions.map(
+        (transaction: { amountUsd: { toString: () => string } } & Record<string, unknown>) => ({
+          ...transaction,
+          amountUsd: parseFloat(transaction.amountUsd?.toString() || '0'),
+        })
+      );
     } catch (error) {
       logger.error('ウォレット取引履歴取得エラー:', error);
       throw new GraphQLError('ウォレット取引履歴の取得に失敗しました');

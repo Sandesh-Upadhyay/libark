@@ -10,7 +10,6 @@ import { Button } from '@/components/atoms';
 
 import { TransactionTable } from './TransactionTable';
 
-
 // Textコンポーネントは削除済み - 直接Tailwindクラスを使用
 
 interface PaymentHistoryItem {

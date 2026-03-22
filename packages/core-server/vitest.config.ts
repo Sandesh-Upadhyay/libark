@@ -31,14 +31,7 @@ export default defineConfig({
     teardownTimeout: 30000,
 
     // 除外パターン
-    exclude: [
-      'node_modules/**',
-      'dist/**',
-      'build/**',
-      'coverage/**',
-      '**/*.config.*',
-      '**/.*',
-    ],
+    exclude: ['node_modules/**', 'dist/**', 'build/**', 'coverage/**', '**/*.config.*', '**/.*'],
 
     // カバレッジ設定
     coverage: {

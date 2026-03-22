@@ -20,11 +20,14 @@ export function createSubscription(channel: string, resolverKey = 'post') {
       return context.redisPubSub.asyncIterator([channel]);
     },
     resolve: (payload: unknown, _args: unknown, context: GraphQLContext) => {
-      context.fastify.log.info({
-        hasPayload: !!payload,
-        payloadType: typeof payload,
-        channel,
-      }, `📨 [GraphQL] サブスクリプション受信:`);
+      context.fastify.log.info(
+        {
+          hasPayload: !!payload,
+          payloadType: typeof payload,
+          channel,
+        },
+        `📨 [GraphQL] サブスクリプション受信:`
+      );
 
       // 特定タイプのメッセージのみ処理
       const payloadObj = payload as {
@@ -62,10 +65,13 @@ export function createIdBasedSubscription(channelPrefix: string, resolverKey = '
       return context.redisPubSub.asyncIterator([channel]);
     },
     resolve: (payload: unknown, _args: unknown, context: GraphQLContext) => {
-      context.fastify.log.info({
-        hasPayload: !!payload,
-        payloadType: typeof payload,
-      }, `📨 [GraphQL] ID基準サブスクリプション受信:`);
+      context.fastify.log.info(
+        {
+          hasPayload: !!payload,
+          payloadType: typeof payload,
+        },
+        `📨 [GraphQL] ID基準サブスクリプション受信:`
+      );
 
       // 特定タイプのメッセージのみ処理
       const payloadObj2 = payload as {

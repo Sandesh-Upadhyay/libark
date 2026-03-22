@@ -29,7 +29,6 @@ import { useProfileImageUpload } from '../../hooks/useProfileImageUpload';
 
 import { ImageCropper, type CropType } from './ImageCropper';
 
-
 export interface ProfileEditModalProps {
   open: boolean;
   onClose: () => void;

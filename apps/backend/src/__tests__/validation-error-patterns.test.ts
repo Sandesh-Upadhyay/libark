@@ -50,7 +50,9 @@ describe('📜 バリデーションエラーパターンテスト', () => {
 
       if (result.errors) {
         const error = result.errors[0];
-        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(error.extensions.code);
+        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(
+          error.extensions.code
+        );
         expect(error.extensions.validationErrors).toBeDefined();
       }
     });
@@ -82,7 +84,9 @@ describe('📜 バリデーションエラーパターンテスト', () => {
 
       if (result.errors) {
         const error = result.errors[0];
-        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(error.extensions.code);
+        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(
+          error.extensions.code
+        );
       }
     });
 
@@ -113,7 +117,9 @@ describe('📜 バリデーションエラーパターンテスト', () => {
 
       if (result.errors) {
         const error = result.errors[0];
-        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(error.extensions.code);
+        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(
+          error.extensions.code
+        );
       }
     });
   });
@@ -206,7 +212,9 @@ describe('📜 バリデーションエラーパターンテスト', () => {
 
       if (result.errors) {
         const error = result.errors[0];
-        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(error.extensions.code);
+        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(
+          error.extensions.code
+        );
       }
     });
 
@@ -239,7 +247,9 @@ describe('📜 バリデーションエラーパターンテスト', () => {
 
       if (result.errors) {
         const error = result.errors[0];
-        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(error.extensions.code);
+        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(
+          error.extensions.code
+        );
       }
     });
 
@@ -270,7 +280,9 @@ describe('📜 バリデーションエラーパターンテスト', () => {
 
       if (result.errors) {
         const error = result.errors[0];
-        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(error.extensions.code);
+        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(
+          error.extensions.code
+        );
       }
     });
   });
@@ -301,7 +313,9 @@ describe('📜 バリデーションエラーパターンテスト', () => {
 
       if (result.errors) {
         const error = result.errors[0];
-        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(error.extensions.code);
+        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(
+          error.extensions.code
+        );
       }
     });
 
@@ -330,7 +344,9 @@ describe('📜 バリデーションエラーパターンテスト', () => {
 
       if (result.errors) {
         const error = result.errors[0];
-        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(error.extensions.code);
+        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(
+          error.extensions.code
+        );
       }
     });
   });
@@ -363,7 +379,9 @@ describe('📜 バリデーションエラーパターンテスト', () => {
 
       if (result.errors) {
         const error = result.errors[0];
-        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(error.extensions.code);
+        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(
+          error.extensions.code
+        );
         expect(error.extensions.validationErrors).toBeDefined();
       }
     });
@@ -395,7 +413,9 @@ describe('📜 バリデーションエラーパターンテスト', () => {
 
       if (result.errors) {
         const error = result.errors[0];
-        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(error.extensions.code);
+        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(
+          error.extensions.code
+        );
       }
     });
   });
@@ -426,7 +446,9 @@ describe('📜 バリデーションエラーパターンテスト', () => {
 
       if (result.errors) {
         const error = result.errors[0];
-        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(error.extensions.code);
+        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(
+          error.extensions.code
+        );
       }
     });
 
@@ -455,7 +477,9 @@ describe('📜 バリデーションエラーパターンテスト', () => {
 
       if (result.errors) {
         const error = result.errors[0];
-        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(error.extensions.code);
+        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(
+          error.extensions.code
+        );
       }
     });
   });
@@ -486,7 +510,9 @@ describe('📜 バリデーションエラーパターンテスト', () => {
 
       if (result.errors) {
         const error = result.errors[0];
-        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(error.extensions.code);
+        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(
+          error.extensions.code
+        );
       }
     });
 
@@ -517,7 +543,9 @@ describe('📜 バリデーションエラーパターンテスト', () => {
 
       if (result.errors) {
         const error = result.errors[0];
-        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(error.extensions.code);
+        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(
+          error.extensions.code
+        );
       }
     });
   });
@@ -705,7 +733,9 @@ describe('📜 バリデーションエラーパターンテスト', () => {
         result.errors.forEach((error: any) => {
           expect(error.message).toBeDefined();
           expect(error.extensions).toBeDefined();
-          expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(error.extensions.code);
+          expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(
+            error.extensions.code
+          );
         });
       }
     });
@@ -740,7 +770,9 @@ describe('📜 バリデーションエラーパターンテスト', () => {
 
         // バリデーションエラーが含まれていることを確認
         const error = result.errors[0];
-        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(error.extensions.code);
+        expect(['BAD_USER_INPUT', 'GRAPHQL_VALIDATION_FAILED', 'UNAUTHENTICATED']).toContain(
+          error.extensions.code
+        );
         expect(error.extensions.validationErrors).toBeDefined();
         expect(error.extensions.validationErrors).toBeInstanceOf(Array);
       }

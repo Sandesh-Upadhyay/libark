@@ -19,7 +19,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@libark/graphql-client';
 import { motion, AnimatePresence } from 'framer-motion';
 
-
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/molecules/UserAvatar';
 import { Logo } from '@/components/atoms';

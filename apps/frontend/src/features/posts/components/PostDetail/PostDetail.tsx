@@ -4,7 +4,6 @@ import React, { useState, useCallback } from 'react';
 import type { PostInfoFragment, User } from '@libark/graphql-client';
 import { useNavigate } from 'react-router-dom';
 
-
 import { SimpleImageModal, Motion } from '@/components/atoms';
 import { cn } from '@/lib/utils';
 

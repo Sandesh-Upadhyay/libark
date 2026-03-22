@@ -1120,8 +1120,8 @@ describe('🏦 Wallet Resolver Integration Tests', () => {
         method: 'POST',
         url: '/graphql',
         headers: {
-           'content-type': 'application/json',
-           cookie
+          'content-type': 'application/json',
+          cookie,
         },
         payload: {
           query: transferBalanceMutation,
@@ -1144,8 +1144,8 @@ describe('🏦 Wallet Resolver Integration Tests', () => {
         method: 'POST',
         url: '/graphql',
         headers: {
-           'content-type': 'application/json',
-           cookie
+          'content-type': 'application/json',
+          cookie,
         },
         payload: { query: myWalletTransactionsQuery, variables: { first: 10 } },
       });

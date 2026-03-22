@@ -16,7 +16,6 @@ import type { GroupedNotification } from '../../utils/notificationGrouping';
 import { generateNotificationText } from '../../utils/notificationGrouping';
 import { MultipleAvatars } from '../atoms/MultipleAvatars';
 
-
 export interface XStyleNotificationItemProps {
   notification: GroupedNotification;
   onNotificationClick?: (notification: GroupedNotification) => void;

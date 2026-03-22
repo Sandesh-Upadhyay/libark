@@ -200,10 +200,13 @@ export async function internalOgpRoutes(app: FastifyInstance) {
       // 内部APIトークン認証
       const providedToken = request.headers['x-internal-token'] as string;
       if (!providedToken || providedToken !== INTERNAL_API_TOKEN) {
-        app.log.warn({
-          mediaId,
-          hasToken: !!providedToken,
-        }, '🚫 [InternalOGP] 認証失敗');
+        app.log.warn(
+          {
+            mediaId,
+            hasToken: !!providedToken,
+          },
+          '🚫 [InternalOGP] 認証失敗'
+        );
         return reply.status(401).send({
           error: {
             message: '認証が必要です',
@@ -224,9 +227,12 @@ export async function internalOgpRoutes(app: FastifyInstance) {
           });
         }
 
-        app.log.info({
-          mediaId,
-        }, '🔍 [InternalOGP] OGPメタデータ取得リクエスト');
+        app.log.info(
+          {
+            mediaId,
+          },
+          '🔍 [InternalOGP] OGPメタデータ取得リクエスト'
+        );
 
         // Mediaレコードを取得（postIdとupdatedAtを含める）
         const media = await app.prisma.media.findUnique({
@@ -235,9 +241,12 @@ export async function internalOgpRoutes(app: FastifyInstance) {
         });
 
         if (!media) {
-          app.log.warn({
-            mediaId,
-          }, '🚫 [InternalOGP] Mediaが見つかりません');
+          app.log.warn(
+            {
+              mediaId,
+            },
+            '🚫 [InternalOGP] Mediaが見つかりません'
+          );
           return reply.status(404).send({
             error: {
               message: 'メディアが見つかりません',
@@ -278,14 +287,17 @@ export async function internalOgpRoutes(app: FastifyInstance) {
         const isPaid = postVisibility === 'PAID';
 
         // デバッグ: media.postの状態をログに出力
-        app.log.info({
-          mediaId,
-          postId: media.postId,
-          hasPost: !!media.post,
-          postVisibilityFromRelation: media.post?.visibility,
-          postVisibilityFromQuery: postVisibility,
-          isPaid,
-        }, '🔍 [InternalOGP] media.post state');
+        app.log.info(
+          {
+            mediaId,
+            postId: media.postId,
+            hasPost: !!media.post,
+            postVisibilityFromRelation: media.post?.visibility,
+            postVisibilityFromQuery: postVisibility,
+            isPaid,
+          },
+          '🔍 [InternalOGP] media.post state'
+        );
 
         const onDemandStandard = generateOnDemandMeta(
           { id: media.id, postId: media.postId, updatedAt: media.updatedAt, post: media.post },
@@ -337,17 +349,20 @@ export async function internalOgpRoutes(app: FastifyInstance) {
             },
           };
 
-          app.log.info({
-            mediaId,
-            onDemandStandard: {
-              contentHash: onDemandStandard.contentHash,
-              status: onDemandStandard.status,
+          app.log.info(
+            {
+              mediaId,
+              onDemandStandard: {
+                contentHash: onDemandStandard.contentHash,
+                status: onDemandStandard.status,
+              },
+              onDemandTeaser: {
+                contentHash: onDemandTeaser.contentHash,
+                status: onDemandTeaser.status,
+              },
             },
-            onDemandTeaser: {
-              contentHash: onDemandTeaser.contentHash,
-              status: onDemandTeaser.status,
-            },
-          }, '✅ [InternalOGP] オンデマンドOGPメタデータ取得成功（既存OGPなし）');
+            '✅ [InternalOGP] オンデマンドOGPメタデータ取得成功（既存OGPなし）'
+          );
 
           return reply.send(response);
         }
@@ -361,27 +376,33 @@ export async function internalOgpRoutes(app: FastifyInstance) {
           },
         };
 
-        app.log.info({
-          mediaId,
-          bucket: response.bucket,
-          ogpKey: response.ogpKey,
-          variant: response.variant,
-          onDemandStandard: {
-            contentHash: onDemandStandard.contentHash,
-            status: onDemandStandard.status,
+        app.log.info(
+          {
+            mediaId,
+            bucket: response.bucket,
+            ogpKey: response.ogpKey,
+            variant: response.variant,
+            onDemandStandard: {
+              contentHash: onDemandStandard.contentHash,
+              status: onDemandStandard.status,
+            },
+            onDemandTeaser: {
+              contentHash: onDemandTeaser.contentHash,
+              status: onDemandTeaser.status,
+            },
           },
-          onDemandTeaser: {
-            contentHash: onDemandTeaser.contentHash,
-            status: onDemandTeaser.status,
-          },
-        }, '✅ [InternalOGP] OGPメタデータ取得成功（既存OGPあり）');
+          '✅ [InternalOGP] OGPメタデータ取得成功（既存OGPあり）'
+        );
 
         return reply.send(response);
       } catch (error) {
-        app.log.error({
-          mediaId,
-          error: error instanceof Error ? error.message : String(error),
-        }, '❌ [InternalOGP] OGPメタデータ取得エラー');
+        app.log.error(
+          {
+            mediaId,
+            error: error instanceof Error ? error.message : String(error),
+          },
+          '❌ [InternalOGP] OGPメタデータ取得エラー'
+        );
 
         return reply.status(404).send({
           error: {

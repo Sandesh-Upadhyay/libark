@@ -62,7 +62,9 @@ interface TwoFactorSettingsPanelProps {
   onBack: () => void;
 }
 
-export const TwoFactorSettingsPanel: React.FC<TwoFactorSettingsPanelProps> = ({ onBack: _onBack }) => {
+export const TwoFactorSettingsPanel: React.FC<TwoFactorSettingsPanelProps> = ({
+  onBack: _onBack,
+}) => {
   const [step, setStep] = useState<'status' | 'setup' | 'enable' | 'disable' | 'regenerate'>(
     'status'
   );

@@ -14,7 +14,8 @@ export const walletPermissionMutations = {
     { input }: { input: { userId: string; permissionName: string; expiresAt?: string } },
     context: GraphQLContext
   ) => {
-    if (!context.user) throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
+    if (!context.user)
+      throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
 
     // 管理者権限チェック
     const hasAdmin = await context.prisma.userPermissionOverride.findFirst({
@@ -26,22 +27,37 @@ export const walletPermissionMutations = {
       },
     });
 
-    if (!hasAdmin) throw new GraphQLError('管理者権限が必要です', { extensions: { code: 'FORBIDDEN' } });
+    if (!hasAdmin)
+      throw new GraphQLError('管理者権限が必要です', { extensions: { code: 'FORBIDDEN' } });
 
     try {
-      const permission = await context.prisma.permission.findUnique({ where: { name: input.permissionName } });
+      const permission = await context.prisma.permission.findUnique({
+        where: { name: input.permissionName },
+      });
       if (!permission) throw new GraphQLError('指定された権限が見つかりません');
 
       const existing = await context.prisma.userPermissionOverride.findUnique({
         where: { userId_permissionId: { userId: input.userId, permissionId: permission.id } },
       });
 
-      if (existing && existing.isActive) throw new GraphQLError('ユーザーは既にこの権限を持っています');
+      if (existing && existing.isActive)
+        throw new GraphQLError('ユーザーは既にこの権限を持っています');
 
       return await context.prisma.userPermissionOverride.upsert({
         where: { userId_permissionId: { userId: input.userId, permissionId: permission.id } },
-        update: { isActive: true, grantedBy: context.user.id, grantedAt: new Date(), expiresAt: input.expiresAt ? new Date(input.expiresAt) : null },
-        create: { userId: input.userId, permissionId: permission.id, allowed: true, grantedBy: context.user.id, expiresAt: input.expiresAt ? new Date(input.expiresAt) : null },
+        update: {
+          isActive: true,
+          grantedBy: context.user.id,
+          grantedAt: new Date(),
+          expiresAt: input.expiresAt ? new Date(input.expiresAt) : null,
+        },
+        create: {
+          userId: input.userId,
+          permissionId: permission.id,
+          allowed: true,
+          grantedBy: context.user.id,
+          expiresAt: input.expiresAt ? new Date(input.expiresAt) : null,
+        },
         include: { user: true, permission: true, grantedByUser: true },
       });
     } catch (error) {
@@ -58,7 +74,8 @@ export const walletPermissionMutations = {
     { input }: { input: { userId: string; permissionName: string } },
     context: GraphQLContext
   ) => {
-    if (!context.user) throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
+    if (!context.user)
+      throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
 
     const hasAdmin = await context.prisma.userPermissionOverride.findFirst({
       where: {
@@ -69,10 +86,13 @@ export const walletPermissionMutations = {
       },
     });
 
-    if (!hasAdmin) throw new GraphQLError('管理者権限が必要です', { extensions: { code: 'FORBIDDEN' } });
+    if (!hasAdmin)
+      throw new GraphQLError('管理者権限が必要です', { extensions: { code: 'FORBIDDEN' } });
 
     try {
-      const permission = await context.prisma.permission.findUnique({ where: { name: input.permissionName } });
+      const permission = await context.prisma.permission.findUnique({
+        where: { name: input.permissionName },
+      });
       if (!permission) throw new GraphQLError('指定された権限が見つかりません');
 
       await context.prisma.userPermissionOverride.updateMany({

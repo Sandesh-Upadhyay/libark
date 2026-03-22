@@ -6,7 +6,7 @@ import React from 'react';
 import { MultiWalletBalanceCard } from '../MultiWalletBalanceCard';
 
 // Mock useAuth
-vi.mock('@libark/graphql-client', async (importOriginal) => {
+vi.mock('@libark/graphql-client', async importOriginal => {
   const actual = await importOriginal<any>();
   return {
     ...actual,
@@ -25,7 +25,7 @@ describe('MultiWalletBalanceCard', () => {
         walletBalance={1000}
         salesBalance={500}
         p2pBalance={200}
-        currency="USD"
+        currency='USD'
       />
     );
 
@@ -49,7 +49,7 @@ describe('MultiWalletBalanceCard', () => {
         walletBalance={1000}
         salesBalance={500}
         p2pBalance={200}
-        currency="USD"
+        currency='USD'
       />
     );
 

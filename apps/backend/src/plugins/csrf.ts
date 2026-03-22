@@ -117,13 +117,54 @@ async function csrfPlugin(fastify: FastifyInstance, options: CSRFPluginOptions =
     const cookieToken = request.cookies?.[csrfConfig.cookieName];
     const headerToken = request.headers[csrfConfig.headerName] as string;
     // #region agent log
-    fetch('http://127.0.0.1:7532/ingest/1bec87db-370e-45a9-bed5-692fbf3f003b',{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'application/json','X-Debug-Session-Id':'1a7f7a'},body:JSON.stringify({sessionId:'1a7f7a',runId:'pre-fix',hypothesisId:'A',location:'apps/backend/src/plugins/csrf.ts:120',message:'CSRF preHandler token presence',data:{requestId:request.id,url:request.url,method:request.method,mutationName:mutationName||null,hasCookieToken:!!cookieToken,hasHeaderToken:!!headerToken,cookieTokenLength:cookieToken?String(cookieToken).length:0,headerTokenLength:headerToken?String(headerToken).length:0},timestamp:Date.now()})}).catch(()=>{});
+    fetch('http://127.0.0.1:7532/ingest/1bec87db-370e-45a9-bed5-692fbf3f003b', {
+      method: 'POST',
+      mode: 'no-cors',
+      keepalive: true,
+      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '1a7f7a' },
+      body: JSON.stringify({
+        sessionId: '1a7f7a',
+        runId: 'pre-fix',
+        hypothesisId: 'A',
+        location: 'apps/backend/src/plugins/csrf.ts:120',
+        message: 'CSRF preHandler token presence',
+        data: {
+          requestId: request.id,
+          url: request.url,
+          method: request.method,
+          mutationName: mutationName || null,
+          hasCookieToken: !!cookieToken,
+          hasHeaderToken: !!headerToken,
+          cookieTokenLength: cookieToken ? String(cookieToken).length : 0,
+          headerTokenLength: headerToken ? String(headerToken).length : 0,
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
     // #endregion
 
     // トークンが存在しない場合
     if (!cookieToken && !headerToken) {
       // #region agent log
-      fetch('http://127.0.0.1:7532/ingest/1bec87db-370e-45a9-bed5-692fbf3f003b',{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'application/json','X-Debug-Session-Id':'1a7f7a'},body:JSON.stringify({sessionId:'1a7f7a',runId:'pre-fix',hypothesisId:'A',location:'apps/backend/src/plugins/csrf.ts:121',message:'CSRF blocked: missing token',data:{requestId:request.id,mutationName:mutationName||null,code:'CSRF_TOKEN_MISSING'},timestamp:Date.now()})}).catch(()=>{});
+      fetch('http://127.0.0.1:7532/ingest/1bec87db-370e-45a9-bed5-692fbf3f003b', {
+        method: 'POST',
+        mode: 'no-cors',
+        keepalive: true,
+        headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '1a7f7a' },
+        body: JSON.stringify({
+          sessionId: '1a7f7a',
+          runId: 'pre-fix',
+          hypothesisId: 'A',
+          location: 'apps/backend/src/plugins/csrf.ts:121',
+          message: 'CSRF blocked: missing token',
+          data: {
+            requestId: request.id,
+            mutationName: mutationName || null,
+            code: 'CSRF_TOKEN_MISSING',
+          },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
       // #endregion
       logAttack(request, 'MISSING_TOKEN', mutationName || undefined);
       reply.code(403).send({
@@ -136,7 +177,25 @@ async function csrfPlugin(fastify: FastifyInstance, options: CSRFPluginOptions =
     // トークンが一致しない場合
     if (cookieToken !== headerToken) {
       // #region agent log
-      fetch('http://127.0.0.1:7532/ingest/1bec87db-370e-45a9-bed5-692fbf3f003b',{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'application/json','X-Debug-Session-Id':'1a7f7a'},body:JSON.stringify({sessionId:'1a7f7a',runId:'pre-fix',hypothesisId:'A',location:'apps/backend/src/plugins/csrf.ts:131',message:'CSRF blocked: token mismatch',data:{requestId:request.id,mutationName:mutationName||null,code:'CSRF_TOKEN_INVALID'},timestamp:Date.now()})}).catch(()=>{});
+      fetch('http://127.0.0.1:7532/ingest/1bec87db-370e-45a9-bed5-692fbf3f003b', {
+        method: 'POST',
+        mode: 'no-cors',
+        keepalive: true,
+        headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '1a7f7a' },
+        body: JSON.stringify({
+          sessionId: '1a7f7a',
+          runId: 'pre-fix',
+          hypothesisId: 'A',
+          location: 'apps/backend/src/plugins/csrf.ts:131',
+          message: 'CSRF blocked: token mismatch',
+          data: {
+            requestId: request.id,
+            mutationName: mutationName || null,
+            code: 'CSRF_TOKEN_INVALID',
+          },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
       // #endregion
       logAttack(request, 'INVALID_TOKEN', mutationName || undefined);
       reply.code(403).send({
@@ -149,7 +208,25 @@ async function csrfPlugin(fastify: FastifyInstance, options: CSRFPluginOptions =
     // トークンの署名を検証
     if (!(await csrf.verifyToken(cookieToken))) {
       // #region agent log
-      fetch('http://127.0.0.1:7532/ingest/1bec87db-370e-45a9-bed5-692fbf3f003b',{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'application/json','X-Debug-Session-Id':'1a7f7a'},body:JSON.stringify({sessionId:'1a7f7a',runId:'pre-fix',hypothesisId:'A',location:'apps/backend/src/plugins/csrf.ts:141',message:'CSRF blocked: signature mismatch',data:{requestId:request.id,mutationName:mutationName||null,code:'CSRF_TOKEN_INVALID'},timestamp:Date.now()})}).catch(()=>{});
+      fetch('http://127.0.0.1:7532/ingest/1bec87db-370e-45a9-bed5-692fbf3f003b', {
+        method: 'POST',
+        mode: 'no-cors',
+        keepalive: true,
+        headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '1a7f7a' },
+        body: JSON.stringify({
+          sessionId: '1a7f7a',
+          runId: 'pre-fix',
+          hypothesisId: 'A',
+          location: 'apps/backend/src/plugins/csrf.ts:141',
+          message: 'CSRF blocked: signature mismatch',
+          data: {
+            requestId: request.id,
+            mutationName: mutationName || null,
+            code: 'CSRF_TOKEN_INVALID',
+          },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
       // #endregion
       logAttack(request, 'SIGNATURE_MISMATCH', mutationName || undefined);
       reply.code(403).send({

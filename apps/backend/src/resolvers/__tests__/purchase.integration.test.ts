@@ -6,8 +6,8 @@ import { createGraphQLContext } from '../../graphql/context.js';
 import { postMutations } from '../post/mutations.js';
 
 // counterManager のモック
-vi.mock('@libark/redis-client', async (importOriginal) => {
-  const actual = await importOriginal() as any;
+vi.mock('@libark/redis-client', async importOriginal => {
+  const actual = (await importOriginal()) as any;
   return {
     ...actual,
     counterManager: {
@@ -43,8 +43,16 @@ describe('Purchase Integration', () => {
   it('有料投稿を購入し、残高が正しく移動することを検証する', async () => {
     const buyerEmail = 'buyer@test.com';
     const sellerEmail = 'seller@test.com';
-    const buyerUser = await createTestUser(app.prisma, { email: buyerEmail, username: 'buyer', password: 'Test12345!' });
-    const sellerUser = await createTestUser(app.prisma, { email: sellerEmail, username: 'seller', password: 'Test12345!' });
+    const buyerUser = await createTestUser(app.prisma, {
+      email: buyerEmail,
+      username: 'buyer',
+      password: 'Test12345!',
+    });
+    const sellerUser = await createTestUser(app.prisma, {
+      email: sellerEmail,
+      username: 'seller',
+      password: 'Test12345!',
+    });
 
     // 1. 売り手が有料投稿を作成
     const post = await app.prisma.post.create({
@@ -59,10 +67,10 @@ describe('Purchase Integration', () => {
 
     // 2. 残高設定
     await app.prisma.wallet.create({
-      data: { userId: buyerUser.id, balanceUsd: 15.0 }
+      data: { userId: buyerUser.id, balanceUsd: 15.0 },
     });
     await app.prisma.wallet.create({
-      data: { userId: sellerUser.id, balanceUsd: 0.0, salesBalanceUsd: 0.0 }
+      data: { userId: sellerUser.id, balanceUsd: 0.0, salesBalanceUsd: 0.0 },
     });
 
     // 3. 購入 (リゾルバー直接呼び出し)
@@ -81,7 +89,12 @@ describe('Purchase Integration', () => {
 
     console.log('DEBUG: Test - Buyer Wallet:', JSON.stringify(buyerWallet));
     console.log('DEBUG: Test - Seller Wallet:', JSON.stringify(sellerWallet));
-    console.log('DEBUG: Test - Seller SalesBalanceUsd:', sellerWallet.salesBalanceUsd, 'type:', typeof sellerWallet.salesBalanceUsd);
+    console.log(
+      'DEBUG: Test - Seller SalesBalanceUsd:',
+      sellerWallet.salesBalanceUsd,
+      'type:',
+      typeof sellerWallet.salesBalanceUsd
+    );
 
     expect(Number(buyerWallet.balanceUsd)).toBe(5.0);
     expect(Number(sellerWallet.salesBalanceUsd)).toBe(10.0);
@@ -90,8 +103,16 @@ describe('Purchase Integration', () => {
   it('残高不足で購入が失敗することを検証する', async () => {
     const buyerEmail = 'buyer2@test.com';
     const sellerEmail = 'seller2@test.com';
-    const buyerUser = await createTestUser(app.prisma, { email: buyerEmail, username: 'buyer2', password: 'Test12345!' });
-    const sellerUser = await createTestUser(app.prisma, { email: sellerEmail, username: 'seller2', password: 'Test12345!' });
+    const buyerUser = await createTestUser(app.prisma, {
+      email: buyerEmail,
+      username: 'buyer2',
+      password: 'Test12345!',
+    });
+    const sellerUser = await createTestUser(app.prisma, {
+      email: sellerEmail,
+      username: 'seller2',
+      password: 'Test12345!',
+    });
 
     const post = await app.prisma.post.create({
       data: {
@@ -104,7 +125,7 @@ describe('Purchase Integration', () => {
     const postId = post.id;
 
     await app.prisma.wallet.create({
-      data: { userId: buyerUser.id, balanceUsd: 50.0 }
+      data: { userId: buyerUser.id, balanceUsd: 50.0 },
     });
 
     // 3. 購入 (リゾルバー直接呼び出し)
@@ -115,7 +136,8 @@ describe('Purchase Integration', () => {
     });
     context.prisma = app.prisma; // 確実に Prisma を渡す
 
-    await expect(postMutations.purchasePost({}, { input: { postId } }, context))
-      .rejects.toThrow('残高が不足しています');
+    await expect(postMutations.purchasePost({}, { input: { postId } }, context)).rejects.toThrow(
+      '残高が不足しています'
+    );
   });
 });

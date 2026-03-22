@@ -7,12 +7,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 
-import {
-  useAppStore,
-  useMessageStore,
-  getAppState,
-  type NotificationItem,
-} from '../index';
+import { useAppStore, useMessageStore, getAppState, type NotificationItem } from '../index';
 
 // localStorageをモック
 const localStorageMock = (() => {

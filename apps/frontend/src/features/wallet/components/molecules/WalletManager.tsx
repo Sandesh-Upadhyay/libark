@@ -12,7 +12,6 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { Plus, Edit2, Trash2, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
 
-
 import { cn } from '@/lib/utils';
 import {
   Card,
@@ -55,8 +54,7 @@ export interface UserWallet {
 }
 
 export interface WalletManagerProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof walletManagerVariants> {
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof walletManagerVariants> {
   /** 登録済みウォレット一覧 */
   userWallets: UserWallet[];
   /** 選択されたウォレット */

@@ -15,7 +15,12 @@ import { setContext } from '@apollo/client/link/context/index.js';
 import { onError } from '@apollo/client/link/error/index.js';
 import { getMainDefinition } from '@apollo/client/utilities/index.js';
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
-import { getGraphQLClientConfig, LogCategory, UnifiedLogLevel, unifiedLoggerHelpers as logger } from '@libark/core-shared';
+import {
+  getGraphQLClientConfig,
+  LogCategory,
+  UnifiedLogLevel,
+  unifiedLoggerHelpers as logger,
+} from '@libark/core-shared';
 
 // キャッシュ永続化パッケージをインポート
 import { CachePersistor } from 'apollo3-cache-persist';
@@ -47,7 +52,21 @@ export function createApolloClient(): LibarkApolloClient | null {
 
     console.log('🔧 [GraphQL Client] URL設定:', { httpUrl });
     // #region agent log
-    fetch('http://127.0.0.1:7532/ingest/1bec87db-370e-45a9-bed5-692fbf3f003b',{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'application/json','X-Debug-Session-Id':'1a7f7a'},body:JSON.stringify({sessionId:'1a7f7a',runId:'pre-fix',hypothesisId:'B',location:'packages/graphql-client/src/apollo/createApolloClient.ts:48',message:'GraphQL httpUrl resolved',data:{httpUrl},timestamp:Date.now()})}).catch(()=>{});
+    fetch('http://127.0.0.1:7532/ingest/1bec87db-370e-45a9-bed5-692fbf3f003b', {
+      method: 'POST',
+      mode: 'no-cors',
+      keepalive: true,
+      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '1a7f7a' },
+      body: JSON.stringify({
+        sessionId: '1a7f7a',
+        runId: 'pre-fix',
+        hypothesisId: 'B',
+        location: 'packages/graphql-client/src/apollo/createApolloClient.ts:48',
+        message: 'GraphQL httpUrl resolved',
+        data: { httpUrl },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
     // #endregion
 
     // HTTP Link の作成（ファイルアップロード対応）
@@ -79,7 +98,25 @@ export function createApolloClient(): LibarkApolloClient | null {
 
         const csrfToken = getCSRFToken();
         // #region agent log
-        fetch('http://127.0.0.1:7532/ingest/1bec87db-370e-45a9-bed5-692fbf3f003b',{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'application/json','X-Debug-Session-Id':'1a7f7a'},body:JSON.stringify({sessionId:'1a7f7a',runId:'pre-fix',hypothesisId:'A',location:'packages/graphql-client/src/apollo/createApolloClient.ts:77',message:'CSRF token presence for operation',data:{operationName:operation.operationName||null,hasCsrfCookie:!!csrfToken,csrfTokenLength:csrfToken?String(csrfToken).length:0},timestamp:Date.now()})}).catch(()=>{});
+        fetch('http://127.0.0.1:7532/ingest/1bec87db-370e-45a9-bed5-692fbf3f003b', {
+          method: 'POST',
+          mode: 'no-cors',
+          keepalive: true,
+          headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '1a7f7a' },
+          body: JSON.stringify({
+            sessionId: '1a7f7a',
+            runId: 'pre-fix',
+            hypothesisId: 'A',
+            location: 'packages/graphql-client/src/apollo/createApolloClient.ts:77',
+            message: 'CSRF token presence for operation',
+            data: {
+              operationName: operation.operationName || null,
+              hasCsrfCookie: !!csrfToken,
+              csrfTokenLength: csrfToken ? String(csrfToken).length : 0,
+            },
+            timestamp: Date.now(),
+          }),
+        }).catch(() => {});
         // #endregion
 
         return {

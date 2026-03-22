@@ -19,7 +19,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { Heart } from 'lucide-react';
 
-
 import { Button } from '@/components/atoms';
 import { cn } from '@/lib/utils';
 import { useFeatures } from '@/hooks';

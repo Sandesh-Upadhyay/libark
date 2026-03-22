@@ -21,7 +21,6 @@ interface ErrorFieldMapping {
  * 認証エラーハンドリング設定
  */
 export interface AuthErrorHandlerConfigEvent<TFormData extends FieldValues> {
-
   setError: UseFormSetError<TFormData>;
   errorFieldMappings: ErrorFieldMapping[];
   defaultField: FieldPath<TFormData>;

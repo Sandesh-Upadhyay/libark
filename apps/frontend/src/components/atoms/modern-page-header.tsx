@@ -39,18 +39,17 @@ const modernPageHeaderVariants = cva('flex flex-col space-y-2 pb-4 border-b bord
   },
 });
 
-export interface ModernPageHeaderProps
-  extends Omit<
-    React.HTMLAttributes<HTMLDivElement>,
-    | 'variant'
-    | 'size'
-    | 'onDrag'
-    | 'onDragEnd'
-    | 'onDragStart'
-    | 'onDragOver'
-    | 'onAnimationStart'
-    | 'onAnimationEnd'
-  > {
+export interface ModernPageHeaderProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  | 'variant'
+  | 'size'
+  | 'onDrag'
+  | 'onDragEnd'
+  | 'onDragStart'
+  | 'onDragOver'
+  | 'onAnimationStart'
+  | 'onAnimationEnd'
+> {
   /** ページタイトル */
   title?: string;
   /** ページの説明 */

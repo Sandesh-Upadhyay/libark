@@ -71,11 +71,14 @@ export async function proxyRoutes(app: FastifyInstance) {
         } catch (error: unknown) {
           // If encryption fails with InvalidRequest, try without encryption
           if ((error as { Code?: string }).Code === 'InvalidRequest') {
-            app.log.warn({
-              bucket,
-              key,
-              error: error instanceof Error ? error.message : 'Unknown error',
-            }, 'Encryption parameters not applicable, trying without encryption:');
+            app.log.warn(
+              {
+                bucket,
+                key,
+                error: error instanceof Error ? error.message : 'Unknown error',
+              },
+              'Encryption parameters not applicable, trying without encryption:'
+            );
 
             // Fallback: try without encryption parameters
             const unencryptedCommand = new GetObjectCommand(getObjectParams);
@@ -142,15 +145,19 @@ export async function proxyRoutes(app: FastifyInstance) {
 
       return reply.send(stream);
     } catch (error: unknown) {
-      app.log.error({
-        error: error instanceof Error ? error.message : 'Unknown error',
-        code: (error as { Code?: string; name?: string }).Code || (error as { name?: string }).name,
-        statusCode: (error as { $metadata?: { httpStatusCode?: number } }).$metadata
-          ?.httpStatusCode,
-        bucket,
-        key,
-        stack: error instanceof Error ? error.stack : undefined,
-      }, 'File serve error:');
+      app.log.error(
+        {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          code:
+            (error as { Code?: string; name?: string }).Code || (error as { name?: string }).name,
+          statusCode: (error as { $metadata?: { httpStatusCode?: number } }).$metadata
+            ?.httpStatusCode,
+          bucket,
+          key,
+          stack: error instanceof Error ? error.stack : undefined,
+        },
+        'File serve error:'
+      );
 
       if (
         (error as { Code?: string }).Code === 'NoSuchKey' ||

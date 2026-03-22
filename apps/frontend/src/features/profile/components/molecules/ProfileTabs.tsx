@@ -4,7 +4,6 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MessageSquare, Image, Heart } from 'lucide-react';
 
-
 import { PostList } from '@/features/posts/components/PostList';
 import { TabNavigation } from '@/components/atoms/tabs/TabNavigation';
 import { TabContent } from '@/components/atoms/tabs/TabContent';

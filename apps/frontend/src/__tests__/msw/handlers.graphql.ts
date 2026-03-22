@@ -436,10 +436,7 @@ export const graphqlHandlers = [
 
   // Timeline query
   graphql.query('Timeline', ({ variables }) => {
-    const {
-      type,
-      after,
-    } = variables as { type: string; first: number; after?: string };
+    const { type, after } = variables as { type: string; first: number; after?: string };
 
     // 1ページ目
     if (!after) {
@@ -537,9 +534,7 @@ export const graphqlHandlers = [
 
   // Posts query
   graphql.query('Posts', ({ variables }) => {
-    const {
-      after,
-    } = variables as {
+    const { after } = variables as {
       first: number;
       after?: string;
       userId?: string;
@@ -691,9 +686,7 @@ export const graphqlHandlers = [
 
   // Comments query
   graphql.query('Comments', ({ variables }) => {
-    const {
-      postId,
-    } = variables as { postId: string; first: number; after?: string };
+    const { postId } = variables as { postId: string; first: number; after?: string };
     const comments = Array.from({ length: 5 }, (_, i) => mockComment(i, postId));
 
     return HttpResponse.json({
@@ -841,9 +834,7 @@ export const graphqlHandlers = [
 
   // Conversations query
   graphql.query('Conversations', ({ variables }) => {
-    const {
-      after,
-    } = variables as {
+    const { after } = variables as {
       first: number;
       after?: string;
       includeArchived: boolean;
@@ -900,9 +891,7 @@ export const graphqlHandlers = [
 
   // SearchMessages query
   graphql.query('SearchMessages', ({ variables }) => {
-    const {
-      after,
-    } = variables as {
+    const { after } = variables as {
       query: string;
       conversationId?: string;
       first: number;

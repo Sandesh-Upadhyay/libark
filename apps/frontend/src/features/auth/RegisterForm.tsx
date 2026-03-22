@@ -16,7 +16,6 @@ import { AuthFormWrapper } from './components/AuthFormWrapper';
 import { AuthSubmitButton } from './components/AuthSubmitButton';
 import { useRegister } from './useRegister';
 
-
 /**
  * 📝 RegisterForm コンポーネント
  *

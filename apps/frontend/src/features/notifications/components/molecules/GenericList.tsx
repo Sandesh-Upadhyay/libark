@@ -15,7 +15,6 @@ import { cn } from '@/lib/utils';
 import { ListContainer } from '../atoms/ListContainer';
 import { ListItem, type ListItemProps } from '../atoms/ListItem';
 
-
 /**
  * 汎用リストのバリアント定義
  */
@@ -38,8 +37,7 @@ export interface GenericListItem {
 }
 
 export interface GenericListProps<T extends GenericListItem>
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof genericListVariants> {
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof genericListVariants> {
   /** データ配列 */
   items: T[];
   /** アイテムレンダリング関数 */

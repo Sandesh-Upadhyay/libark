@@ -541,7 +541,7 @@ export class MediaProcessingWorker extends BaseWorker<MediaProcessingJobData> {
    */
   private async updateMediaRecord(
     mediaId: string,
-      data: Partial<{
+    data: Partial<{
       width: number;
       height: number;
       status: DbMediaStatus;

@@ -16,14 +16,7 @@ import {
   useResolveP2PDisputeMutation,
   P2PDisputeStatus,
 } from '@libark/graphql-client';
-import {
-  ShieldAlert,
-  Gavel,
-  DollarSign,
-  Briefcase,
-  MessageSquare,
-  Loader2
-} from 'lucide-react';
+import { ShieldAlert, Gavel, DollarSign, Briefcase, MessageSquare, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -78,7 +71,7 @@ const AdminP2PDisputeDetailPage: React.FC = () => {
       toast.success('紛争を解決しました');
       refetch();
     },
-    onError: (err) => {
+    onError: err => {
       toast.error(`解決に失敗しました: ${err.message}`);
     },
   });
@@ -157,11 +150,15 @@ const AdminP2PDisputeDetailPage: React.FC = () => {
 
       <div className='container mx-auto p-4 space-y-6 max-w-4xl'>
         {/* ステータスバナー */}
-        <div className={`p-4 rounded-lg flex items-center justify-between ${
-          dispute.status === 'OPEN' ? 'bg-destructive/10 border border-destructive/20' :
-          dispute.status === 'UNDER_REVIEW' ? 'bg-yellow-100 dark:bg-yellow-900/20 border-yellow-200' :
-          'bg-green-100 dark:bg-green-900/20 border-green-200'
-        }`}>
+        <div
+          className={`p-4 rounded-lg flex items-center justify-between ${
+            dispute.status === 'OPEN'
+              ? 'bg-destructive/10 border border-destructive/20'
+              : dispute.status === 'UNDER_REVIEW'
+                ? 'bg-yellow-100 dark:bg-yellow-900/20 border-yellow-200'
+                : 'bg-green-100 dark:bg-green-900/20 border-green-200'
+          }`}
+        >
           <div className='flex items-center gap-3'>
             <ShieldAlert className='h-6 w-6' />
             <div>
@@ -194,9 +191,7 @@ const AdminP2PDisputeDetailPage: React.FC = () => {
 
             <div>
               <div className='text-sm font-medium text-muted-foreground mb-1'>理由</div>
-              <div className='p-3 bg-muted/30 rounded border text-lg'>
-                {dispute.reason}
-              </div>
+              <div className='p-3 bg-muted/30 rounded border text-lg'>{dispute.reason}</div>
             </div>
 
             {dispute.evidence && (
@@ -220,45 +215,49 @@ const AdminP2PDisputeDetailPage: React.FC = () => {
           </CardHeader>
           <CardContent className='space-y-4'>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                <div>
-                  <div className='text-sm font-medium text-muted-foreground'>取引ID</div>
-                  <div className='font-mono'>{trade?.id}</div>
+              <div>
+                <div className='text-sm font-medium text-muted-foreground'>取引ID</div>
+                <div className='font-mono'>{trade?.id}</div>
+              </div>
+              <div>
+                <div className='text-sm font-medium text-muted-foreground'>金額</div>
+                <div className='text-xl font-bold flex items-center gap-1'>
+                  <DollarSign className='h-4 w-4' />
+                  {Number(trade?.amountUsd).toLocaleString()} USD
                 </div>
-                <div>
-                  <div className='text-sm font-medium text-muted-foreground'>金額</div>
-                  <div className='text-xl font-bold flex items-center gap-1'>
-                    <DollarSign className='h-4 w-4' />
-                    {Number(trade?.amountUsd).toLocaleString()} USD
-                  </div>
-                  <div className='text-sm text-muted-foreground'>
-                    ({Number(trade?.fiatAmount).toLocaleString()} {trade?.fiatCurrency})
-                  </div>
+                <div className='text-sm text-muted-foreground'>
+                  ({Number(trade?.fiatAmount).toLocaleString()} {trade?.fiatCurrency})
                 </div>
+              </div>
             </div>
 
             <div className='grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t'>
-                <div>
-                    <div className='text-sm font-medium text-muted-foreground mb-2'>買い手</div>
-                     <div className='flex items-center gap-2 p-2 bg-muted/30 rounded border'>
-                        {trade?.buyer && <UserAvatar user={trade.buyer} size='sm' />}
-                        <div>
-                            <div className='font-bold'>{trade?.buyer?.displayName}</div>
-                            <div className='text-xs text-muted-foreground'>@{trade?.buyer?.username}</div>
-                        </div>
-                            <Badge variant='outline' className='ml-auto'>Buyer</Badge>
-                     </div>
+              <div>
+                <div className='text-sm font-medium text-muted-foreground mb-2'>買い手</div>
+                <div className='flex items-center gap-2 p-2 bg-muted/30 rounded border'>
+                  {trade?.buyer && <UserAvatar user={trade.buyer} size='sm' />}
+                  <div>
+                    <div className='font-bold'>{trade?.buyer?.displayName}</div>
+                    <div className='text-xs text-muted-foreground'>@{trade?.buyer?.username}</div>
+                  </div>
+                  <Badge variant='outline' className='ml-auto'>
+                    Buyer
+                  </Badge>
                 </div>
-                <div>
-                    <div className='text-sm font-medium text-muted-foreground mb-2'>売り手</div>
-                     <div className='flex items-center gap-2 p-2 bg-muted/30 rounded border'>
-                        {trade?.seller && <UserAvatar user={trade.seller} size='sm' />}
-                        <div>
-                            <div className='font-bold'>{trade?.seller?.displayName}</div>
-                            <div className='text-xs text-muted-foreground'>@{trade?.seller?.username}</div>
-                        </div>
-                        <Badge variant='outline' className='ml-auto'>Seller</Badge>
-                     </div>
+              </div>
+              <div>
+                <div className='text-sm font-medium text-muted-foreground mb-2'>売り手</div>
+                <div className='flex items-center gap-2 p-2 bg-muted/30 rounded border'>
+                  {trade?.seller && <UserAvatar user={trade.seller} size='sm' />}
+                  <div>
+                    <div className='font-bold'>{trade?.seller?.displayName}</div>
+                    <div className='text-xs text-muted-foreground'>@{trade?.seller?.username}</div>
+                  </div>
+                  <Badge variant='outline' className='ml-auto'>
+                    Seller
+                  </Badge>
                 </div>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -299,18 +298,22 @@ const AdminP2PDisputeDetailPage: React.FC = () => {
                   placeholder='裁定の理由や詳細を入力してください'
                   rows={4}
                   value={resolutionNotes}
-                  onChange={(e) => setResolutionNotes(e.target.value)}
+                  onChange={e => setResolutionNotes(e.target.value)}
                 />
               </div>
 
               <div className='pt-4 flex justify-end'>
                 <Button
-                    onClick={handleResolve}
-                    disabled={!resolutionStatus || resolving}
-                    className="w-full sm:w-auto"
+                  onClick={handleResolve}
+                  disabled={!resolutionStatus || resolving}
+                  className='w-full sm:w-auto'
                 >
-                    {resolving ? <Loader2 className="animate-spin mr-2" /> : <Gavel className="mr-2 h-4 w-4" />}
-                    紛争を解決する
+                  {resolving ? (
+                    <Loader2 className='animate-spin mr-2' />
+                  ) : (
+                    <Gavel className='mr-2 h-4 w-4' />
+                  )}
+                  紛争を解決する
                 </Button>
               </div>
             </CardContent>

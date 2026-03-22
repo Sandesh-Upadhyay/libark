@@ -7,20 +7,25 @@ import { Button } from '@/components/atoms/button';
 import { useP2PSellerOffer } from '../../hooks/useP2PSellerOffer';
 import { CURRENCY_OPTIONS, PAYMENT_METHOD_OPTIONS } from '../../../p2p/constants/p2pConstants';
 
-
-
 export interface P2PSellerOfferFormProps {
   onComplete?: () => void;
   onError?: (error: Error) => void;
 }
 
 export function P2PSellerOfferForm({ onComplete, onError }: P2PSellerOfferFormProps) {
-  const { offer, loading: _loading, isCreating, isUpdating, createOffer, updateOffer, refetch } =
-    useP2PSellerOffer({
-      onCreateComplete: onComplete,
-      onUpdateComplete: onComplete,
-      onError,
-    });
+  const {
+    offer,
+    loading: _loading,
+    isCreating,
+    isUpdating,
+    createOffer,
+    updateOffer,
+    refetch,
+  } = useP2PSellerOffer({
+    onCreateComplete: onComplete,
+    onUpdateComplete: onComplete,
+    onError,
+  });
 
   const [deleteOffer, { loading: isDeleting }] = useDeleteP2POfferMutation();
 

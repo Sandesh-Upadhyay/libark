@@ -8,10 +8,7 @@ import { FastifyInstance } from 'fastify';
 import { PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { getRedisClient } from '@libark/redis-client';
-import {
-  UploadSessionManager,
-  UploadTokenService,
-} from '@libark/upload-session';
+import { UploadSessionManager, UploadTokenService } from '@libark/upload-session';
 
 // generateUnifiedMediaUrl は廃止予定のため削除
 
@@ -92,13 +89,16 @@ export async function uploadRoutes(app: FastifyInstance) {
         });
       }
 
-      app.log.info({
-        s3Key,
-        filename,
-        contentType,
-        fileSize,
-        hasMetadata: !!metadata,
-      }, '🚀 [S3Gateway] 純粋プロキシアップロード:');
+      app.log.info(
+        {
+          s3Key,
+          filename,
+          contentType,
+          fileSize,
+          hasMetadata: !!metadata,
+        },
+        '🚀 [S3Gateway] 純粋プロキシアップロード:'
+      );
 
       const s3Client = s3Service.getClient();
       const s3Config = s3Service.getConfig();
@@ -129,12 +129,15 @@ export async function uploadRoutes(app: FastifyInstance) {
       const command = new PutObjectCommand(putObjectParams);
       const response = await s3Client.send(command);
 
-      app.log.info({
-        key: s3Key,
-        etag: response.ETag,
-        bucket: s3Config.backend.bucket,
-        size: fileSize,
-      }, '✅ [S3Gateway] アップロード成功:');
+      app.log.info(
+        {
+          key: s3Key,
+          etag: response.ETag,
+          bucket: s3Config.backend.bucket,
+          size: fileSize,
+        },
+        '✅ [S3Gateway] アップロード成功:'
+      );
 
       // 純粋なレスポンス（ビジネスロジック情報を除去）
       return {
@@ -165,23 +168,29 @@ export async function uploadRoutes(app: FastifyInstance) {
   app.post('/upload-variant', async (request, reply) => {
     try {
       // デバッグ: リクエストの詳細をログ出力
-      app.log.info({
-        contentType: request.headers['content-type'],
-        contentLength: request.headers['content-length'],
-        userAgent: request.headers['user-agent'],
-        headers: Object.keys(request.headers),
-      }, 'S3Gateway /upload-variant request received:');
+      app.log.info(
+        {
+          contentType: request.headers['content-type'],
+          contentLength: request.headers['content-length'],
+          userAgent: request.headers['user-agent'],
+          headers: Object.keys(request.headers),
+        },
+        'S3Gateway /upload-variant request received:'
+      );
 
       const data = await request.file();
 
       // デバッグ: ファイルデータの詳細をログ出力
-      app.log.info({
-        hasData: !!data,
-        filename: data?.filename,
-        mimetype: data?.mimetype,
-        encoding: data?.encoding,
-        fieldsKeys: data?.fields ? Object.keys(data.fields) : 'no fields',
-      }, 'S3Gateway /upload-variant file data:');
+      app.log.info(
+        {
+          hasData: !!data,
+          filename: data?.filename,
+          mimetype: data?.mimetype,
+          encoding: data?.encoding,
+          fieldsKeys: data?.fields ? Object.keys(data.fields) : 'no fields',
+        },
+        'S3Gateway /upload-variant file data:'
+      );
 
       if (!data) {
         app.log.error('S3Gateway /upload-variant: No file data received');
@@ -206,20 +215,23 @@ export async function uploadRoutes(app: FastifyInstance) {
       const fields = data.fields;
 
       // デバッグ: 受信したフィールドをログ出力
-      app.log.info({
-        fieldsKeys: fields ? Object.keys(fields) : 'no fields',
-        fields: fields
-          ? Object.fromEntries(
-              Object.entries(fields).map(([key, value]) => [
-                key,
-                value && typeof value === 'object' && 'value' in value ? value.value : value,
-              ])
-            )
-          : null,
-        filename,
-        contentType,
-        fileSize,
-      }, 'S3Gateway /upload-variant received fields:');
+      app.log.info(
+        {
+          fieldsKeys: fields ? Object.keys(fields) : 'no fields',
+          fields: fields
+            ? Object.fromEntries(
+                Object.entries(fields).map(([key, value]) => [
+                  key,
+                  value && typeof value === 'object' && 'value' in value ? value.value : value,
+                ])
+              )
+            : null,
+          filename,
+          contentType,
+          fileSize,
+        },
+        'S3Gateway /upload-variant received fields:'
+      );
 
       const mediaId =
         fields?.mediaId && 'value' in fields.mediaId ? String(fields.mediaId.value) : undefined;
@@ -228,11 +240,14 @@ export async function uploadRoutes(app: FastifyInstance) {
 
       // 必須パラメータのチェック
       if (!mediaId || !s3Key) {
-        app.log.error({
-          mediaId,
-          s3Key,
-          fieldsReceived: fields ? Object.keys(fields) : 'no fields',
-        }, 'S3Gateway /upload-variant missing required params:');
+        app.log.error(
+          {
+            mediaId,
+            s3Key,
+            fieldsReceived: fields ? Object.keys(fields) : 'no fields',
+          },
+          'S3Gateway /upload-variant missing required params:'
+        );
         return reply.status(400).send({
           error: {
             message: 'mediaId and s3Key are required for variant upload',
@@ -246,13 +261,16 @@ export async function uploadRoutes(app: FastifyInstance) {
         });
       }
 
-      app.log.info({
-        mediaId,
-        s3Key,
-        filename,
-        contentType,
-        fileSize,
-      }, 'S3Gateway バリアントアップロード:');
+      app.log.info(
+        {
+          mediaId,
+          s3Key,
+          filename,
+          contentType,
+          fileSize,
+        },
+        'S3Gateway バリアントアップロード:'
+      );
 
       const s3Client = s3Service.getClient();
       const s3Config = s3Service.getConfig();
@@ -358,10 +376,13 @@ export async function uploadRoutes(app: FastifyInstance) {
 
       // トークンのuploadIdとパスのuploadIdが一致するか確認
       if (payload.uploadId !== uploadId) {
-        app.log.warn({
-          tokenUploadId: payload.uploadId,
-          pathUploadId: uploadId,
-        }, '🔐 [S3Gateway] uploadIdが一致しません:');
+        app.log.warn(
+          {
+            tokenUploadId: payload.uploadId,
+            pathUploadId: uploadId,
+          },
+          '🔐 [S3Gateway] uploadIdが一致しません:'
+        );
         return reply.status(403).send({
           error: {
             message: 'uploadId mismatch',
@@ -386,10 +407,13 @@ export async function uploadRoutes(app: FastifyInstance) {
 
       // セッションのuserIdとトークンのuserIdが一致するか確認
       if (session.userId !== payload.userId) {
-        app.log.warn({
-          sessionUserId: session.userId,
-          tokenUserId: payload.userId,
-        }, '🔐 [S3Gateway] セッションの所有者ではありません:');
+        app.log.warn(
+          {
+            sessionUserId: session.userId,
+            tokenUserId: payload.userId,
+          },
+          '🔐 [S3Gateway] セッションの所有者ではありません:'
+        );
         return reply.status(403).send({
           error: {
             message: 'Session owner mismatch',
@@ -405,11 +429,14 @@ export async function uploadRoutes(app: FastifyInstance) {
       if (!startResult.allowed) {
         const currentSession = startResult.session;
         if (currentSession) {
-          app.log.warn({
-            uploadId,
-            status: currentSession.status,
-            lockUntil: currentSession.lockUntil,
-          }, '🔐 [S3Gateway] 無効な状態:');
+          app.log.warn(
+            {
+              uploadId,
+              status: currentSession.status,
+              lockUntil: currentSession.lockUntil,
+            },
+            '🔐 [S3Gateway] 無効な状態:'
+          );
         }
         return reply.status(409).send({
           error: {
@@ -437,10 +464,13 @@ export async function uploadRoutes(app: FastifyInstance) {
 
       // セッションのcontentTypeと一致するか確認
       if (contentType !== session.contentType) {
-        app.log.warn({
-          expected: session.contentType,
-          received: contentType,
-        }, '🔐 [S3Gateway] Content-Typeが一致しません:');
+        app.log.warn(
+          {
+            expected: session.contentType,
+            received: contentType,
+          },
+          '🔐 [S3Gateway] Content-Typeが一致しません:'
+        );
         await sessionManager.failSession(uploadId, 'Content-Type mismatch');
         return reply.status(415).send({
           error: {
@@ -528,12 +558,15 @@ export async function uploadRoutes(app: FastifyInstance) {
         const uploadResult = await runManagedUpload(upload as ManagedUploadLike);
         const etag = uploadResult.ETag || '';
 
-        app.log.info({
-          uploadId,
-          s3Key: session.s3Key,
-          receivedBytes,
-          etag,
-        }, '✅ [S3Gateway] S3アップロード成功:');
+        app.log.info(
+          {
+            uploadId,
+            s3Key: session.s3Key,
+            receivedBytes,
+            etag,
+          },
+          '✅ [S3Gateway] S3アップロード成功:'
+        );
 
         // ========================================
         // 6. 完了処理
@@ -543,12 +576,15 @@ export async function uploadRoutes(app: FastifyInstance) {
           app.log.error({ uploadId }, '❌ [S3Gateway] セッションの完了に失敗しました:');
           // S3にはアップロード済みだが、Redisの更新に失敗した場合
           // 後でリカバリできるようにログを残す
-          app.log.error({
-            uploadId,
-            s3Key: session.s3Key,
-            receivedBytes,
-            etag,
-          }, '⚠️ [S3Gateway] S3アップロード済みですがRedis更新失敗:');
+          app.log.error(
+            {
+              uploadId,
+              s3Key: session.s3Key,
+              receivedBytes,
+              etag,
+            },
+            '⚠️ [S3Gateway] S3アップロード済みですがRedis更新失敗:'
+          );
         }
 
         // 204 No Content
@@ -557,11 +593,14 @@ export async function uploadRoutes(app: FastifyInstance) {
         const error = uploadError as Error & { code?: string; message?: string; stack?: string };
         // maxBytes超過エラーの場合
         if (error.code === 'PAYLOAD_TOO_LARGE') {
-          app.log.warn({
-            uploadId,
-            receivedBytes,
-            maxBytes,
-          }, '🔐 [S3Gateway] Payload too large:');
+          app.log.warn(
+            {
+              uploadId,
+              receivedBytes,
+              maxBytes,
+            },
+            '🔐 [S3Gateway] Payload too large:'
+          );
           await sessionManager.failSession(uploadId, 'Payload too large');
           return reply.status(413).send({
             error: {
@@ -572,11 +611,14 @@ export async function uploadRoutes(app: FastifyInstance) {
         }
 
         // その他のS3アップロードエラー
-        app.log.error({
-          uploadId,
-          error: error.message,
-          stack: error.stack,
-        }, '❌ [S3Gateway] S3アップロード失敗:');
+        app.log.error(
+          {
+            uploadId,
+            error: error.message,
+            stack: error.stack,
+          },
+          '❌ [S3Gateway] S3アップロード失敗:'
+        );
         await sessionManager.failSession(
           uploadId,
           `S3 upload failed: ${error.message || 'Unknown error'}`
@@ -590,20 +632,26 @@ export async function uploadRoutes(app: FastifyInstance) {
       }
     } catch (error: unknown) {
       const err = error as Error & { message?: string; stack?: string };
-      app.log.error({
-        uploadId,
-        error: err.message,
-        stack: err.stack,
-      }, '❌ [S3Gateway] PUT /upload/:uploadId エラー:');
+      app.log.error(
+        {
+          uploadId,
+          error: err.message,
+          stack: err.stack,
+        },
+        '❌ [S3Gateway] PUT /upload/:uploadId エラー:'
+      );
 
       // エラーが発生した場合、セッションをFAILEDに設定
       try {
         await sessionManager.failSession(uploadId, err.message || 'Unknown error');
       } catch (failError) {
-        app.log.error({
-          uploadId,
-          err: failError,
-        }, '❌ [S3Gateway] セッションの失敗設定にも失敗:');
+        app.log.error(
+          {
+            uploadId,
+            err: failError,
+          },
+          '❌ [S3Gateway] セッションの失敗設定にも失敗:'
+        );
       }
 
       return reply.status(500).send({

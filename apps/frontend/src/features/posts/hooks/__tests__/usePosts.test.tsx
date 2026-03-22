@@ -780,7 +780,7 @@ describe('usePosts', () => {
         content: 'New post',
         visibility: 'PUBLIC',
       });
-      
+
       // ミューテーションが呼び出されることを確認
       expect(resultData).toBeDefined();
     });
@@ -826,7 +826,7 @@ describe('usePosts', () => {
       // onErrorハンドラーがエラーを処理するため、Promiseは解決される
       // エラーが発生してもミューテーションは解決される
       const resultData = await result.current.deletePost('1');
-      
+
       // ミューテーションが呼び出されることを確認
       expect(resultData).toBeDefined();
     });
@@ -872,7 +872,7 @@ describe('usePosts', () => {
       // onErrorハンドラーがエラーを処理するため、Promiseは解決される
       // エラーが発生してもミューテーションは解決される
       const resultData = await result.current.toggleLike('1');
-      
+
       // ミューテーションが呼び出されることを確認
       expect(resultData).toBeDefined();
       expect(mockToggleLike).toHaveBeenCalledWith('1');

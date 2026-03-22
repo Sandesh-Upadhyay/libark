@@ -80,7 +80,7 @@ describe('DepositForm', () => {
       exchangeRate: 150.5,
       enabled: true,
     };
-    render(<DepositForm {...defaultProps} limits={limits} selectedCurrency="ETH" />);
+    render(<DepositForm {...defaultProps} limits={limits} selectedCurrency='ETH' />);
 
     expect(screen.getByText(/0.01000000 ETH/)).toBeInTheDocument();
     expect(screen.getByText(/1 ETH = \$150.50/)).toBeInTheDocument();
@@ -101,8 +101,10 @@ describe('DepositForm', () => {
   });
 
   it('制限額取得エラーが表示されること', () => {
-    render(<DepositForm {...defaultProps} limitsError="取得できませんでした" />);
-    expect(screen.getByText('制限額の取得に失敗しました: 取得できませんでした')).toBeInTheDocument();
+    render(<DepositForm {...defaultProps} limitsError='取得できませんでした' />);
+    expect(
+      screen.getByText('制限額の取得に失敗しました: 取得できませんでした')
+    ).toBeInTheDocument();
   });
 
   it('最小/最大額が未定義の場合、デフォルトのプレースホルダーが表示されること', () => {

@@ -184,7 +184,7 @@ export const LoginDialog: React.FC<LoginDialogProps> = ({
             {/* コンテンツ */}
             <div className='p-6 space-y-6'>
               {!twoFactorIsOpen ? (
-                <div key="login-content" className='space-y-4'>
+                <div key='login-content' className='space-y-4'>
                   {/* ログインフォーム */}
                   <div className='space-y-4'>
                     <LoginForm redirectPath='/home' onSuccess={handleLoginSuccess} compact={true} />
@@ -212,7 +212,7 @@ export const LoginDialog: React.FC<LoginDialogProps> = ({
                   <AuthDialogNavigation type='login' onSwitch={onSwitchToRegister} />
                 </div>
               ) : (
-                <div key="2fa-content" className='space-y-4'>
+                <div key='2fa-content' className='space-y-4'>
                   {/* 2FA認証フォーム */}
                   <div className='space-y-4'>
                     <div className='text-center text-sm text-muted-foreground mb-4'>

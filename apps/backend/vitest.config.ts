@@ -19,7 +19,7 @@ export default defineConfig({
 
     // src配下のすべてのテストを実行（*.test.ts）
     include: ['src/**/*.test.ts'],
-    
+
     // 除外パターン（ベース設定を上書き）
     exclude: ['node_modules/**', 'dist/**', 'build/**', '.next/**', 'coverage/**'],
 

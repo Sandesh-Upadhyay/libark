@@ -51,7 +51,8 @@ const currencySelectorVariants = cva('w-full transition-all duration-200', {
 });
 
 export interface CurrencySelectorProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'fullWidth' | 'maxWidth'>,
+  extends
+    Omit<React.HTMLAttributes<HTMLDivElement>, 'fullWidth' | 'maxWidth'>,
     VariantProps<typeof currencySelectorVariants> {
   /** 利用可能な通貨リスト */
   currencies: string[];

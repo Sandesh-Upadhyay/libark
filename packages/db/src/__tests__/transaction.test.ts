@@ -641,7 +641,11 @@ describe('トランザクション', () => {
         updatedAt: new Date(),
       };
 
-      (prisma.$transaction as ReturnType<typeof vi.fn>).mockResolvedValue([mockUser, mockPost, mockMedia]);
+      (prisma.$transaction as ReturnType<typeof vi.fn>).mockResolvedValue([
+        mockUser,
+        mockPost,
+        mockMedia,
+      ]);
 
       const [user, post, media] = await prisma.$transaction(async tx => {
         const createdUser = await tx.user.create({

@@ -31,10 +31,13 @@ export class MediaAccessControlService {
    */
   async checkAccess(context: MediaAccessContext): Promise<MediaAccessResult> {
     try {
-      this.logger.info({
-        userId: context.userId,
-        mediaId: context.mediaId,
-      }, '🔍 [MediaAccess] アクセス権限チェック開始');
+      this.logger.info(
+        {
+          userId: context.userId,
+          mediaId: context.mediaId,
+        },
+        '🔍 [MediaAccess] アクセス権限チェック開始'
+      );
 
       // メディア情報を取得
       const media = await this.prisma.media.findUnique({
@@ -84,20 +87,26 @@ export class MediaAccessControlService {
         });
 
         if (hasAdminPermission) {
-          this.logger.info({
-            userId: context.userId,
-            mediaId: context.mediaId,
-          }, '✅ [MediaAccess] 管理者アクセス許可');
+          this.logger.info(
+            {
+              userId: context.userId,
+              mediaId: context.mediaId,
+            },
+            '✅ [MediaAccess] 管理者アクセス許可'
+          );
           return { allowed: true };
         }
       }
 
       // メディア所有者は自分のメディアにアクセス可能
       if (context.userId && media.userId === context.userId) {
-        this.logger.info({
-          userId: context.userId,
-          mediaId: context.mediaId,
-        }, '✅ [MediaAccess] 所有者アクセス許可');
+        this.logger.info(
+          {
+            userId: context.userId,
+            mediaId: context.mediaId,
+          },
+          '✅ [MediaAccess] 所有者アクセス許可'
+        );
         return { allowed: true };
       }
 
@@ -107,12 +116,15 @@ export class MediaAccessControlService {
       const isPublicVariant = context.variant === 'BLUR' || context.variant === 'OGP';
 
       if (isPublicMediaType || isPublicVariant) {
-        this.logger.info({
-          userId: context.userId,
-          mediaId: context.mediaId,
-          mediaType: media.type,
-          variant: context.variant,
-        }, '✅ [MediaAccess] パブリックメディア/バリアントアクセス許可');
+        this.logger.info(
+          {
+            userId: context.userId,
+            mediaId: context.mediaId,
+            mediaType: media.type,
+            variant: context.variant,
+          },
+          '✅ [MediaAccess] パブリックメディア/バリアントアクセス許可'
+        );
         return { allowed: true };
       }
 
@@ -191,20 +203,26 @@ export class MediaAccessControlService {
         };
       }
 
-      this.logger.info({
-        userId: context.userId,
-        mediaId: context.mediaId,
-        postId: media.post.id,
-        purchaseId: purchase.id,
-      }, '✅ [MediaAccess] 購入済みアクセス許可');
+      this.logger.info(
+        {
+          userId: context.userId,
+          mediaId: context.mediaId,
+          postId: media.post.id,
+          purchaseId: purchase.id,
+        },
+        '✅ [MediaAccess] 購入済みアクセス許可'
+      );
 
       return { allowed: true };
     } catch (error) {
-      this.logger.error({
-        userId: context.userId,
-        mediaId: context.mediaId,
-        error: error instanceof Error ? error.message : String(error),
-      }, '❌ [MediaAccess] アクセス権限チェックエラー');
+      this.logger.error(
+        {
+          userId: context.userId,
+          mediaId: context.mediaId,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        '❌ [MediaAccess] アクセス権限チェックエラー'
+      );
 
       return {
         allowed: false,

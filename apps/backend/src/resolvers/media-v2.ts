@@ -311,18 +311,24 @@ async function sendS3EventFromFrontend(
 
     await redisClient.publish('s3:events', JSON.stringify(s3Event));
 
-    context.fastify.log.info({
-      bucketName: 'media',
-      objectKey: s3Key,
-      mediaId,
-      eventName: 's3:ObjectCreated:Put',
-    }, '📨 S3 event sent from frontend:');
+    context.fastify.log.info(
+      {
+        bucketName: 'media',
+        objectKey: s3Key,
+        mediaId,
+        eventName: 's3:ObjectCreated:Put',
+      },
+      '📨 S3 event sent from frontend:'
+    );
   } catch (error) {
-    context.fastify.log.error({
-      error: error instanceof Error ? error.message : String(error),
-      mediaId,
-      s3Key,
-    }, '❌ Failed to send S3 event from frontend:');
+    context.fastify.log.error(
+      {
+        error: error instanceof Error ? error.message : String(error),
+        mediaId,
+        s3Key,
+      },
+      '❌ Failed to send S3 event from frontend:'
+    );
     // S3イベント送信の失敗はアップロード自体の失敗とはしない
   }
 }
@@ -455,10 +461,13 @@ const resolvers = {
           });
         }
 
-        context.fastify.log.info({
-          mediaId,
-          userId: user.id,
-        }, '📡 [GraphQL] アップロード進捗サブスクリプション開始:');
+        context.fastify.log.info(
+          {
+            mediaId,
+            userId: user.id,
+          },
+          '📡 [GraphQL] アップロード進捗サブスクリプション開始:'
+        );
 
         // Redis Pub/Sub チャンネルを購読
         if (!context.redisPubSub) {
@@ -532,21 +541,27 @@ const resolvers = {
           },
         });
 
-        context.fastify.log.info({
-          mediaId: presignedDataObj.mediaId,
-          filename: sanitizedFilename,
-          size,
-          userId: context.user.id,
-        }, '✅ プリサインドURL生成完了:');
+        context.fastify.log.info(
+          {
+            mediaId: presignedDataObj.mediaId,
+            filename: sanitizedFilename,
+            size,
+            userId: context.user.id,
+          },
+          '✅ プリサインドURL生成完了:'
+        );
 
         return presignedData;
       } catch (error) {
         // Zodバリデーションエラーの処理
         if (error instanceof z.ZodError) {
-          context.fastify.log.warn({
-            errors: error.errors,
-            input,
-          }, '❌ プリサインドアップロードバリデーションエラー:');
+          context.fastify.log.warn(
+            {
+              errors: error.errors,
+              input,
+            },
+            '❌ プリサインドアップロードバリデーションエラー:'
+          );
 
           const errorMessage = error.errors.map(err => err.message).join(', ');
           throw new GraphQLError(`入力データが無効です: ${errorMessage}`, {
@@ -571,7 +586,19 @@ const resolvers = {
      * プロキシアップロード（責任分離対応）
      * S3ゲートウェイクライアント経由でアップロードし、アプリケーション層でデータベース操作を実行
      */
-    uploadFileProxy: async (_: unknown, args: { input: { filename: string; contentType: string; size: number; mediaType: string; fileData: string } }, context: GraphQLContext) => {
+    uploadFileProxy: async (
+      _: unknown,
+      args: {
+        input: {
+          filename: string;
+          contentType: string;
+          size: number;
+          mediaType: string;
+          fileData: string;
+        };
+      },
+      context: GraphQLContext
+    ) => {
       try {
         if (!context.user) {
           throw new GraphQLError('認証が必要です', {
@@ -657,26 +684,35 @@ const resolvers = {
         // メディア処理ワーカーキューに追加
         try {
           await addMediaProcessingJob(mediaId, mediaType, context.user.id);
-          context.fastify?.log.info({
-            mediaId,
-            mediaType,
-            userId: context.user.id,
-          }, '✅ メディア処理ジョブ追加完了:');
+          context.fastify?.log.info(
+            {
+              mediaId,
+              mediaType,
+              userId: context.user.id,
+            },
+            '✅ メディア処理ジョブ追加完了:'
+          );
         } catch (jobError) {
-          context.fastify?.log.error({
-            mediaId,
-            error: jobError instanceof Error ? jobError.message : String(jobError),
-          }, '❌ メディア処理ジョブ追加失敗:');
+          context.fastify?.log.error(
+            {
+              mediaId,
+              error: jobError instanceof Error ? jobError.message : String(jobError),
+            },
+            '❌ メディア処理ジョブ追加失敗:'
+          );
           // ジョブ追加失敗でもアップロード自体は成功とする
         }
 
-        context.fastify?.log.info({
-          mediaId,
-          filename: sanitizedFilename,
-          size,
-          userId: context.user.id,
-          s3Key,
-        }, '✅ プロキシアップロード完了:');
+        context.fastify?.log.info(
+          {
+            mediaId,
+            filename: sanitizedFilename,
+            size,
+            userId: context.user.id,
+            s3Key,
+          },
+          '✅ プロキシアップロード完了:'
+        );
 
         return {
           success: true,
@@ -758,21 +794,27 @@ const resolvers = {
         });
 
         const multipartDataObj = multipartData as { uploadId: string; mediaId: string };
-        context.fastify?.log.info({
-          uploadId: multipartDataObj.uploadId,
-          mediaId: multipartDataObj.mediaId,
-          partCount,
-          userId: context.user.id,
-        }, '✅ マルチパートアップロード開始:');
+        context.fastify?.log.info(
+          {
+            uploadId: multipartDataObj.uploadId,
+            mediaId: multipartDataObj.mediaId,
+            partCount,
+            userId: context.user.id,
+          },
+          '✅ マルチパートアップロード開始:'
+        );
 
         return multipartData;
       } catch (error) {
         // Zodバリデーションエラーの処理
         if (error instanceof z.ZodError) {
-          context.fastify?.log.warn({
-            errors: error.errors,
-            input,
-          }, '❌ マルチパートアップロードバリデーションエラー:');
+          context.fastify?.log.warn(
+            {
+              errors: error.errors,
+              input,
+            },
+            '❌ マルチパートアップロードバリデーションエラー:'
+          );
 
           const errorMessage = error.errors.map(err => err.message).join(', ');
           throw new GraphQLError(`入力データが無効です: ${errorMessage}`, {
@@ -873,27 +915,36 @@ const resolvers = {
         // メディア処理ワーカーキューに追加
         try {
           await addMediaProcessingJob(mediaId, media.type, context.user.id);
-          context.fastify?.log.info({
-            mediaId: media.id,
-            mediaType: media.type,
-            userId: media.userId,
-          }, '✅ メディア処理ジョブ追加完了:');
+          context.fastify?.log.info(
+            {
+              mediaId: media.id,
+              mediaType: media.type,
+              userId: media.userId,
+            },
+            '✅ メディア処理ジョブ追加完了:'
+          );
         } catch (jobError) {
-          context.fastify.log.error({
-            mediaId,
-            error: jobError instanceof Error ? jobError.message : String(jobError),
-          }, '❌ メディア処理ジョブ追加失敗:');
+          context.fastify.log.error(
+            {
+              mediaId,
+              error: jobError instanceof Error ? jobError.message : String(jobError),
+            },
+            '❌ メディア処理ジョブ追加失敗:'
+          );
           // ジョブ追加失敗でもアップロード完了通知は成功とする
         }
 
         // S3イベントをワーカーに送信（責任分離版）
         await sendS3EventFromFrontend(context, mediaId, s3Key, media);
 
-        context.fastify?.log.info({
-          mediaId,
-          s3Key,
-          userId: context.user.id,
-        }, '✅ フロントエンドからのアップロード完了通知:');
+        context.fastify?.log.info(
+          {
+            mediaId,
+            s3Key,
+            userId: context.user.id,
+          },
+          '✅ フロントエンドからのアップロード完了通知:'
+        );
 
         return {
           media,
@@ -1002,15 +1053,18 @@ const resolvers = {
         // expiresAt: TTL秒後
         const expiresAt = new Date(Date.now() + UPLOAD_SESSION_CONSTANTS.SESSION_TTL * 1000);
 
-        context.fastify?.log.info({
-          uploadId,
-          userId: context.user.id,
-          kind,
-          contentType,
-          byteSize,
-          maxBytes,
-          s3Key,
-        }, '✅ UploadSession作成完了:');
+        context.fastify?.log.info(
+          {
+            uploadId,
+            userId: context.user.id,
+            kind,
+            contentType,
+            byteSize,
+            maxBytes,
+            s3Key,
+          },
+          '✅ UploadSession作成完了:'
+        );
 
         return {
           uploadId,
@@ -1023,10 +1077,20 @@ const resolvers = {
       } catch (error) {
         // Zodバリデーションエラーの処理
         if (error instanceof z.ZodError) {
-          context.fastify?.log.warn({
-            errors: error.errors,
-            input: { filename: input.filename, contentType: input.contentType, kind: input.kind, byteSize: input.byteSize, width: input.width, height: input.height },
-          }, '❌ UploadSession作成バリデーションエラー:');
+          context.fastify?.log.warn(
+            {
+              errors: error.errors,
+              input: {
+                filename: input.filename,
+                contentType: input.contentType,
+                kind: input.kind,
+                byteSize: input.byteSize,
+                width: input.width,
+                height: input.height,
+              },
+            },
+            '❌ UploadSession作成バリデーションエラー:'
+          );
 
           const errorMessage = error.errors.map(err => err.message).join(', ');
           throw new GraphQLError(`入力データが無効です: ${errorMessage}`, {
@@ -1133,25 +1197,34 @@ const resolvers = {
         // メディア処理ワーカーキューに追加
         try {
           await addMediaProcessingJob(uploadId, session.kind, context.user.id);
-          context.fastify.log.info({
-            mediaId: uploadId,
-            mediaType: session.kind,
-            userId: context.user.id,
-          }, '✅ メディア処理ジョブ追加完了:');
+          context.fastify.log.info(
+            {
+              mediaId: uploadId,
+              mediaType: session.kind,
+              userId: context.user.id,
+            },
+            '✅ メディア処理ジョブ追加完了:'
+          );
         } catch (jobError) {
-          context.fastify?.log.error({
-            mediaId: media.id,
-            error: jobError instanceof Error ? jobError.message : String(jobError),
-          }, '❌ メディア処理ジョブ追加失敗:');
+          context.fastify?.log.error(
+            {
+              mediaId: media.id,
+              error: jobError instanceof Error ? jobError.message : String(jobError),
+            },
+            '❌ メディア処理ジョブ追加失敗:'
+          );
           // ジョブ追加失敗でも完了処理は成功とする
         }
 
-        context.fastify?.log.info({
-        uploadId,
-        userId: context.user.id,
-        s3Key: session.s3Key,
-        fileSize: session.receivedBytes,
-      }, '✅ UploadSession完了処理完了:');
+        context.fastify?.log.info(
+          {
+            uploadId,
+            userId: context.user.id,
+            s3Key: session.s3Key,
+            fileSize: session.receivedBytes,
+          },
+          '✅ UploadSession完了処理完了:'
+        );
         return media;
       } catch (error) {
         context.fastify?.log.error({ err: error }, '❌ UploadSession完了エラー:');

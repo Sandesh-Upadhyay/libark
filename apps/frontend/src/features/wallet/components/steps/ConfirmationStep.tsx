@@ -4,7 +4,6 @@ import { Button } from '@/components/atoms/button';
 
 import { P2PAmountDisplay } from '../atoms/P2PAmountDisplay';
 
-
 export interface ConfirmationStepProps {
   trade: P2PTradeInfoFragment;
   onNewDeposit: () => void;

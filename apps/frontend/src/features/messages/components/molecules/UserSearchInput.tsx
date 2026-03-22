@@ -18,7 +18,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@apollo/client';
 import { Search, Users, Check } from 'lucide-react';
 
-
 import { Input } from '@/components/atoms';
 import { LoadingSpinner } from '@/components/atoms';
 

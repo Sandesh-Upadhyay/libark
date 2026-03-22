@@ -5,7 +5,6 @@ import { MemoryRouter } from 'react-router-dom';
 import { graphql, HttpResponse } from 'msw';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 
-
 import { Providers } from '@/providers';
 import { PostList } from '@/features/posts/components/PostList';
 

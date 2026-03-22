@@ -139,14 +139,18 @@ export async function initializeGraphQL(fastify: FastifyInstance) {
             },
           };
 
-          fastify.log.info({
-            hasSocket: !!ctxObj.socket,
-            hasExtra: !!ctx.extra,
-            hasRequest: !!ctxObj.request,
-            cookieFromExtra: ctx.extra?.request?.headers?.cookie?.substring(0, 50) + '...',
-            cookieFromSocket: ctxObj.socket?.upgradeReq?.headers?.cookie?.substring(0, 50) + '...',
-            cookieFromRequest: ctxObj.request?.headers?.cookie?.substring(0, 50) + '...',
-          }, '🔍 [GraphQL WebSocket] リクエスト情報デバッグ:');
+          fastify.log.info(
+            {
+              hasSocket: !!ctxObj.socket,
+              hasExtra: !!ctx.extra,
+              hasRequest: !!ctxObj.request,
+              cookieFromExtra: ctx.extra?.request?.headers?.cookie?.substring(0, 50) + '...',
+              cookieFromSocket:
+                ctxObj.socket?.upgradeReq?.headers?.cookie?.substring(0, 50) + '...',
+              cookieFromRequest: ctxObj.request?.headers?.cookie?.substring(0, 50) + '...',
+            },
+            '🔍 [GraphQL WebSocket] リクエスト情報デバッグ:'
+          );
 
           const contextValue = await createSubscriptionContext(
             ctx.connectionParams || {},
@@ -314,9 +318,12 @@ export async function initializeGraphQL(fastify: FastifyInstance) {
         } catch (uploadError) {
           // Zodバリデーションエラーの処理
           if (uploadError instanceof z.ZodError) {
-            fastify.log.error({
-              errors: uploadError.errors,
-            } as unknown, 'GraphQL upload config validation error:');
+            fastify.log.error(
+              {
+                errors: uploadError.errors,
+              } as unknown,
+              'GraphQL upload config validation error:'
+            );
 
             reply.status(500);
             return {

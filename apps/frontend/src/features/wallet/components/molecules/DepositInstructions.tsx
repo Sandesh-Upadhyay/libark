@@ -13,7 +13,6 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { Copy, Clock, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
-
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/atoms';
 import { Button, Badge } from '@/components/atoms';
@@ -44,8 +43,7 @@ const depositInstructionsVariants = cva('w-full space-y-4', {
 });
 
 export interface DepositInstructionsProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof depositInstructionsVariants> {
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof depositInstructionsVariants> {
   /** 入金先アドレス */
   depositAddress: string;
   /** 通貨 */

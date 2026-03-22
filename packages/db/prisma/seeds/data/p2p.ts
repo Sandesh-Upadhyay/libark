@@ -3,10 +3,7 @@
  * シードで使用するP2P取引データを定義
  */
 
-import type {
-  P2PTradeData,
-  P2PSellerOfferData,
-} from '../utils/types';
+import type { P2PTradeData, P2PSellerOfferData } from '../utils/types';
 
 // 為替レート（1 USD = 150 JPY）
 const EXCHANGE_RATE_JPY = 150;

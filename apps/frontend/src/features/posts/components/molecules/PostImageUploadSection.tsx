@@ -16,7 +16,6 @@ import { MediaType as GraphQLMediaType } from '@libark/graphql-client/generated/
 import { toast } from 'sonner';
 import { ImagePlus, Loader } from 'lucide-react';
 
-
 import { Button } from '@/components/atoms';
 // import { useImageUploadErrorHandler } from '@/hooks/useUnifiedErrorHandler';
 import { getMediaConfig } from '@/config/media-config';

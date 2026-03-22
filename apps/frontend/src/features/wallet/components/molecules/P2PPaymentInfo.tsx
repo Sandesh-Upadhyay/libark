@@ -2,7 +2,6 @@ import { useState, useCallback } from 'react';
 import { Copy, Check } from 'lucide-react';
 import type { P2PTradeInfoFragment } from '@libark/graphql-client';
 
-
 import { Button } from '@/components/atoms/button';
 import { toast } from '@/lib/toast';
 
@@ -30,13 +29,7 @@ interface PaymentDetails {
 /**
  * コピー可能なフィールドコンポーネント
  */
-function CopyableField({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
+function CopyableField({ label, value }: { label: string; value: string }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async () => {
@@ -55,12 +48,7 @@ function CopyableField({
       <span className='text-sm text-muted-foreground'>{label}</span>
       <div className='flex items-center gap-2'>
         <span className='font-medium'>{value}</span>
-        <Button
-          variant='ghost'
-          size='sm'
-          onClick={handleCopy}
-          className='h-7 w-7 p-0'
-        >
+        <Button variant='ghost' size='sm' onClick={handleCopy} className='h-7 w-7 p-0'>
           {copied ? (
             <Check className='h-4 w-4 text-green-500' />
           ) : (

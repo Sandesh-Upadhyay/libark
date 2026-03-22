@@ -96,11 +96,13 @@ export const followResolvers = {
         ]);
 
         const hasNextPage = follows.length > first;
-        const edges = follows.slice(0, first).map((follow: { follower: unknown; createdAt: Date }) => ({
-          node: follow.follower,
-          cursor: encodeCursor(follow.createdAt),
-          followedAt: follow.createdAt,
-        }));
+        const edges = follows
+          .slice(0, first)
+          .map((follow: { follower: unknown; createdAt: Date }) => ({
+            node: follow.follower,
+            cursor: encodeCursor(follow.createdAt),
+            followedAt: follow.createdAt,
+          }));
 
         return {
           edges,
@@ -168,11 +170,13 @@ export const followResolvers = {
         ]);
 
         const hasNextPage = follows.length > first;
-        const edges = follows.slice(0, first).map((follow: { following: unknown; createdAt: Date }) => ({
-          node: follow.following,
-          cursor: encodeCursor(follow.createdAt),
-          followedAt: follow.createdAt,
-        }));
+        const edges = follows
+          .slice(0, first)
+          .map((follow: { following: unknown; createdAt: Date }) => ({
+            node: follow.following,
+            cursor: encodeCursor(follow.createdAt),
+            followedAt: follow.createdAt,
+          }));
 
         return {
           edges,

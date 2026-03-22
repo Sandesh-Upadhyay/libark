@@ -10,7 +10,6 @@
 import React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 
-
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle, Button } from '@/components/atoms';
 
@@ -41,7 +40,8 @@ const multiWalletBalanceCardVariants = cva('transition-all duration-200', {
 });
 
 export interface MultiWalletBalanceCardProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof multiWalletBalanceCardVariants> {
   /** ウォレット残高 */
   walletBalance: number;

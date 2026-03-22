@@ -154,7 +154,8 @@ export const getOtherParticipants = (
   conversation: ConversationInfoFragment,
   currentUserId: string
 ): GraphQLUser[] => {
-  return (conversation.activeParticipants?.filter(user => user.id !== currentUserId) || []) as GraphQLUser[];
+  return (conversation.activeParticipants?.filter(user => user.id !== currentUserId) ||
+    []) as GraphQLUser[];
 };
 
 /**

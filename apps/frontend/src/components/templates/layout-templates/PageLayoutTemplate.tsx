@@ -18,7 +18,6 @@
 
 import React, { memo } from 'react';
 
-
 import { Guard } from '@/features/auth/components/organisms/Guard';
 import { Icon, ModernPageHeader } from '@/components/atoms';
 // Textコンポーネントは削除済み - 直接Tailwindクラスを使用

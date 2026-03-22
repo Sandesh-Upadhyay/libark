@@ -12,7 +12,6 @@ import type {
   P2PTradeStatus,
 } from '@libark/graphql-client';
 
-
 import { toast } from '@/lib/toast';
 import { UserAvatar } from '@/components/molecules/UserAvatar';
 import { formatCurrency } from '@/lib/utils/currencyUtils';
@@ -62,7 +61,8 @@ export function P2PBuyDrawer({ isOpen, onClose, offer }: P2PBuyDrawerProps) {
   useEffect(() => {
     if (offer) {
       setFiatCurrency(offer.fiatCurrency);
-      const baseRate = exchangeRateData?.currentExchangeRate || FALLBACK_EXCHANGE_RATES[offer.fiatCurrency] || 1;
+      const baseRate =
+        exchangeRateData?.currentExchangeRate || FALLBACK_EXCHANGE_RATES[offer.fiatCurrency] || 1;
       setExchangeRate(baseRate * (1 + Number(offer.exchangeRateMargin) / 100));
     }
   }, [offer, exchangeRateData]);
@@ -147,10 +147,7 @@ export function P2PBuyDrawer({ isOpen, onClose, offer }: P2PBuyDrawerProps) {
   return (
     <div className={`fixed inset-0 z-50 ${isOpen ? 'block' : 'hidden'}`}>
       {/* オーバーレイ */}
-      <div
-        className='absolute inset-0 bg-black/50 transition-opacity'
-        onClick={onClose}
-      />
+      <div className='absolute inset-0 bg-black/50 transition-opacity' onClick={onClose} />
 
       {/* ドロワー */}
       <div className='absolute right-0 top-0 h-full w-full max-w-md bg-card shadow-xl overflow-y-auto border-l'>
@@ -170,7 +167,7 @@ export function P2PBuyDrawer({ isOpen, onClose, offer }: P2PBuyDrawerProps) {
           <div className='mb-6 p-4 bg-muted/30 rounded-lg border border-border'>
             <div className='flex items-center gap-3 mb-4'>
               <UserAvatar
-                size="md"
+                size='md'
                 username={offer.seller?.username}
                 displayName={offer.seller?.displayName ?? undefined}
                 profileImageId={offer.seller?.profileImageId ?? undefined}
@@ -195,7 +192,8 @@ export function P2PBuyDrawer({ isOpen, onClose, offer }: P2PBuyDrawerProps) {
               <div className='flex justify-between'>
                 <span className='text-muted-foreground text-xs'>対応金額</span>
                 <span className='font-medium'>
-                  {formatCurrency(Number(offer.minAmountUsd), { currency: 'USD' })} - {formatCurrency(Number(offer.maxAmountUsd), { currency: 'USD' })}
+                  {formatCurrency(Number(offer.minAmountUsd), { currency: 'USD' })} -{' '}
+                  {formatCurrency(Number(offer.maxAmountUsd), { currency: 'USD' })}
                 </span>
               </div>
             </div>

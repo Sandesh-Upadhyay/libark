@@ -33,7 +33,6 @@ import { useExchangeRate, useSupportedCurrencies, useWallet } from '@/features/w
 import { CurrencyIcon } from '../atoms/CurrencyIcon';
 import { WalletBalance } from '../atoms/WalletBalance';
 
-
 export interface WithdrawModalProps {
   isOpen: boolean;
   onClose: () => void;

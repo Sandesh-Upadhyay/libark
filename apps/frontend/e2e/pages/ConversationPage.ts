@@ -28,7 +28,7 @@ export class ConversationPage {
   async sendMessage(text: string) {
     await this.messageInput.sendMessage(text);
   }
-  
+
   async getMessages() {
     return this.messageList.getMessages();
   }
