@@ -113,12 +113,15 @@ export async function purchasePost(context: GraphQLContext, input: PurchasePostI
     });
   });
 
-  context.fastify.log.info({
-    purchaseId: purchase.id,
-    userId: context.user.id,
-    postId,
-    price: post.price,
-  }, '💰 [PurchasePost] 投稿購入完了:');
+  context.fastify.log.info(
+    {
+      purchaseId: purchase.id,
+      userId: context.user.id,
+      postId,
+      price: post.price,
+    },
+    '💰 [PurchasePost] 投稿購入完了:'
+  );
 
   return purchase;
 }

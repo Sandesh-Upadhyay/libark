@@ -61,16 +61,19 @@ export async function createPost(context: GraphQLContext, input: PostCreateInput
   validatePaidPostPrice(visibility, price);
   validatePostContent(content, mediaIds);
 
-  context.fastify.log.info({
-    userId: context.user.id,
-    content:
-      content?.substring(0, PAGINATION_CONSTANTS.MAX_PAGE_SIZE) +
-      (content && content.length > PAGINATION_CONSTANTS.MAX_PAGE_SIZE ? '...' : ''),
-    visibility,
-    price,
-    mediaIds,
-    mediaCount: mediaIds?.length || 0,
-  }, '📝 [CreatePost] 投稿作成開始:');
+  context.fastify.log.info(
+    {
+      userId: context.user.id,
+      content:
+        content?.substring(0, PAGINATION_CONSTANTS.MAX_PAGE_SIZE) +
+        (content && content.length > PAGINATION_CONSTANTS.MAX_PAGE_SIZE ? '...' : ''),
+      visibility,
+      price,
+      mediaIds,
+      mediaCount: mediaIds?.length || 0,
+    },
+    '📝 [CreatePost] 投稿作成開始:'
+  );
 
   // メディアの所有権確認
   if (mediaIds && mediaIds.length > 0) {
@@ -110,11 +113,14 @@ export async function createPost(context: GraphQLContext, input: PostCreateInput
 
     // メディアを投稿に紐づけ
     if (mediaIds && mediaIds.length > 0) {
-      context.fastify.log.info({
-        postId: post.id,
-        mediaIds,
-        userId: context.user!.id,
-      }, '🔗 [CreatePost] メディア関連付け開始:');
+      context.fastify.log.info(
+        {
+          postId: post.id,
+          mediaIds,
+          userId: context.user!.id,
+        },
+        '🔗 [CreatePost] メディア関連付け開始:'
+      );
 
       const updateResult = await tx.media.updateMany({
         where: {
@@ -126,18 +132,24 @@ export async function createPost(context: GraphQLContext, input: PostCreateInput
         },
       });
 
-      context.fastify.log.info({
-        postId: post.id,
-        updatedCount: updateResult.count,
-        expectedCount: mediaIds.length,
-      }, '✅ [CreatePost] メディア関連付け完了:');
+      context.fastify.log.info(
+        {
+          postId: post.id,
+          updatedCount: updateResult.count,
+          expectedCount: mediaIds.length,
+        },
+        '✅ [CreatePost] メディア関連付け完了:'
+      );
 
       if (updateResult.count !== mediaIds.length) {
-        context.fastify.log.warn({
-          expected: mediaIds.length,
-          actual: updateResult.count,
-          mediaIds,
-        }, '⚠️ [CreatePost] メディア関連付け数が不一致:');
+        context.fastify.log.warn(
+          {
+            expected: mediaIds.length,
+            actual: updateResult.count,
+            mediaIds,
+          },
+          '⚠️ [CreatePost] メディア関連付け数が不一致:'
+        );
       }
     }
 

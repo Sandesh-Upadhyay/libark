@@ -1,4 +1,3 @@
-
 import { PageLayoutTemplate } from '@/components/templates/layout-templates';
 import { Header } from '@/components/molecules/Header';
 

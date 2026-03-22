@@ -49,7 +49,7 @@ export default function P2PTradeDetailPage() {
   useP2PSubscription({
     userId: user?.id || '',
     enabled: !!user?.id && !!tradeId,
-    onTradeUpdate: (updatedTrade) => {
+    onTradeUpdate: updatedTrade => {
       // 表示中の取引が更新された場合のみリフレッシュ
       if (updatedTrade.id === tradeId) {
         refetch();
@@ -198,9 +198,7 @@ export default function P2PTradeDetailPage() {
           <Header title='取引詳細' />
           <div className='text-center py-12'>
             <p className='text-muted-foreground mb-4'>取引が見つかりません</p>
-            <Button onClick={() => navigate('/wallet/p2p/history')}>
-              履歴に戻る
-            </Button>
+            <Button onClick={() => navigate('/wallet/p2p/history')}>履歴に戻る</Button>
           </div>
         </div>
       </PageLayoutTemplate>
@@ -212,10 +210,7 @@ export default function P2PTradeDetailPage() {
   return (
     <PageLayoutTemplate header={{ show: false }} requireAuth={true}>
       <div role='main' aria-label='取引詳細'>
-        <Header
-          title='取引詳細'
-          subtitle={`取引ID: ${trade.id.slice(0, 8)}...`}
-        />
+        <Header title='取引詳細' subtitle={`取引ID: ${trade.id.slice(0, 8)}...`} />
 
         <div className='space-y-6'>
           {/* 取引カード */}
@@ -229,9 +224,7 @@ export default function P2PTradeDetailPage() {
           />
 
           {/* 支払い情報（MATCHEDまたはPAYMENT_SENT状態の場合） */}
-          {['MATCHED', 'PAYMENT_SENT'].includes(trade.status) && (
-            <P2PPaymentInfo trade={trade} />
-          )}
+          {['MATCHED', 'PAYMENT_SENT'].includes(trade.status) && <P2PPaymentInfo trade={trade} />}
 
           {/* アクションボタン */}
           <div className='border-t border-border pt-6 space-y-4'>
@@ -326,10 +319,7 @@ export default function P2PTradeDetailPage() {
             </div>
 
             <DialogFooter>
-              <Button
-                variant='outline'
-                onClick={() => setIsDisputeDialogOpen(false)}
-              >
+              <Button variant='outline' onClick={() => setIsDisputeDialogOpen(false)}>
                 キャンセル
               </Button>
               <Button

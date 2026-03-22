@@ -26,7 +26,6 @@ import { useToggleCommentLike } from '../../hooks/useToggleCommentLike';
 import { CommentForm } from './CommentForm';
 import { CommentList } from './CommentList';
 
-
 export const CommentSection = ({ postId, commentsCount, currentUser }: CommentSectionProps) => {
   // Comment関連のフックを使用
   const { data: comments, isLoading, error } = useApolloGraphQLComments(postId);

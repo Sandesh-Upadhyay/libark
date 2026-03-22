@@ -15,7 +15,6 @@ import {
 import { useProxyUpload, type ProxyUploadHookResponse } from './useProxyUpload';
 import { type UnifiedUploadResult } from './useMediaUpload';
 
-
 // 統一メディアタイプ定義（シンプル命名）
 type MediaType = GraphQLMediaType;
 

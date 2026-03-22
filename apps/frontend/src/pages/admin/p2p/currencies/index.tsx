@@ -26,7 +26,7 @@ const AdminP2PCurrenciesPage: React.FC = () => {
       setNewCurrency({ code: '', name: '', symbol: '' });
       refetch();
     },
-    onError: (err) => {
+    onError: err => {
       toast.error(`追加に失敗しました: ${err.message}`);
     },
   });
@@ -37,7 +37,7 @@ const AdminP2PCurrenciesPage: React.FC = () => {
       setEditingId(null);
       refetch();
     },
-    onError: (err) => {
+    onError: err => {
       toast.error(`更新に失敗しました: ${err.message}`);
     },
   });
@@ -134,15 +134,25 @@ const AdminP2PCurrenciesPage: React.FC = () => {
               <table className='w-full border-collapse'>
                 <thead>
                   <tr className='bg-muted/30 border-b border-border/40'>
-                    <th className='text-left p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider'>コード</th>
-                    <th className='text-left p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider'>名称</th>
-                    <th className='text-left p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider'>記号</th>
-                    <th className='text-left p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider'>ステータス</th>
-                    <th className='text-right p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider'>操作</th>
+                    <th className='text-left p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider'>
+                      コード
+                    </th>
+                    <th className='text-left p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider'>
+                      名称
+                    </th>
+                    <th className='text-left p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider'>
+                      記号
+                    </th>
+                    <th className='text-left p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider'>
+                      ステータス
+                    </th>
+                    <th className='text-right p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider'>
+                      操作
+                    </th>
                   </tr>
                 </thead>
                 <tbody className='divide-y divide-border/40'>
-                  {currencies.map((currency) => (
+                  {currencies.map(currency => (
                     <tr key={currency.id} className='hover:bg-muted/10 transition-colors group'>
                       <td className='p-4'>
                         <div className='flex items-center gap-2'>
@@ -156,7 +166,7 @@ const AdminP2PCurrenciesPage: React.FC = () => {
                         {editingId === currency.id ? (
                           <Input
                             value={editValues.name}
-                            onChange={(e) => setEditValues({ ...editValues, name: e.target.value })}
+                            onChange={e => setEditValues({ ...editValues, name: e.target.value })}
                             className='max-w-[200px]'
                           />
                         ) : (
@@ -167,11 +177,13 @@ const AdminP2PCurrenciesPage: React.FC = () => {
                         {editingId === currency.id ? (
                           <Input
                             value={editValues.symbol}
-                            onChange={(e) => setEditValues({ ...editValues, symbol: e.target.value })}
+                            onChange={e => setEditValues({ ...editValues, symbol: e.target.value })}
                             className='max-w-[100px]'
                           />
                         ) : (
-                          <span className='text-sm font-mono text-foreground'>{currency.symbol}</span>
+                          <span className='text-sm font-mono text-foreground'>
+                            {currency.symbol}
+                          </span>
                         )}
                       </td>
                       <td className='p-4'>
@@ -219,7 +231,9 @@ const AdminP2PCurrenciesPage: React.FC = () => {
                                 variant='ghost'
                                 className={cn(
                                   'h-8 w-8 p-0',
-                                  currency.isActive ? 'text-yellow-500 hover:text-yellow-600' : 'text-success hover:text-success'
+                                  currency.isActive
+                                    ? 'text-yellow-500 hover:text-yellow-600'
+                                    : 'text-success hover:text-success'
                                 )}
                                 onClick={() => toggleActive(currency.id, currency.isActive)}
                                 disabled={isUpdating}
@@ -261,7 +275,7 @@ const AdminP2PCurrenciesPage: React.FC = () => {
                     placeholder='例: THB'
                     maxLength={3}
                     value={newCurrency.code}
-                    onChange={(e) => setNewCurrency({ ...newCurrency, code: e.target.value })}
+                    onChange={e => setNewCurrency({ ...newCurrency, code: e.target.value })}
                     className='uppercase'
                   />
                 </div>
@@ -271,7 +285,7 @@ const AdminP2PCurrenciesPage: React.FC = () => {
                     id='name'
                     placeholder='例: タイ・バーツ'
                     value={newCurrency.name}
-                    onChange={(e) => setNewCurrency({ ...newCurrency, name: e.target.value })}
+                    onChange={e => setNewCurrency({ ...newCurrency, name: e.target.value })}
                   />
                 </div>
                 <div className='space-y-2'>
@@ -280,7 +294,7 @@ const AdminP2PCurrenciesPage: React.FC = () => {
                     id='symbol'
                     placeholder='例: ฿'
                     value={newCurrency.symbol}
-                    onChange={(e) => setNewCurrency({ ...newCurrency, symbol: e.target.value })}
+                    onChange={e => setNewCurrency({ ...newCurrency, symbol: e.target.value })}
                   />
                 </div>
                 <div className='flex gap-3 mt-8'>

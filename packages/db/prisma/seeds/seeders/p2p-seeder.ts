@@ -6,11 +6,7 @@
 import { PrismaClient } from '@prisma/client';
 
 import type { User, SeedResult } from '../utils/types';
-import {
-  p2pTradeRequestsData,
-  p2pWalletTransactionsData,
-  p2pConfig,
-} from '../data/p2p';
+import { p2pTradeRequestsData, p2pWalletTransactionsData, p2pConfig } from '../data/p2p';
 import { logProgress } from '../utils/database';
 
 /**
@@ -450,7 +446,11 @@ export async function seedP2PTrades(prisma: PrismaClient): Promise<SeedResult> {
 
     return {
       success: true,
-      count: fiatCurrenciesData.length + p2pOffersData.length + p2pTradeRequestsData.length + p2pWalletTransactionsData.length,
+      count:
+        fiatCurrenciesData.length +
+        p2pOffersData.length +
+        p2pTradeRequestsData.length +
+        p2pWalletTransactionsData.length,
       message: 'P2P取引関連のシードが正常に完了しました',
     };
   } catch (error) {

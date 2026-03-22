@@ -128,7 +128,9 @@ describe('📜 GraphQLエラーレスポンス検証テスト', () => {
         const error = result.errors[0];
         expect(error.message).toBeDefined();
         expect(error.extensions).toBeDefined();
-        expect(['FORBIDDEN', 'UNAUTHORIZED', 'GRAPHQL_VALIDATION_FAILED']).toContain(error.extensions.code);
+        expect(['FORBIDDEN', 'UNAUTHORIZED', 'GRAPHQL_VALIDATION_FAILED']).toContain(
+          error.extensions.code
+        );
       }
 
       // クリーンアップ

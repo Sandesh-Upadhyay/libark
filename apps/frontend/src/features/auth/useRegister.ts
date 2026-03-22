@@ -15,7 +15,6 @@ import { registerSchema, type RegisterFormData } from './validations';
 import { useAuthForm, createFormDataTransformer } from './hooks/useAuthForm';
 import { createRegisterErrorHandler } from './utils/authErrorHandler';
 
-
 export function useRegister(config: AuthFormConfig<RegisterFormData> = {}) {
   const { register: registerUser, isLoading: isAuthLoading } = useAuth();
 

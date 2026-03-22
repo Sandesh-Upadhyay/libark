@@ -37,9 +37,7 @@ export const disputeResolvers = {
       prisma.user.findUnique({ where: { id: parent.initiatorId } }),
 
     resolver: async (parent: { resolvedBy?: string }) =>
-      parent.resolvedBy
-        ? prisma.user.findUnique({ where: { id: parent.resolvedBy } })
-        : null,
+      parent.resolvedBy ? prisma.user.findUnique({ where: { id: parent.resolvedBy } }) : null,
   },
 
   Query: {
@@ -80,16 +78,22 @@ export const disputeResolvers = {
       const user = await requireAuthentication(ctx);
 
       // @ts-ignore
-      return prisma.p2PDispute?.findMany?.({
-        where: { initiatorId: user.id },
-        orderBy: { createdAt: 'desc' },
-      }) ?? [];
+      return (
+        prisma.p2PDispute?.findMany?.({
+          where: { initiatorId: user.id },
+          orderBy: { createdAt: 'desc' },
+        }) ?? []
+      );
     },
 
     /**
      * 管理者用：全紛争一覧を取得
      */
-    adminP2PDisputes: async (_: unknown, args: { status?: string; limit?: number; offset?: number }, ctx: GraphQLContext) => {
+    adminP2PDisputes: async (
+      _: unknown,
+      args: { status?: string; limit?: number; offset?: number },
+      ctx: GraphQLContext
+    ) => {
       const user = await requireAuthentication(ctx);
       const isAdmin = await checkAdminPermission(user.id);
 
@@ -98,22 +102,24 @@ export const disputeResolvers = {
       }
 
       // @ts-ignore
-      return prisma.p2PDispute?.findMany?.({
-        where: args.status ? { status: args.status as any } : undefined,
-        orderBy: { createdAt: 'desc' },
-        take: args.limit || 50,
-        skip: args.offset || 0,
-        include: {
-          trade: {
-            include: {
-              buyer: true,
-              seller: true
-            }
+      return (
+        prisma.p2PDispute?.findMany?.({
+          where: args.status ? { status: args.status as any } : undefined,
+          orderBy: { createdAt: 'desc' },
+          take: args.limit || 50,
+          skip: args.offset || 0,
+          include: {
+            trade: {
+              include: {
+                buyer: true,
+                seller: true,
+              },
+            },
+            initiator: true,
+            resolver: true,
           },
-          initiator: true,
-          resolver: true
-        }
-      }) ?? [];
+        }) ?? []
+      );
     },
 
     /**
@@ -121,10 +127,12 @@ export const disputeResolvers = {
      */
     fiatCurrencies: async (_: unknown, args: { isActive?: boolean }) => {
       // @ts-ignore
-      return prisma.fiatCurrency?.findMany?.({
-        where: args.isActive !== undefined ? { isActive: args.isActive } : undefined,
-        orderBy: { code: 'asc' },
-      }) ?? [];
+      return (
+        prisma.fiatCurrency?.findMany?.({
+          where: args.isActive !== undefined ? { isActive: args.isActive } : undefined,
+          orderBy: { code: 'asc' },
+        }) ?? []
+      );
     },
 
     /**
@@ -134,10 +142,12 @@ export const disputeResolvers = {
       const user = await requireAuthentication(ctx);
 
       // @ts-ignore
-      return prisma.p2PBuyerPreference?.findMany?.({
-        where: { buyerId: user.id },
-        orderBy: { createdAt: 'desc' },
-      }) ?? [];
+      return (
+        prisma.p2PBuyerPreference?.findMany?.({
+          where: { buyerId: user.id },
+          orderBy: { createdAt: 'desc' },
+        }) ?? []
+      );
     },
 
     /**
@@ -184,9 +194,7 @@ export const disputeResolvers = {
 
       // ステータス確認（支払い済み状態でのみ紛争可能）
       if (trade.status !== 'PAYMENT_SENT') {
-        throw new GraphQLError(
-          '紛争を作成できるのは支払い済みステータスの取引のみです'
-        );
+        throw new GraphQLError('紛争を作成できるのは支払い済みステータスの取引のみです');
       }
 
       // 既存の紛争確認
@@ -199,26 +207,28 @@ export const disputeResolvers = {
       }
 
       // トランザクションで紛争作成と取引ステータス更新
-      const dispute = await prisma.$transaction(async (tx: import('@libark/db').Prisma.TransactionClient) => {
-        // 紛争を作成
-        const newDispute = await tx.p2PDispute.create({
-          data: {
-            tradeId,
-            initiatorId: user.id,
-            reason,
-            evidence,
-            status: 'OPEN',
-          },
-        });
+      const dispute = await prisma.$transaction(
+        async (tx: import('@libark/db').Prisma.TransactionClient) => {
+          // 紛争を作成
+          const newDispute = await tx.p2PDispute.create({
+            data: {
+              tradeId,
+              initiatorId: user.id,
+              reason,
+              evidence,
+              status: 'OPEN',
+            },
+          });
 
-        // 取引ステータスを更新
-        await tx.p2PTradeRequest.update({
-          where: { id: tradeId },
-          data: { status: 'DISPUTED' },
-        });
+          // 取引ステータスを更新
+          await tx.p2PTradeRequest.update({
+            where: { id: tradeId },
+            data: { status: 'DISPUTED' },
+          });
 
-        return newDispute;
-      });
+          return newDispute;
+        }
+      );
 
       // 通知送信
       // 通知送信
@@ -281,62 +291,59 @@ export const disputeResolvers = {
       }
 
       // 解決処理
-      const resolvedDispute = await prisma.$transaction(async (tx: import('@libark/db').Prisma.TransactionClient) => {
-        // 紛争を解決
-        const updated = await tx.p2PDispute.update({
-          where: { id: disputeId },
-          data: {
-            status: resolution as any,
-            resolution: notes,
-            resolvedBy: user.id,
-            resolvedAt: new Date(),
-          },
-        });
+      const resolvedDispute = await prisma.$transaction(
+        async (tx: import('@libark/db').Prisma.TransactionClient) => {
+          // 紛争を解決
+          const updated = await tx.p2PDispute.update({
+            where: { id: disputeId },
+            data: {
+              status: resolution as any,
+              resolution: notes,
+              resolvedBy: user.id,
+              resolvedAt: new Date(),
+            },
+          });
 
-        // 取引ステータスを更新
-        let tradeStatus: 'COMPLETED' | 'CANCELLED';
-        if (resolution === 'RESOLVED_BUYER_WIN' || resolution === 'RESOLVED_SPLIT') {
-          tradeStatus = 'COMPLETED';
+          // 取引ステータスを更新
+          let tradeStatus: 'COMPLETED' | 'CANCELLED';
+          if (resolution === 'RESOLVED_BUYER_WIN' || resolution === 'RESOLVED_SPLIT') {
+            tradeStatus = 'COMPLETED';
 
-          // 買い手勝利または分割の場合、エスクローを解放
-          const trade = dispute.trade;
-          if (trade.sellerId) {
-            const amount =
-              resolution === 'RESOLVED_SPLIT'
-                ? Number(trade.amountUsd) / 2
-                : Number(trade.amountUsd);
+            // 買い手勝利または分割の場合、エスクローを解放
+            const trade = dispute.trade;
+            if (trade.sellerId) {
+              const amount =
+                resolution === 'RESOLVED_SPLIT'
+                  ? Number(trade.amountUsd) / 2
+                  : Number(trade.amountUsd);
 
-            await p2pTradeService.releaseEscrow(
-              trade.buyerId,
-              trade.sellerId,
-              amount,
-              trade.id
-            );
+              await p2pTradeService.releaseEscrow(trade.buyerId, trade.sellerId, amount, trade.id);
+            }
+          } else {
+            tradeStatus = 'CANCELLED';
+
+            // 売り手勝利の場合、エスクローをキャンセル（売り手に返却）
+            const trade = dispute.trade;
+            if (trade.sellerId && trade.escrowAmount) {
+              await p2pTradeService.cancelEscrow(
+                trade.sellerId,
+                Number(trade.escrowAmount),
+                trade.id
+              );
+            }
           }
-        } else {
-          tradeStatus = 'CANCELLED';
 
-          // 売り手勝利の場合、エスクローをキャンセル（売り手に返却）
-          const trade = dispute.trade;
-          if (trade.sellerId && trade.escrowAmount) {
-            await p2pTradeService.cancelEscrow(
-              trade.sellerId,
-              Number(trade.escrowAmount),
-              trade.id
-            );
-          }
+          await tx.p2PTradeRequest.update({
+            where: { id: dispute.tradeId },
+            data: {
+              status: tradeStatus,
+              completedAt: new Date(),
+            },
+          });
+
+          return updated;
         }
-
-        await tx.p2PTradeRequest.update({
-          where: { id: dispute.tradeId },
-          data: {
-            status: tradeStatus,
-            completedAt: new Date(),
-          },
-        });
-
-        return updated;
-      });
+      );
 
       logger.info('P2P dispute resolved', { disputeId, resolution });
 
@@ -345,11 +352,19 @@ export const disputeResolvers = {
       const tradeData = dispute.trade!; // 既にincludeされている
 
       // 買い手へ通知
-      await notificationService.notifyP2PDisputeResolved(tradeData.buyerId, dispute.tradeId, resolution);
+      await notificationService.notifyP2PDisputeResolved(
+        tradeData.buyerId,
+        dispute.tradeId,
+        resolution
+      );
 
       // 売り手へ通知
       if (tradeData.sellerId) {
-        await notificationService.notifyP2PDisputeResolved(tradeData.sellerId, dispute.tradeId, resolution);
+        await notificationService.notifyP2PDisputeResolved(
+          tradeData.sellerId,
+          dispute.tradeId,
+          resolution
+        );
       }
 
       return resolvedDispute;
@@ -399,11 +414,7 @@ export const disputeResolvers = {
     /**
      * 買い手設定を削除
      */
-    deleteP2PBuyerPreference: async (
-      _: unknown,
-      args: { id: string },
-      ctx: GraphQLContext
-    ) => {
+    deleteP2PBuyerPreference: async (_: unknown, args: { id: string }, ctx: GraphQLContext) => {
       const user = await requireAuthentication(ctx);
 
       // @ts-ignore
@@ -534,6 +545,8 @@ async function checkAdminPermission(userId: string): Promise<boolean> {
 
   return (
     user.role.name === 'ADMIN' ||
-    user.role.permissions.some((rp: { permission: { name: string } }) => rp.permission.name === 'ADMIN_PANEL')
+    user.role.permissions.some(
+      (rp: { permission: { name: string } }) => rp.permission.name === 'ADMIN_PANEL'
+    )
   );
 }

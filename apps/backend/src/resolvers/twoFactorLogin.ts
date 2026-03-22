@@ -97,13 +97,16 @@ export const twoFactorLoginResolvers = {
         }
 
         // セキュリティログ記録
-        context.fastify.log.info({
-          userId: user.id,
-          username: user.username,
-          email: user.email,
-          isBackupCode: verificationResult.isBackupCode,
-          timestamp: new Date().toISOString(),
-        }, '🔐 [2FA Login] 認証成功:');
+        context.fastify.log.info(
+          {
+            userId: user.id,
+            username: user.username,
+            email: user.email,
+            isBackupCode: verificationResult.isBackupCode,
+            timestamp: new Date().toISOString(),
+          },
+          '🔐 [2FA Login] 認証成功:'
+        );
 
         return {
           success: true,

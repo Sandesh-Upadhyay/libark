@@ -46,15 +46,18 @@ export async function mediaRoutes(app: FastifyInstance) {
           request.user = authResult.data;
         }
 
-        app.log.info({
-          mediaId,
-          userId: request.user?.id,
-          variant,
-          download,
-          userAgent: request.headers['user-agent'],
-          ip: request.ip,
-          authenticated: !!request.user,
-        }, '🖼️ [SecureMedia] メディア配信リクエスト');
+        app.log.info(
+          {
+            mediaId,
+            userId: request.user?.id,
+            variant,
+            download,
+            userAgent: request.headers['user-agent'],
+            ip: request.ip,
+            authenticated: !!request.user,
+          },
+          '🖼️ [SecureMedia] メディア配信リクエスト'
+        );
 
         // アクセス権限チェック
         const accessResult = await accessControlService.checkAccess({
@@ -65,12 +68,15 @@ export async function mediaRoutes(app: FastifyInstance) {
         });
 
         if (!accessResult.allowed) {
-          app.log.warn({
-            mediaId,
-            userId: request.user?.id,
-            reason: accessResult.reason,
-            code: accessResult.code,
-          }, '🚫 [SecureMedia] アクセス拒否');
+          app.log.warn(
+            {
+              mediaId,
+              userId: request.user?.id,
+              reason: accessResult.reason,
+              code: accessResult.code,
+            },
+            '🚫 [SecureMedia] アクセス拒否'
+          );
 
           // アクセス拒否の理由に応じたHTTPステータスコード
           const statusCode = getStatusCodeForAccessDenial(accessResult.code);
@@ -116,12 +122,15 @@ export async function mediaRoutes(app: FastifyInstance) {
         const mediaWithVariants = media as { variants?: { s3Key: string }[] };
         if (variant && mediaWithVariants.variants && mediaWithVariants.variants.length > 0) {
           targetS3Key = mediaWithVariants.variants[0].s3Key;
-          app.log.info({
-            mediaId,
-            variant,
-            originalKey: media.s3Key,
-            variantKey: targetS3Key,
-          }, '📐 [SecureMedia] バリアント使用');
+          app.log.info(
+            {
+              mediaId,
+              variant,
+              originalKey: media.s3Key,
+              variantKey: targetS3Key,
+            },
+            '📐 [SecureMedia] バリアント使用'
+          );
         }
 
         // S3Gateway経由でファイルを取得
@@ -129,23 +138,29 @@ export async function mediaRoutes(app: FastifyInstance) {
         const bucket = process.env.S3_BACKEND_BUCKET || 'libark-media';
         const proxyUrl = `${s3GatewayUrl}/files/${bucket}/${targetS3Key}`;
 
-        app.log.info({
-          mediaId,
-          s3Key: targetS3Key,
-          proxyUrl,
-        }, '🔄 [SecureMedia] S3Gateway経由でファイル取得');
+        app.log.info(
+          {
+            mediaId,
+            s3Key: targetS3Key,
+            proxyUrl,
+          },
+          '🔄 [SecureMedia] S3Gateway経由でファイル取得'
+        );
 
         try {
           // S3Gatewayからファイルを取得
           const response = await fetch(proxyUrl);
 
           if (!response.ok) {
-            app.log.error({
-              mediaId,
-              s3Key: targetS3Key,
-              status: response.status,
-              statusText: response.statusText,
-            }, '❌ [SecureMedia] S3Gateway取得エラー');
+            app.log.error(
+              {
+                mediaId,
+                s3Key: targetS3Key,
+                status: response.status,
+                statusText: response.statusText,
+              },
+              '❌ [SecureMedia] S3Gateway取得エラー'
+            );
 
             return reply.status(response.status).send({
               error: {
@@ -197,12 +212,15 @@ export async function mediaRoutes(app: FastifyInstance) {
             }
           }
 
-          app.log.info({
-            mediaId,
-            userId: request.user?.id,
-            contentType,
-            fileSize: contentLength,
-          }, '✅ [SecureMedia] ファイル配信成功');
+          app.log.info(
+            {
+              mediaId,
+              userId: request.user?.id,
+              contentType,
+              fileSize: contentLength,
+            },
+            '✅ [SecureMedia] ファイル配信成功'
+          );
 
           // ストリームとして配信
           if (response.body) {
@@ -218,11 +236,14 @@ export async function mediaRoutes(app: FastifyInstance) {
             });
           }
         } catch (fetchError) {
-          app.log.error({
-            mediaId,
-            s3Key: targetS3Key,
-            error: fetchError instanceof Error ? fetchError.message : String(fetchError),
-          }, '❌ [SecureMedia] S3Gateway通信エラー');
+          app.log.error(
+            {
+              mediaId,
+              s3Key: targetS3Key,
+              error: fetchError instanceof Error ? fetchError.message : String(fetchError),
+            },
+            '❌ [SecureMedia] S3Gateway通信エラー'
+          );
 
           return reply.status(500).send({
             error: {
@@ -232,11 +253,14 @@ export async function mediaRoutes(app: FastifyInstance) {
           });
         }
       } catch (error) {
-        app.log.error({
-          mediaId,
-          userId: request.user?.id,
-          error: error instanceof Error ? error.message : String(error),
-        }, '❌ [SecureMedia] メディア配信エラー');
+        app.log.error(
+          {
+            mediaId,
+            userId: request.user?.id,
+            error: error instanceof Error ? error.message : String(error),
+          },
+          '❌ [SecureMedia] メディア配信エラー'
+        );
 
         return reply.status(500).send({
           error: {

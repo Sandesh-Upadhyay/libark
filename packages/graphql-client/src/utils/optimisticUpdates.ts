@@ -92,7 +92,7 @@ export function createRemoveFromMessageList(
   conversationId: string,
   messageId: string
 ): CacheUpdateFunction {
-  return (_cache) => {
+  return _cache => {
     _cache.modify({
       id: _cache.identify({ __typename: 'Conversation', id: conversationId }),
       fields: {
@@ -101,7 +101,9 @@ export function createRemoveFromMessageList(
 
           return {
             ...existingMessages,
-            edges: existingMessages.edges.filter((edge: { node: { id: string } }) => edge.node.id !== messageId),
+            edges: existingMessages.edges.filter(
+              (edge: { node: { id: string } }) => edge.node.id !== messageId
+            ),
             totalCount: Math.max(0, (existingMessages.totalCount || 0) - 1),
           };
         },
@@ -314,7 +316,9 @@ export function createRemoveFromPostList(postId: string): CacheUpdateFunction {
 
           return {
             ...existingPosts,
-            edges: existingPosts.edges.filter((edge: { node: { id: string } }) => edge.node.id !== postId),
+            edges: existingPosts.edges.filter(
+              (edge: { node: { id: string } }) => edge.node.id !== postId
+            ),
             totalCount: Math.max(0, (existingPosts.totalCount || 0) - 1),
           };
         },

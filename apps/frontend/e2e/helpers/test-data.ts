@@ -137,21 +137,34 @@ export function generateWeakPasswords() {
 /**
  * ページの読み込み完了を待機
  */
-export async function waitForPageLoad(page: { waitForLoadState: (state: string, opts?: { timeout: number }) => Promise<unknown> }, timeout = 10000) {
+export async function waitForPageLoad(
+  page: { waitForLoadState: (state: string, opts?: { timeout: number }) => Promise<unknown> },
+  timeout = 10000
+) {
   await page.waitForLoadState('networkidle', { timeout });
 }
 
 /**
  * 認証後のリダイレクトを確認
  */
-export async function verifyAuthRedirect(page: { waitForURL: (url: string, opts?: { timeout: number }) => Promise<unknown> }, expectedPath = '/home') {
+export async function verifyAuthRedirect(
+  page: { waitForURL: (url: string, opts?: { timeout: number }) => Promise<unknown> },
+  expectedPath = '/home'
+) {
   await page.waitForURL(`**${expectedPath}`, { timeout: 15000 });
 }
 
 /**
  * トーストメッセージの確認
  */
-export async function verifyToastMessage(page: { locator: (selector: string) => { first: () => { waitFor: (opts: { state: string; timeout: number }) => Promise<unknown> } } }, expectedMessage: string) {
+export async function verifyToastMessage(
+  page: {
+    locator: (selector: string) => {
+      first: () => { waitFor: (opts: { state: string; timeout: number }) => Promise<unknown> };
+    };
+  },
+  expectedMessage: string
+) {
   const toast = page.locator('[data-testid="toast"]').first();
   await toast.waitFor({ state: 'visible', timeout: 5000 });
   await expect(toast).toContainText(expectedMessage);
@@ -160,7 +173,15 @@ export async function verifyToastMessage(page: { locator: (selector: string) => 
 /**
  * フォームのバリデーションエラーを確認
  */
-export async function verifyValidationError(page: { locator: (selector: string) => { first: () => { waitFor: (opts: { state: string; timeout: number }) => Promise<unknown> } } }, fieldTestId: string, expectedError: string) {
+export async function verifyValidationError(
+  page: {
+    locator: (selector: string) => {
+      first: () => { waitFor: (opts: { state: string; timeout: number }) => Promise<unknown> };
+    };
+  },
+  fieldTestId: string,
+  expectedError: string
+) {
   const errorElement = page.locator(`[data-testid="${fieldTestId}"] [role="alert"]`).first();
   await errorElement.waitFor({ state: 'visible', timeout: 3000 });
   await expect(errorElement).toContainText(expectedError);

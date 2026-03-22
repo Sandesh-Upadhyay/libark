@@ -201,7 +201,7 @@ export const notificationResolvers = {
         ids.map(id =>
           context.prisma.notification.update({
             where: { id },
-             data: {
+            data: {
               isRead: true,
               readAt: new Date(),
             },
@@ -267,7 +267,7 @@ export const notificationResolvers = {
           userId: context.user.id,
           isRead: false,
         },
-        select: { id: true }
+        select: { id: true },
       });
 
       if (unreadNotifications.length === 0) {
@@ -406,11 +406,14 @@ export const notificationResolvers = {
         // Redis PubSubでユーザー固有の通知チャンネルを購読
         const channel = `notification:${args.userId}`;
 
-        context.fastify.log.info({
-          userId: args.userId,
-          authenticatedUserId: user.id,
-          channel,
-        }, '📡 [GraphQL] 通知サブスクリプション開始:');
+        context.fastify.log.info(
+          {
+            userId: args.userId,
+            authenticatedUserId: user.id,
+            channel,
+          },
+          '📡 [GraphQL] 通知サブスクリプション開始:'
+        );
 
         // デバッグ用：購読開始をログ出力
         const iterator = context.redisPubSub!.asyncIterator([channel]);
@@ -419,12 +422,15 @@ export const notificationResolvers = {
         return iterator;
       },
       resolve: (payload: unknown, _args: unknown, context: GraphQLContext) => {
-        context.fastify.log.info({
-          hasPayload: !!payload,
-          payloadType: typeof payload,
-          payloadKeys: payload ? Object.keys(payload as object) : [],
-          fullPayload: payload,
-        }, '📨 [GraphQL] 通知サブスクリプション受信:');
+        context.fastify.log.info(
+          {
+            hasPayload: !!payload,
+            payloadType: typeof payload,
+            payloadKeys: payload ? Object.keys(payload as object) : [],
+            fullPayload: payload,
+          },
+          '📨 [GraphQL] 通知サブスクリプション受信:'
+        );
 
         // 通知追加タイプのメッセージのみ処理
         const payloadObj = payload as {
@@ -459,12 +465,15 @@ export const notificationResolvers = {
             userId?: string;
             timestamp?: string;
           };
-          context.fastify.log.info({
-            mediaId: avatarPayload.mediaId,
-            userId: avatarPayload.userId,
-            timestamp: avatarPayload.timestamp,
-            fullPayload: payloadObj,
-          }, '🖼️ [GraphQL] アバター完了通知を処理:');
+          context.fastify.log.info(
+            {
+              mediaId: avatarPayload.mediaId,
+              userId: avatarPayload.userId,
+              timestamp: avatarPayload.timestamp,
+              fullPayload: payloadObj,
+            },
+            '🖼️ [GraphQL] アバター完了通知を処理:'
+          );
 
           const notification = {
             id: randomUUID(), // 有効なUUIDを生成
@@ -526,11 +535,14 @@ export const notificationResolvers = {
         // Redis PubSubでユーザー固有の通知カウントチャンネルを購読
         const channel = `notification_count:${args.userId}`;
 
-        context.fastify.log.info({
-          userId: args.userId,
-          authenticatedUserId: user.id,
-          channel,
-        }, '📡 [GraphQL] 通知カウントサブスクリプション開始:');
+        context.fastify.log.info(
+          {
+            userId: args.userId,
+            authenticatedUserId: user.id,
+            channel,
+          },
+          '📡 [GraphQL] 通知カウントサブスクリプション開始:'
+        );
         return context.redisPubSub!.asyncIterator([channel]);
       },
       resolve: (payload: unknown, _args: unknown, context: GraphQLContext) => {

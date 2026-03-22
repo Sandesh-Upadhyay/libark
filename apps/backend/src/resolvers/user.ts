@@ -142,7 +142,11 @@ export const userResolvers = {
      */
     users: async (
       _parent: unknown,
-      { first = PAGINATION_CONSTANTS.USER_PAGE_SIZE, after, search }: { first?: number; after?: string; search?: string },
+      {
+        first = PAGINATION_CONSTANTS.USER_PAGE_SIZE,
+        after,
+        search,
+      }: { first?: number; after?: string; search?: string },
       context: GraphQLContext
     ) => {
       const limit = Math.min(first, 100); // 最大100件に制限
@@ -240,7 +244,11 @@ export const userResolvers = {
     /**
      * 為替レート取得
      */
-    getExchangeRate: async (_parent: unknown, { currency }: { currency: string }, context: GraphQLContext) => {
+    getExchangeRate: async (
+      _parent: unknown,
+      { currency }: { currency: string },
+      context: GraphQLContext
+    ) => {
       // This resolver body was not provided in the instruction,
       // so a placeholder is used to maintain syntactical correctness.
       // Please replace with actual logic for fetching exchange rates.
@@ -270,7 +278,10 @@ export const userResolvers = {
       // This resolver body was not provided in the instruction,
       // so a placeholder is used to maintain syntactical correctness.
       // Please replace with actual logic for fetching wallet transactions.
-      context.fastify.log.info({ userId: context.user.id, first, after }, 'ウォレットトランザクション取得リクエスト');
+      context.fastify.log.info(
+        { userId: context.user.id, first, after },
+        'ウォレットトランザクション取得リクエスト'
+      );
       return {
         edges: [],
         pageInfo: {
@@ -573,10 +584,13 @@ export const userResolvers = {
       } catch (error) {
         // Zodバリデーションエラーの処理
         if (error instanceof z.ZodError) {
-          context.fastify.log.warn({
-            errors: error.errors,
-            input,
-          }, '❌ プロフィール更新バリデーションエラー:');
+          context.fastify.log.warn(
+            {
+              errors: error.errors,
+              input,
+            },
+            '❌ プロフィール更新バリデーションエラー:'
+          );
 
           const errorMessage = error.errors.map(err => err.message).join(', ');
           throw new GraphQLError(`入力データが無効です: ${errorMessage}`, {
@@ -635,11 +649,14 @@ export const userResolvers = {
 
         // アバター画像の場合、PROCESSINGステータスでも更新を許可
         if (media.status === 'PROCESSING' && media.type === 'AVATAR') {
-          context.fastify.log.info({
-            mediaId,
-            status: media.status,
-            type: media.type,
-          }, '🖼️ [Avatar] PROCESSING状態のアバターメディアを許可:');
+          context.fastify.log.info(
+            {
+              mediaId,
+              status: media.status,
+              type: media.type,
+            },
+            '🖼️ [Avatar] PROCESSING状態のアバターメディアを許可:'
+          );
         }
 
         // 2. ユーザー情報を更新（profileImageIdを設定）
@@ -667,11 +684,14 @@ export const userResolvers = {
 
         // 🔄 分散キャッシュの無効化（削除済み - 不要）
 
-        context.fastify.log.info({
-          userId: context.user.id,
-          mediaId,
-          s3Key: media.s3Key,
-        }, '✅ GraphQL アバター更新成功:');
+        context.fastify.log.info(
+          {
+            userId: context.user.id,
+            mediaId,
+            s3Key: media.s3Key,
+          },
+          '✅ GraphQL アバター更新成功:'
+        );
 
         return {
           success: true,
@@ -725,9 +745,12 @@ export const userResolvers = {
           },
         });
 
-        context.fastify.log.info({
-          userId: context.user.id,
-        }, '✅ GraphQL アバター削除成功:');
+        context.fastify.log.info(
+          {
+            userId: context.user.id,
+          },
+          '✅ GraphQL アバター削除成功:'
+        );
 
         return {
           success: true,
@@ -780,11 +803,14 @@ export const userResolvers = {
 
         // カバー画像の場合、PROCESSINGステータスでも更新を許可
         if (media.status === 'PROCESSING' && media.type === 'COVER') {
-          context.fastify.log.info({
-            mediaId,
-            status: media.status,
-            type: media.type,
-          }, '🖼️ [Cover] PROCESSING状態のカバーメディアを許可:');
+          context.fastify.log.info(
+            {
+              mediaId,
+              status: media.status,
+              type: media.type,
+            },
+            '🖼️ [Cover] PROCESSING状態のカバーメディアを許可:'
+          );
         }
 
         // 2. ユーザー情報を更新（coverImageIdを設定）
@@ -812,11 +838,14 @@ export const userResolvers = {
 
         // 🔄 分散キャッシュの無効化（削除済み - 不要）
 
-        context.fastify.log.info({
-          userId: context.user.id,
-          mediaId,
-          s3Key: media.s3Key,
-        }, '✅ GraphQL カバー画像更新成功:');
+        context.fastify.log.info(
+          {
+            userId: context.user.id,
+            mediaId,
+            s3Key: media.s3Key,
+          },
+          '✅ GraphQL カバー画像更新成功:'
+        );
 
         return {
           success: true,
@@ -868,9 +897,12 @@ export const userResolvers = {
           },
         });
 
-        context.fastify.log.info({
-          userId: context.user.id,
-        }, '✅ GraphQL カバー画像削除成功:');
+        context.fastify.log.info(
+          {
+            userId: context.user.id,
+          },
+          '✅ GraphQL カバー画像削除成功:'
+        );
 
         return {
           success: true,
@@ -972,7 +1004,10 @@ export const userResolvers = {
           },
         });
 
-        context.fastify.log.info({ username: context.user.username }, '✅ GraphQL パスワード変更成功:');
+        context.fastify.log.info(
+          { username: context.user.username },
+          '✅ GraphQL パスワード変更成功:'
+        );
 
         return {
           success: true,
@@ -981,10 +1016,13 @@ export const userResolvers = {
       } catch (error) {
         // Zodバリデーションエラーの処理
         if (error instanceof z.ZodError) {
-          context.fastify.log.warn({
-            errors: error.errors,
-            input,
-          }, '❌ パスワード変更バリデーションエラー:');
+          context.fastify.log.warn(
+            {
+              errors: error.errors,
+              input,
+            },
+            '❌ パスワード変更バリデーションエラー:'
+          );
 
           const errorMessage = error.errors.map(err => err.message).join(', ');
           throw new GraphQLError(`入力データが無効です: ${errorMessage}`, {
@@ -1073,7 +1111,10 @@ export const userResolvers = {
           },
         });
 
-        context.fastify.log.info({ username: context.user.username }, '✅ GraphQL メールアドレス変更成功:');
+        context.fastify.log.info(
+          { username: context.user.username },
+          '✅ GraphQL メールアドレス変更成功:'
+        );
 
         return {
           success: true,
@@ -1083,10 +1124,13 @@ export const userResolvers = {
       } catch (error) {
         // Zodバリデーションエラーの処理
         if (error instanceof z.ZodError) {
-          context.fastify.log.warn({
-            errors: error.errors,
-            input,
-          }, '❌ メールアドレス変更バリデーションエラー:');
+          context.fastify.log.warn(
+            {
+              errors: error.errors,
+              input,
+            },
+            '❌ メールアドレス変更バリデーションエラー:'
+          );
 
           const errorMessage = error.errors.map(err => err.message).join(', ');
           throw new GraphQLError(`入力データが無効です: ${errorMessage}`, {

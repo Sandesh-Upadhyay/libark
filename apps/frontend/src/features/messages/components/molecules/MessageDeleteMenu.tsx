@@ -41,7 +41,6 @@ import type {
   HideMessageResponse,
 } from '../../messages';
 
-
 // Message型にはすでに必要なプロパティが含まれているため、ExtendedMessageは不要
 type ExtendedMessage = Message;
 

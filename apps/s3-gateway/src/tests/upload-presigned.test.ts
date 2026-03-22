@@ -34,7 +34,7 @@ vi.mock('@aws-sdk/client-s3', () => ({
 // @aws-sdk/lib-storageをモック
 // @aws-sdk/lib-storageをモック
 vi.mock('@aws-sdk/lib-storage', () => ({
-  Upload: vi.fn().mockImplementation((args) => ({
+  Upload: vi.fn().mockImplementation(args => ({
     done: vi.fn().mockImplementation(async () => {
       // ストリームを消費してsizeCheckStreamをトリガーする
       if (args.params && args.params.Body && typeof args.params.Body.on === 'function') {

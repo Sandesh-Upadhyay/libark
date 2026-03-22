@@ -3,7 +3,6 @@
 import React, { useCallback, useMemo } from 'react';
 import type { UserInfoFragment } from '@libark/graphql-client';
 
-
 import { cn } from '@/lib/utils';
 import { getComponentZIndexClass } from '@/lib/constants/z-index';
 

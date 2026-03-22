@@ -81,11 +81,14 @@ export const authResolvers = {
      */
     me: async (_parent: unknown, _args: unknown, context: GraphQLContext) => {
       // デバッグログ追加
-      context.fastify.log.info({
-        hasUser: !!context.user,
-        userId: context.user?.id,
-        userEmail: context.user?.email,
-      } as unknown, '🔍 [GraphQL me] 認証状況:');
+      context.fastify.log.info(
+        {
+          hasUser: !!context.user,
+          userId: context.user?.id,
+          userEmail: context.user?.email,
+        } as unknown,
+        '🔍 [GraphQL me] 認証状況:'
+      );
 
       if (!context.user) {
         context.fastify.log.warn('🔐 [GraphQL me] 認証されていないユーザー');
@@ -110,10 +113,13 @@ export const authResolvers = {
         },
       });
 
-      context.fastify.log.info({
-        found: !!user,
-        email: user?.email,
-      } as unknown, '✅ [GraphQL me] ユーザー情報取得:');
+      context.fastify.log.info(
+        {
+          found: !!user,
+          email: user?.email,
+        } as unknown,
+        '✅ [GraphQL me] ユーザー情報取得:'
+      );
 
       return user;
     },
@@ -196,16 +202,22 @@ export const authResolvers = {
           context.fastify.auth.setAuthCookie(context.reply, accessToken);
         }
 
-        context.fastify.log.info({ username: user.username } as unknown, '✅ GraphQL ログイン成功:');
+        context.fastify.log.info(
+          { username: user.username } as unknown,
+          '✅ GraphQL ログイン成功:'
+        );
 
         return createAuthSuccessResponse(user, accessToken, 'ログインに成功しました');
       } catch (error) {
         // Zodバリデーションエラーの処理
         if (error instanceof z.ZodError) {
-          context.fastify.log.warn({
-            errors: error.errors,
-            input,
-          } as unknown, '❌ GraphQL ログインバリデーションエラー:');
+          context.fastify.log.warn(
+            {
+              errors: error.errors,
+              input,
+            } as unknown,
+            '❌ GraphQL ログインバリデーションエラー:'
+          );
 
           const errorMessage = error.errors.map(err => err.message).join(', ');
           throw new GraphQLError(`入力データが無効です: ${errorMessage}`, {
@@ -216,13 +228,16 @@ export const authResolvers = {
           });
         }
 
-        context.fastify.log.error({
-          error: error instanceof Error ? error.message : String(error),
-          stack: error instanceof Error ? error.stack : undefined,
-          input: { email: input.email }, // パスワードは除外
-          errorType: error instanceof Error ? error.constructor.name : typeof error,
-          timestamp: new Date().toISOString(),
-        } as unknown, '❌ GraphQL ログインエラー:');
+        context.fastify.log.error(
+          {
+            error: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+            input: { email: input.email }, // パスワードは除外
+            errorType: error instanceof Error ? error.constructor.name : typeof error,
+            timestamp: new Date().toISOString(),
+          } as unknown,
+          '❌ GraphQL ログインエラー:'
+        );
         if (error instanceof GraphQLError) {
           throw error;
         }
@@ -242,7 +257,10 @@ export const authResolvers = {
     ): Promise<AuthPayload> => {
       try {
         // Zodバリデーション（拡張されたスキーマを使用）
-        context.fastify.log.info({ stage: 'validation' } as unknown, '🔧 ユーザー登録: 入力値バリデーション開始');
+        context.fastify.log.info(
+          { stage: 'validation' } as unknown,
+          '🔧 ユーザー登録: 入力値バリデーション開始'
+        );
         const validatedInput = RegisterInputSchema.parse(input);
         const {
           username,
@@ -254,7 +272,10 @@ export const authResolvers = {
         context.fastify.log.info({ username, email } as unknown, '✅ 入力値バリデーション完了');
 
         // 既存ユーザーチェック
-        context.fastify.log.info({ username, email } as unknown, '🔧 ユーザー登録: 既存ユーザー確認中');
+        context.fastify.log.info(
+          { username, email } as unknown,
+          '🔧 ユーザー登録: 既存ユーザー確認中'
+        );
         const existingUser = await context.prisma.user.findFirst({
           where: {
             OR: [{ email }, { username }],
@@ -275,16 +296,25 @@ export const authResolvers = {
             });
           }
         }
-        context.fastify.log.info({ username, email } as unknown, '✅ 既存ユーザー確認完了（新規OK）');
+        context.fastify.log.info(
+          { username, email } as unknown,
+          '✅ 既存ユーザー確認完了（新規OK）'
+        );
 
         // パスワードをハッシュ化
-        context.fastify.log.info({ stage: 'password_hashing' } as unknown, '🔧 ユーザー登録: パスワードハッシュ化中');
+        context.fastify.log.info(
+          { stage: 'password_hashing' } as unknown,
+          '🔧 ユーザー登録: パスワードハッシュ化中'
+        );
         const saltRounds = 12;
         const passwordHash = await hashPassword(password, { saltRounds });
         context.fastify.log.info('✅ パスワードハッシュ化完了');
 
         // ユーザー作成
-        context.fastify.log.info({ username, email } as unknown, '🔧 ユーザー登録: ユーザーレコード作成中');
+        context.fastify.log.info(
+          { username, email } as unknown,
+          '🔧 ユーザー登録: ユーザーレコード作成中'
+        );
         const user = await context.prisma.user.create({
           data: {
             username,
@@ -296,10 +326,16 @@ export const authResolvers = {
             lastLoginAt: new Date(),
           },
         });
-        context.fastify.log.info({ userId: user.id, username, email } as unknown, '✅ ユーザーレコード作成完了');
+        context.fastify.log.info(
+          { userId: user.id, username, email } as unknown,
+          '✅ ユーザーレコード作成完了'
+        );
 
         // タイムゾーン自動検出
-        context.fastify.log.info({ browserTimezone, stage: 'timezone_detection' } as unknown, '🔧 ユーザー登録: タイムゾーン検出中');
+        context.fastify.log.info(
+          { browserTimezone, stage: 'timezone_detection' } as unknown,
+          '🔧 ユーザー登録: タイムゾーン検出中'
+        );
         const clientIP = extractClientIP(
           context.request?.headers ?? ({} as Record<string, string | string[] | undefined>)
         );
@@ -311,11 +347,14 @@ export const authResolvers = {
             // TODO: 必要に応じてIPGeolocation APIキーを設定
             // apiKey: process.env.IPGEOLOCATION_API_KEY,
           });
-          context.fastify.log.info({
-            detectedTimezone,
-            browserTimezone,
-            clientIP,
-          } as unknown, '✅ タイムゾーン検出完了');
+          context.fastify.log.info(
+            {
+              detectedTimezone,
+              browserTimezone,
+              clientIP,
+            } as unknown,
+            '✅ タイムゾーン検出完了'
+          );
         } catch (tzError) {
           context.fastify.log.warn(
             {
@@ -336,7 +375,10 @@ export const authResolvers = {
         } as const;
 
         // ユーザー設定を作成（検出されたタイムゾーンを使用）
-        context.fastify.log.info({ userId: user.id, stage: 'user_settings_creation' } as unknown, '🔧 ユーザー登録: ユーザー設定レコード作成中');
+        context.fastify.log.info(
+          { userId: user.id, stage: 'user_settings_creation' } as unknown,
+          '🔧 ユーザー登録: ユーザー設定レコード作成中'
+        );
         try {
           await context.prisma.userSettings.create({
             data: {
@@ -349,10 +391,13 @@ export const authResolvers = {
               timezone: detectedTimezone,
             },
           });
-          context.fastify.log.info({
-            userId: user.id,
-            timezone: detectedTimezone,
-          } as unknown, '✅ ユーザー設定レコード作成完了');
+          context.fastify.log.info(
+            {
+              userId: user.id,
+              timezone: detectedTimezone,
+            } as unknown,
+            '✅ ユーザー設定レコード作成完了'
+          );
         } catch (settingsError) {
           // ユーザー設定作成失敗時は詳細ログ
           const settingsErr = settingsError as any;
@@ -362,7 +407,8 @@ export const authResolvers = {
               errorType: settingsErr?.constructor?.name,
               prismaCode: settingsErr?.code,
               prismaMeta: settingsErr?.meta,
-              message: settingsError instanceof Error ? settingsError.message : String(settingsError),
+              message:
+                settingsError instanceof Error ? settingsError.message : String(settingsError),
               stage: 'user_settings_creation_failed',
             } as unknown,
             '❌ ユーザー設定作成エラー:'
@@ -370,18 +416,25 @@ export const authResolvers = {
           throw new GraphQLError('ユーザー設定の作成に失敗しました', {
             extensions: {
               code: 'SETTINGS_CREATION_ERROR',
-              details: settingsError instanceof Error ? settingsError.message : String(settingsError),
+              details:
+                settingsError instanceof Error ? settingsError.message : String(settingsError),
             },
           });
         }
 
         // Cookie認証システムでトークン生成
-        context.fastify.log.info({ userId: user.id, stage: 'token_generation' } as unknown, '🔧 ユーザー登録: アクセストークン生成中');
+        context.fastify.log.info(
+          { userId: user.id, stage: 'token_generation' } as unknown,
+          '🔧 ユーザー登録: アクセストークン生成中'
+        );
         const accessToken = await context.fastify.auth.generateAccessToken(userPayload);
         context.fastify.log.info('✅ アクセストークン生成完了');
 
         // Cookie設定
-        context.fastify.log.info({ stage: 'cookie_setting' } as unknown, '🔧 ユーザー登録: 認証Cookie設定中');
+        context.fastify.log.info(
+          { stage: 'cookie_setting' } as unknown,
+          '🔧 ユーザー登録: 認証Cookie設定中'
+        );
         if (context.reply) {
           context.fastify.auth.setAuthCookie(context.reply, accessToken);
           context.fastify.log.info('✅ 認証Cookie設定完了');
@@ -397,11 +450,14 @@ export const authResolvers = {
       } catch (error) {
         // Zodバリデーションエラーの処理
         if (error instanceof z.ZodError) {
-          context.fastify.log.warn({
-            errors: error.errors,
-            input: { username: input.username, email: input.email },
-            stage: 'validation_error',
-          } as unknown, '❌ GraphQL 登録バリデーションエラー:');
+          context.fastify.log.warn(
+            {
+              errors: error.errors,
+              input: { username: input.username, email: input.email },
+              stage: 'validation_error',
+            } as unknown,
+            '❌ GraphQL 登録バリデーションエラー:'
+          );
 
           const errorMessage = error.errors.map(err => err.message).join(', ');
           throw new GraphQLError(`入力データが無効です: ${errorMessage}`, {
@@ -423,7 +479,8 @@ export const authResolvers = {
             input: {
               username: input.username,
               email: input.email,
-              hasPassword: typeof (input as any).password === 'string' && (input as any).password.length > 0,
+              hasPassword:
+                typeof (input as any).password === 'string' && (input as any).password.length > 0,
               displayName: input.displayName,
             },
             timestamp: new Date().toISOString(),

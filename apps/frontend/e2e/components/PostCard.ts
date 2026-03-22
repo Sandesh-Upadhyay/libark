@@ -30,7 +30,7 @@ export class PostCard {
   async getAuthor(): Promise<string | null> {
     return this.author.textContent();
   }
-  
+
   async click() {
     await this.card.click();
   }

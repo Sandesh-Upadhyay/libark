@@ -109,10 +109,13 @@ export const mediaFields = {
       });
 
       if (!ogpPublicMedia) {
-        context.fastify?.log.warn({
-          mediaId: parent.id,
-          variant,
-        }, '🚫 [OGP] OGPメタデータが見つかりません');
+        context.fastify?.log.warn(
+          {
+            mediaId: parent.id,
+            variant,
+          },
+          '🚫 [OGP] OGPメタデータが見つかりません'
+        );
         return null;
       }
 
@@ -145,20 +148,26 @@ export const mediaFields = {
       const publicUrl = process.env.PUBLIC_URL || 'http://localhost:8000';
       const fullUrl = `${publicUrl}${path}?${queryParams.toString()}`;
 
-      context.fastify?.log.info({
-        mediaId: parent.id,
-        variant,
-        path,
-        exp,
-      }, '✅ [OGP] OGP URL生成成功');
+      context.fastify?.log.info(
+        {
+          mediaId: parent.id,
+          variant,
+          path,
+          exp,
+        },
+        '✅ [OGP] OGP URL生成成功'
+      );
 
       return fullUrl;
     } catch (error) {
-      context.fastify?.log.error({
-        mediaId: parent.id,
-        variant,
-        error: error instanceof Error ? error.message : String(error),
-      }, '❌ [OGP] OGP URL生成エラー');
+      context.fastify?.log.error(
+        {
+          mediaId: parent.id,
+          variant,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        '❌ [OGP] OGP URL生成エラー'
+      );
       return null;
     }
   },
@@ -233,10 +242,13 @@ export const mediaFields = {
 
       return urls;
     } catch (error) {
-      context.fastify?.log.error({
-        mediaId: parent.id,
-        error: error instanceof Error ? error.message : String(error),
-      }, '❌ [OGP] OGP URLs生成エラー');
+      context.fastify?.log.error(
+        {
+          mediaId: parent.id,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        '❌ [OGP] OGP URLs生成エラー'
+      );
       return {};
     }
   },

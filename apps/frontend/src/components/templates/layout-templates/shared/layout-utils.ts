@@ -22,7 +22,6 @@ import type {
   AnimationConfig,
 } from './layout-types';
 
-
 /**
  * 🎯 シンプルなレイアウトクラス生成関数
  * ESLintルール準拠: 事前定義されたCSSクラスのみ使用

@@ -39,10 +39,14 @@ export const walletMutations = {
     { input }: { input: CreateDepositRequestInput },
     context: GraphQLContext
   ) => {
-    if (!context.user) throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
+    if (!context.user)
+      throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
 
     const isEnabled = await checkSiteFeatureEnabled(context, 'WALLET_DEPOSIT');
-    if (!isEnabled) throw new GraphQLError('ウォレット入金機能は現在無効になっています', { extensions: { code: 'FEATURE_DISABLED' } });
+    if (!isEnabled)
+      throw new GraphQLError('ウォレット入金機能は現在無効になっています', {
+        extensions: { code: 'FEATURE_DISABLED' },
+      });
 
     try {
       const walletService = new WalletService(context.prisma);
@@ -74,10 +78,14 @@ export const walletMutations = {
     { input }: { input: CreateWithdrawalRequestInput },
     context: GraphQLContext
   ) => {
-    if (!context.user) throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
+    if (!context.user)
+      throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
 
     const isEnabled = await checkSiteFeatureEnabled(context, 'WALLET_WITHDRAW');
-    if (!isEnabled) throw new GraphQLError('ウォレット出金機能は現在無効になっています', { extensions: { code: 'FEATURE_DISABLED' } });
+    if (!isEnabled)
+      throw new GraphQLError('ウォレット出金機能は現在無効になっています', {
+        extensions: { code: 'FEATURE_DISABLED' },
+      });
 
     try {
       const walletService = new WalletService(context.prisma);
@@ -110,7 +118,8 @@ export const walletMutations = {
     { input }: { input: RegisterUserWalletInput },
     context: GraphQLContext
   ) => {
-    if (!context.user) throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
+    if (!context.user)
+      throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
 
     try {
       return await context.prisma.userWallet.create({
@@ -134,22 +143,42 @@ export const walletMutations = {
    */
   transferBalance: async (
     _parent: unknown,
-    { input }: { input: { fromBalanceType: string; toBalanceType: string; amountUsd: number; description?: string } },
+    {
+      input,
+    }: {
+      input: {
+        fromBalanceType: string;
+        toBalanceType: string;
+        amountUsd: number;
+        description?: string;
+      };
+    },
     context: GraphQLContext
   ) => {
-    if (!context.user) throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
+    if (!context.user)
+      throw new GraphQLError('認証が必要です', { extensions: { code: 'UNAUTHENTICATED' } });
 
     // 権限チェック
     if (input.fromBalanceType === 'SALES') {
       const hasSeller = await context.prisma.userPermissionOverride.findFirst({
-        where: { userId: context.user.id, permission: { name: { in: ['CONTENT_SELLER', 'ADMIN_PANEL', 'MANAGE_USERS'] } }, isActive: true, OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }] }
+        where: {
+          userId: context.user.id,
+          permission: { name: { in: ['CONTENT_SELLER', 'ADMIN_PANEL', 'MANAGE_USERS'] } },
+          isActive: true,
+          OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+        },
       });
       if (!hasSeller) throw new GraphQLError('売上残高の操作にはCONTENT_SELLER権限が必要です');
     }
 
     if (input.fromBalanceType === 'P2P') {
       const hasP2P = await context.prisma.userPermissionOverride.findFirst({
-        where: { userId: context.user.id, permission: { name: { in: ['P2P_TRADER', 'ADMIN_PANEL', 'MANAGE_USERS'] } }, isActive: true, OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }] }
+        where: {
+          userId: context.user.id,
+          permission: { name: { in: ['P2P_TRADER', 'ADMIN_PANEL', 'MANAGE_USERS'] } },
+          isActive: true,
+          OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+        },
       });
       if (!hasP2P) throw new GraphQLError('P2P残高の操作にはP2P_TRADER権限が必要です');
     }

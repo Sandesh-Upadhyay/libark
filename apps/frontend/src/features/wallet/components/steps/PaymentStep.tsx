@@ -6,7 +6,6 @@ import { P2PCountdownTimer } from '../atoms/P2PCountdownTimer';
 import { P2PAmountDisplay } from '../atoms/P2PAmountDisplay';
 import { P2PPaymentInfo } from '../molecules/P2PPaymentInfo';
 
-
 export interface PaymentStepProps {
   trade: P2PTradeInfoFragment;
   onPaymentComplete: () => void;

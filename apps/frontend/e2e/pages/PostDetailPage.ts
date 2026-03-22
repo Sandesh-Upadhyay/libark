@@ -7,7 +7,10 @@ export class PostDetailPage {
   readonly postContainer: Locator;
   readonly commentSection: CommentSection;
 
-  constructor(page: Page, readonly postId: string) {
+  constructor(
+    page: Page,
+    readonly postId: string
+  ) {
     this.page = page;
     this.postContainer = page.getByTestId('post-detail-container');
     this.commentSection = new CommentSection(page, this.postContainer);
@@ -21,7 +24,7 @@ export class PostDetailPage {
   async getPostCard(): Promise<PostCard> {
     return new PostCard(this.page, this.postId);
   }
-  
+
   async addComment(text: string) {
     await this.commentSection.addComment(text);
   }

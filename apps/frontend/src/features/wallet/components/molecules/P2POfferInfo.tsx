@@ -35,9 +35,7 @@ export function P2POfferInfo({ offer, className = '' }: P2POfferInfoProps) {
         <div className='flex items-center justify-between text-sm'>
           <span className='text-muted-foreground'>支払い方法</span>
           <div className='flex flex-wrap gap-1'>
-            <span className='px-2 py-1 bg-muted rounded text-xs'>
-              {offer.paymentMethod}
-            </span>
+            <span className='px-2 py-1 bg-muted rounded text-xs'>{offer.paymentMethod}</span>
           </div>
         </div>
       </div>

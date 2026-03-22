@@ -1,19 +1,39 @@
-
 export const p2pQueries = {
   // P2P取引リクエストを取得（単一）
-  p2pTradeRequest: async (_: unknown, args: { tradeId: string }, ctx: { user?: { id: string }; prisma: { p2PTradeRequest: { findUnique: (arg: { where: { id: string } }) => Promise<{ buyerId: string; sellerId: string } | null> } } }) => {
+  p2pTradeRequest: async (
+    _: unknown,
+    args: { tradeId: string },
+    ctx: {
+      user?: { id: string };
+      prisma: {
+        p2PTradeRequest: {
+          findUnique: (arg: {
+            where: { id: string };
+          }) => Promise<{ buyerId: string; sellerId: string } | null>;
+        };
+      };
+    }
+  ) => {
     const userId = ctx.user?.id;
     if (!userId) throw new Error('認証が必要です');
 
     const trade = await ctx.prisma.p2PTradeRequest.findUnique({ where: { id: args.tradeId } });
     if (!trade) throw new Error('取引が見つかりません');
-    if (trade.buyerId !== userId && trade.sellerId !== userId) throw new Error('認証されていません');
+    if (trade.buyerId !== userId && trade.sellerId !== userId)
+      throw new Error('認証されていません');
 
     return trade;
   },
 
   // 自分のP2P取引リクエスト一覧を取得
-  myP2PTradeRequests: async (_: unknown, args: { status?: string; first?: number; after?: string }, ctx: { user?: { id: string }; prisma: { p2PTradeRequest: { findMany: (arg: any) => Promise<unknown[]> } } }) => {
+  myP2PTradeRequests: async (
+    _: unknown,
+    args: { status?: string; first?: number; after?: string },
+    ctx: {
+      user?: { id: string };
+      prisma: { p2PTradeRequest: { findMany: (arg: any) => Promise<unknown[]> } };
+    }
+  ) => {
     const userId = ctx.user?.id;
     if (!userId) throw new Error('認証が必要です');
 
@@ -65,10 +85,18 @@ export const p2pQueries = {
 
     if (orderBy) {
       switch (orderBy.field) {
-        case 'RATE': prismaOrderBy.push({ exchangeRateMargin: order }); break;
-        case 'MIN_AMOUNT': prismaOrderBy.push({ minAmountUsd: order }); break;
-        case 'MAX_AMOUNT': prismaOrderBy.push({ maxAmountUsd: order }); break;
-        case 'CREATED_AT': prismaOrderBy.push({ createdAt: order }); break;
+        case 'RATE':
+          prismaOrderBy.push({ exchangeRateMargin: order });
+          break;
+        case 'MIN_AMOUNT':
+          prismaOrderBy.push({ minAmountUsd: order });
+          break;
+        case 'MAX_AMOUNT':
+          prismaOrderBy.push({ maxAmountUsd: order });
+          break;
+        case 'CREATED_AT':
+          prismaOrderBy.push({ createdAt: order });
+          break;
       }
     } else {
       prismaOrderBy.push({ priority: 'desc' }, { createdAt: 'desc' });
@@ -102,7 +130,14 @@ export const p2pQueries = {
   },
 
   // 自分のP2Pオファー一覧を取得
-  myP2POffers: async (_: unknown, args: { fiatCurrency?: string; paymentMethod?: string; isActive?: boolean }, ctx: { user?: { id: string }; prisma: { p2POffer: { findMany: (arg: any) => Promise<unknown[]> } } }) => {
+  myP2POffers: async (
+    _: unknown,
+    args: { fiatCurrency?: string; paymentMethod?: string; isActive?: boolean },
+    ctx: {
+      user?: { id: string };
+      prisma: { p2POffer: { findMany: (arg: any) => Promise<unknown[]> } };
+    }
+  ) => {
     const userId = ctx.user?.id;
     if (!userId) throw new Error('認証が必要です');
 

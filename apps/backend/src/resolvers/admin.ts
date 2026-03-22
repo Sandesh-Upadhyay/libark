@@ -98,7 +98,13 @@ export const adminResolvers = {
 
         // ストレージ使用量（概算）
         let totalSize = BigInt(0);
-        const prisma = context.prisma as unknown as { mediaVariant: { aggregate: (args: { _sum: { fileSize: true } }) => Promise<{ _sum: { fileSize: bigint | null } }> } };
+        const prisma = context.prisma as unknown as {
+          mediaVariant: {
+            aggregate: (args: {
+              _sum: { fileSize: true };
+            }) => Promise<{ _sum: { fileSize: bigint | null } }>;
+          };
+        };
         if (prisma.mediaVariant && typeof prisma.mediaVariant.aggregate === 'function') {
           const storageUsed = await prisma.mediaVariant.aggregate({
             _sum: { fileSize: true },
@@ -193,16 +199,23 @@ export const adminResolvers = {
         const edges = users.slice(0, limit);
 
         return {
-          edges: edges.map((user: User & { _count: { posts: number; comments: number; followers: number; following: number }; permissionOverrides: unknown[] }) => ({
-            node: {
-              ...user,
-              postsCount: user._count?.posts ?? 0,
-              followersCount: user._count?.followers ?? 0,
-              followingCount: user._count?.following ?? 0,
-              permissions: user.permissionOverrides,
-            },
-            cursor: user.id,
-          })),
+          edges: edges.map(
+            (
+              user: User & {
+                _count: { posts: number; comments: number; followers: number; following: number };
+                permissionOverrides: unknown[];
+              }
+            ) => ({
+              node: {
+                ...user,
+                postsCount: user._count?.posts ?? 0,
+                followersCount: user._count?.followers ?? 0,
+                followingCount: user._count?.following ?? 0,
+                permissions: user.permissionOverrides,
+              },
+              cursor: user.id,
+            })
+          ),
           pageInfo: {
             hasNextPage,
             hasPreviousPage: false, // 現在の実装では前のページはサポートしていない
@@ -467,12 +480,15 @@ export const adminResolvers = {
         });
 
         // ログ記録（パスワードは記録しない）
-        context.fastify.log.info({
-          adminId: context.user?.id,
-          adminUsername: context.user?.username,
-          targetUserId: userId,
-          targetUsername: existingUser.username,
-        } as unknown, '✅ 管理者によるパスワード変更成功:');
+        context.fastify.log.info(
+          {
+            adminId: context.user?.id,
+            adminUsername: context.user?.username,
+            targetUserId: userId,
+            targetUsername: existingUser.username,
+          } as unknown,
+          '✅ 管理者によるパスワード変更成功:'
+        );
 
         return {
           success: true,
@@ -481,11 +497,14 @@ export const adminResolvers = {
       } catch (error) {
         // Zodバリデーションエラーの処理
         if (error instanceof z.ZodError) {
-          context.fastify.log.warn({
-            errors: error.errors,
-            adminId: context.user?.id,
-            input: { userId: input.userId }, // パスワードはログに記録しない
-          } as unknown, '❌ 管理者パスワード変更バリデーションエラー:');
+          context.fastify.log.warn(
+            {
+              errors: error.errors,
+              adminId: context.user?.id,
+              input: { userId: input.userId }, // パスワードはログに記録しない
+            } as unknown,
+            '❌ 管理者パスワード変更バリデーションエラー:'
+          );
 
           const errorMessage = error.errors.map(err => err.message).join(', ');
           throw new GraphQLError(`入力データが無効です: ${errorMessage}`, {
@@ -497,11 +516,14 @@ export const adminResolvers = {
         }
 
         if (error instanceof GraphQLError) throw error;
-        context.fastify.log.error({
-          error,
-          adminId: context.user?.id,
-          targetUserId: input.userId,
-        } as unknown, '❌ 管理者パスワード変更エラー:');
+        context.fastify.log.error(
+          {
+            error,
+            adminId: context.user?.id,
+            targetUserId: input.userId,
+          } as unknown,
+          '❌ 管理者パスワード変更エラー:'
+        );
         throw new GraphQLError('パスワード変更処理中にエラーが発生しました', {
           extensions: { code: 'INTERNAL_ERROR' },
         });
@@ -524,18 +546,24 @@ export const adminResolvers = {
       try {
         // S3クリーンアップを試行（失敗しても継続）
         const serverS3Config = getS3Config();
-        context.fastify.log.info({
-          bucket: serverS3Config.bucket,
-          region: serverS3Config.region,
-          endpoint: serverS3Config.endpoint,
-          hasAccessKey: !!serverS3Config.accessKey,
-          hasSecretKey: !!serverS3Config.secretKey,
-        } as unknown, '🧹 [Admin] S3クリーンアップ設定確認:');
+        context.fastify.log.info(
+          {
+            bucket: serverS3Config.bucket,
+            region: serverS3Config.region,
+            endpoint: serverS3Config.endpoint,
+            hasAccessKey: !!serverS3Config.accessKey,
+            hasSecretKey: !!serverS3Config.secretKey,
+          } as unknown,
+          '🧹 [Admin] S3クリーンアップ設定確認:'
+        );
         // エラーが発生してもデータベースリセットは継続
         // S3クリーンアップの失敗はデータベースリセットを阻害しない
         return { deletedObjects: 0 };
       } catch (error) {
-        context.fastify.log.error({ err: error }, 'S3クリーンアップ中にエラーが発生しましたが、処理を継続します:');
+        context.fastify.log.error(
+          { err: error },
+          'S3クリーンアップ中にエラーが発生しましたが、処理を継続します:'
+        );
         return { deletedObjects: 0 };
       }
     },

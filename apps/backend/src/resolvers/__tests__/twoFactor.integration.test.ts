@@ -106,9 +106,9 @@ describe('🔐 2FA System Integration Tests', () => {
     // Cookieの取得
     const cookieHeader = _loginRes.headers['set-cookie'];
     if (Array.isArray(cookieHeader)) {
-        cookie = cookieHeader[0].split(';')[0];
+      cookie = cookieHeader[0].split(';')[0];
     } else {
-        cookie = (cookieHeader as string)?.split(';')[0];
+      cookie = (cookieHeader as string)?.split(';')[0];
     }
   });
 
@@ -124,7 +124,7 @@ describe('🔐 2FA System Integration Tests', () => {
       url: '/graphql',
       headers: {
         'content-type': 'application/json',
-        cookie
+        cookie,
       },
       payload: {
         query: setupTwoFactorMutation,
@@ -147,7 +147,7 @@ describe('🔐 2FA System Integration Tests', () => {
       url: '/graphql',
       headers: {
         'content-type': 'application/json',
-        cookie
+        cookie,
       },
       payload: {
         query: enableTwoFactorMutation,
@@ -171,7 +171,7 @@ describe('🔐 2FA System Integration Tests', () => {
       method: 'POST',
       url: '/graphql',
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
       },
       payload: {
         query: loginMutation,
@@ -199,7 +199,7 @@ describe('🔐 2FA System Integration Tests', () => {
       method: 'POST',
       url: '/graphql',
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
       },
       payload: {
         query: loginWithTwoFactorMutation,
@@ -221,9 +221,9 @@ describe('🔐 2FA System Integration Tests', () => {
     let newCookie = '';
     const newCookieHeader = twoFactorLoginRes.headers['set-cookie'];
     if (Array.isArray(newCookieHeader)) {
-        newCookie = newCookieHeader[0].split(';')[0];
+      newCookie = newCookieHeader[0].split(';')[0];
     } else {
-        newCookie = (newCookieHeader as string)?.split(';')[0];
+      newCookie = (newCookieHeader as string)?.split(';')[0];
     }
 
     // 5. 2FA無効化
@@ -233,7 +233,7 @@ describe('🔐 2FA System Integration Tests', () => {
       url: '/graphql',
       headers: {
         'content-type': 'application/json',
-        cookie: newCookie
+        cookie: newCookie,
       },
       payload: {
         query: disableTwoFactorMutation,

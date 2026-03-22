@@ -3,7 +3,6 @@ import React from 'react';
 import { render, screen, waitFor, fireEvent, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
-
 import { Providers } from '@/providers';
 import { PostList } from '@/features/posts/components/PostList';
 

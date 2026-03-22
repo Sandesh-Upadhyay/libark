@@ -125,7 +125,9 @@ describe('Validators Utils', () => {
       (context.prisma.post.findUnique as any).mockResolvedValue(mockPost);
 
       await expect(verifyPostOwnership(context, 'post-1')).rejects.toThrow(GraphQLError);
-      await expect(verifyPostOwnership(context, 'post-1')).rejects.toThrow('この投稿を編集する権限がありません');
+      await expect(verifyPostOwnership(context, 'post-1')).rejects.toThrow(
+        'この投稿を編集する権限がありません'
+      );
     });
   });
 
@@ -269,7 +271,9 @@ describe('Validators Utils', () => {
       const context = createMockContext();
       (context.prisma.media.count as any).mockResolvedValue(1);
 
-      await expect(verifyMediaOwnership(context, ['media-1', 'media-2'])).rejects.toThrow(GraphQLError);
+      await expect(verifyMediaOwnership(context, ['media-1', 'media-2'])).rejects.toThrow(
+        GraphQLError
+      );
       await expect(verifyMediaOwnership(context, ['media-1', 'media-2'])).rejects.toThrow(
         '指定されたメディアが見つからないか、権限がありません'
       );
@@ -376,9 +380,7 @@ describe('Validators Utils', () => {
       const context = createMockContext();
 
       await expect(validatePostAccess(post, context, true)).rejects.toThrow(GraphQLError);
-      await expect(validatePostAccess(post, context, true)).rejects.toThrow(
-        '投稿が見つかりません'
-      );
+      await expect(validatePostAccess(post, context, true)).rejects.toThrow('投稿が見つかりません');
     });
 
     it('should not throw for processing post when user is owner and includeProcessing is true', async () => {

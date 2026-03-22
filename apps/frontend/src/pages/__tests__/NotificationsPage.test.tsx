@@ -9,13 +9,11 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { graphql, HttpResponse } from 'msw';
 
-
 import { Providers } from '@/providers';
 import { server } from '@/__tests__/msw/server';
 import { resetMSWState } from '@/__tests__/msw/handlers.graphql';
 
 import NotificationsPage from '../NotificationsPage';
-
 
 describe('NotificationsPage', () => {
   beforeEach(() => {

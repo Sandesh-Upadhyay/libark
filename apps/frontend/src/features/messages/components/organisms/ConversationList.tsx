@@ -71,7 +71,9 @@ export const ConversationList: React.FC<ConversationListProps> = ({
 }) => {
   // 会話データをListItem形式に変換
   const conversationItems: ListItem[] = conversations.map((conversation, _index) => {
-    const otherParticipant = conversation.participants.find((p: any) => p.user.id !== currentUserId);
+    const otherParticipant = conversation.participants.find(
+      (p: any) => p.user.id !== currentUserId
+    );
 
     return {
       id: conversation.id,

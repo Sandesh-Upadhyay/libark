@@ -67,8 +67,7 @@ const mobileListItemVariants = cva('flex items-start gap-3 sm:gap-4 transition-c
  * モバイルセクションのプロパティ
  */
 export interface MobileSectionProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof mobileSectionVariants> {
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof mobileSectionVariants> {
   title?: string;
   description?: string;
   icon?: LucideIcon;
@@ -80,8 +79,7 @@ export interface MobileSectionProps
  * モバイルリストアイテムのプロパティ
  */
 export interface MobileListItemProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof mobileListItemVariants> {
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof mobileListItemVariants> {
   icon?: React.ReactNode;
   title?: string;
   subtitle?: string;

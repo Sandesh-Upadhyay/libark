@@ -12,11 +12,7 @@
 import { Readable } from 'stream';
 
 import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
-import {
-  GetObjectCommand,
-  HeadObjectCommand,
-  PutObjectCommand,
-} from '@aws-sdk/client-s3';
+import { GetObjectCommand, HeadObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { Redis } from 'ioredis';
 import type { FastifyInstance } from 'fastify';
 

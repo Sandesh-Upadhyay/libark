@@ -132,7 +132,7 @@ describe('🔔 通知リゾルバー統合テスト', () => {
         url: '/graphql',
         payload: {
           query,
-          variables: { isRead: false }
+          variables: { isRead: false },
         },
         headers: { cookie: authToken, 'content-type': 'application/json' },
       });
@@ -178,7 +178,7 @@ describe('🔔 通知リゾルバー統合テスト', () => {
     it('通知を既読にできる', async () => {
       // 未読の通知IDを取得
       const notif = await app.prisma.notification.findFirst({
-        where: { userId: testUser.id, isRead: false }
+        where: { userId: testUser.id, isRead: false },
       });
 
       const response = await app.inject({
@@ -186,7 +186,7 @@ describe('🔔 通知リゾルバー統合テスト', () => {
         url: '/graphql',
         payload: {
           query: mutation,
-          variables: { id: notif?.id }
+          variables: { id: notif?.id },
         },
         headers: { cookie: authToken, 'content-type': 'application/json' },
       });
@@ -197,7 +197,7 @@ describe('🔔 通知リゾルバー統合テスト', () => {
 
       // 未読数が減っているか確認
       const count = await app.prisma.notification.count({
-        where: { userId: testUser.id, isRead: false }
+        where: { userId: testUser.id, isRead: false },
       });
       expect(count).toBe(1);
     });
@@ -209,8 +209,8 @@ describe('🔔 通知リゾルバー統合テスト', () => {
           userId: otherUser.id,
           type: 'FOLLOW',
           content: 'Other notification',
-          isRead: false // 未読
-        }
+          isRead: false, // 未読
+        },
       });
 
       const response = await app.inject({
@@ -218,7 +218,7 @@ describe('🔔 通知リゾルバー統合テスト', () => {
         url: '/graphql',
         payload: {
           query: mutation,
-          variables: { id: otherNotif.id }
+          variables: { id: otherNotif.id },
         },
         headers: { cookie: authToken, 'content-type': 'application/json' },
       });
@@ -250,7 +250,7 @@ describe('🔔 通知リゾルバー統合テスト', () => {
 
       // 未読数が0になっているか確認
       const count = await app.prisma.notification.count({
-        where: { userId: testUser.id, isRead: false }
+        where: { userId: testUser.id, isRead: false },
       });
       expect(count).toBe(0);
     });

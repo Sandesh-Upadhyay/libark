@@ -293,7 +293,9 @@ describe('リポジトリパターン', () => {
           updatedAt: new Date(),
         }));
 
-        (prisma.user.findMany as ReturnType<typeof vi.fn>).mockResolvedValue(mockUsers.slice(0, 10));
+        (prisma.user.findMany as ReturnType<typeof vi.fn>).mockResolvedValue(
+          mockUsers.slice(0, 10)
+        );
 
         const users = await prisma.user.findMany({
           skip: 0,
@@ -827,7 +829,9 @@ describe('リポジトリパターン', () => {
           updatedAt: new Date(),
         };
 
-        (prisma.notification.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockNotification);
+        (prisma.notification.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+          mockNotification
+        );
 
         const notification = await prisma.notification.findUnique({
           where: { id: notificationId },

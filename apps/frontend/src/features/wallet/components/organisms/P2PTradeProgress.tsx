@@ -8,7 +8,6 @@ import { toast } from '@/lib/toast';
 import { P2PStatusBadge } from '../atoms/P2PStatusBadge';
 import { P2PTradeTimeline } from '../molecules/P2PTradeTimeline';
 
-
 export interface P2PTradeProgressProps {
   trade: P2PTradeInfoFragment;
   className?: string;
@@ -43,16 +42,8 @@ function calculateTimeRemaining(expiresAt: string): {
 /**
  * カウントダウンタイマーコンポーネント
  */
-function CountdownTimer({
-  expiresAt,
-  onExpire,
-}: {
-  expiresAt: string;
-  onExpire?: () => void;
-}) {
-  const [timeRemaining, setTimeRemaining] = useState(() =>
-    calculateTimeRemaining(expiresAt)
-  );
+function CountdownTimer({ expiresAt, onExpire }: { expiresAt: string; onExpire?: () => void }) {
+  const [timeRemaining, setTimeRemaining] = useState(() => calculateTimeRemaining(expiresAt));
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -111,17 +102,8 @@ function CopyButton({ value, label }: { value: string; label: string }) {
   }, [value, label]);
 
   return (
-    <Button
-      variant='ghost'
-      size='sm'
-      onClick={handleCopy}
-      className='h-6 w-6 p-0'
-    >
-      {copied ? (
-        <Check className='h-3 w-3 text-green-500' />
-      ) : (
-        <Copy className='h-3 w-3' />
-      )}
+    <Button variant='ghost' size='sm' onClick={handleCopy} className='h-6 w-6 p-0'>
+      {copied ? <Check className='h-3 w-3 text-green-500' /> : <Copy className='h-3 w-3' />}
     </Button>
   );
 }
@@ -141,9 +123,7 @@ export function P2PTradeProgress({
       <div className='flex items-center justify-between'>
         <h2 className='text-xl font-semibold'>取引進行状況</h2>
         <div className='flex items-center gap-4'>
-          {showTimer && (
-            <CountdownTimer expiresAt={trade.expiresAt} onExpire={onExpire} />
-          )}
+          {showTimer && <CountdownTimer expiresAt={trade.expiresAt} onExpire={onExpire} />}
           <P2PStatusBadge status={trade.status} />
         </div>
       </div>
@@ -192,12 +172,7 @@ export function P2PTradeProgress({
       {/* 紛争ボタン */}
       {canDispute && onDispute && (
         <div className='pt-4 border-t border-border'>
-          <Button
-            variant='destructive'
-            size='sm'
-            onClick={onDispute}
-            className='w-full'
-          >
+          <Button variant='destructive' size='sm' onClick={onDispute} className='w-full'>
             <AlertTriangle className='h-4 w-4 mr-2' />
             問題を報告する（紛争を開始）
           </Button>

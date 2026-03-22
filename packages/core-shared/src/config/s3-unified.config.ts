@@ -314,7 +314,9 @@ export class S3ConfigManager {
         errors.push('Encryption is enabled but S3_GATEWAY_ENCRYPTION_KEY is not set');
       }
     } catch (error) {
-      errors.push(`Configuration load error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      errors.push(
+        `Configuration load error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
 
     return {

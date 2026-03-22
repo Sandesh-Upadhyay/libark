@@ -46,7 +46,12 @@ export class P2PTradeService {
    * P2P取引更新イベントをパブリッシュする
    * @param trade 取引データ
    */
-  async publishTradeUpdate(trade: { id: string; buyerId: string; sellerId?: string | null; status: string }): Promise<void> {
+  async publishTradeUpdate(trade: {
+    id: string;
+    buyerId: string;
+    sellerId?: string | null;
+    status: string;
+  }): Promise<void> {
     try {
       const pubsub = RedisPubSubManager.getInstance();
 
@@ -110,7 +115,9 @@ export class P2PTradeService {
     const lockKey = `${OFFER_LOCK_KEY}${fiatCurrency}:${amountUsd}`;
     const lockAcquired = await counterManager.acquireLock(lockKey, OFFER_LOCK_TTL);
     if (!lockAcquired) {
-      logger.warn('[P2PTradeService] Failed to acquire lock for matchOffer, proceeding without lock');
+      logger.warn(
+        '[P2PTradeService] Failed to acquire lock for matchOffer, proceeding without lock'
+      );
     }
 
     const offers = await this.prisma.p2POffer.findMany({

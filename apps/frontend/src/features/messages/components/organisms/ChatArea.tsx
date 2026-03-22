@@ -2,7 +2,6 @@ import React, { useRef, useEffect } from 'react';
 import { MessageSquare, CheckCheck, Users, Info } from 'lucide-react';
 import type { Message as GraphQLMessage } from '@libark/graphql-client';
 
-
 import { Button } from '@/components/atoms';
 import { LoadingSpinner } from '@/components/atoms/loading';
 import { UserAvatar } from '@/components/molecules/UserAvatar';

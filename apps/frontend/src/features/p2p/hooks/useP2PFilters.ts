@@ -2,7 +2,6 @@ import { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import type { P2PPaymentMethodType } from '@libark/graphql-client';
 
-
 import { DEFAULT_FILTERS, PARAM_KEYS, SORT_BY_OPTIONS } from '@/features/p2p/types';
 import type { P2PFilters } from '@/features/p2p/types';
 
@@ -24,7 +23,10 @@ export function useP2PFilters() {
 
     return {
       fiatCurrency: currency,
-      paymentMethod: Object.keys(PAYMENT_METHOD_LABELS).includes(payment) || payment === 'all' ? payment : DEFAULT_FILTERS.paymentMethod,
+      paymentMethod:
+        Object.keys(PAYMENT_METHOD_LABELS).includes(payment) || payment === 'all'
+          ? payment
+          : DEFAULT_FILTERS.paymentMethod,
       amountUsd: amount ? Number(amount) : undefined,
       sortBy: SORT_BY_OPTIONS.includes(sort) ? sort : DEFAULT_FILTERS.sortBy,
       sortOrder: order === 'asc' || order === 'desc' ? order : DEFAULT_FILTERS.sortOrder,
@@ -32,23 +34,33 @@ export function useP2PFilters() {
   }, [searchParams]);
 
   // フィルター更新関数（即時反映用）
-  const updateFilters = useCallback((newFilters: Partial<P2PFilters>) => {
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev);
-      const merged = { ...filters, ...newFilters };
+  const updateFilters = useCallback(
+    (newFilters: Partial<P2PFilters>) => {
+      setSearchParams(
+        prev => {
+          const next = new URLSearchParams(prev);
+          const merged = { ...filters, ...newFilters };
 
-      Object.entries(PARAM_KEYS).forEach(([key, paramName]) => {
-        const value = merged[key as keyof P2PFilters];
-        // デフォルト値または 'all' の場合はパラメータを削除してURLをスリムに保つ
-        if (value === undefined || value === 'all' || value === DEFAULT_FILTERS[key as keyof P2PFilters]) {
-          next.delete(paramName);
-        } else {
-          next.set(paramName, String(value));
-        }
-      });
-      return next;
-    }, { replace: true });
-  }, [filters, setSearchParams]);
+          Object.entries(PARAM_KEYS).forEach(([key, paramName]) => {
+            const value = merged[key as keyof P2PFilters];
+            // デフォルト値または 'all' の場合はパラメータを削除してURLをスリムに保つ
+            if (
+              value === undefined ||
+              value === 'all' ||
+              value === DEFAULT_FILTERS[key as keyof P2PFilters]
+            ) {
+              next.delete(paramName);
+            } else {
+              next.set(paramName, String(value));
+            }
+          });
+          return next;
+        },
+        { replace: true }
+      );
+    },
+    [filters, setSearchParams]
+  );
 
   // デバウンス用の一時状態（金額入力など）
   const [draftAmount, setDraftAmount] = useState<string>(filters.amountUsd?.toString() || '');
@@ -60,20 +72,23 @@ export function useP2PFilters() {
   }, [filters.amountUsd]);
 
   // 金額のデバウンス更新
-  const updateAmountDebounced = useCallback((value: string) => {
-    setDraftAmount(value);
+  const updateAmountDebounced = useCallback(
+    (value: string) => {
+      setDraftAmount(value);
 
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-
-    debounceTimerRef.current = setTimeout(() => {
-      const numValue = value === '' ? undefined : Number(value);
-      if (numValue !== filters.amountUsd) {
-        updateFilters({ amountUsd: numValue });
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
       }
-    }, 300);
-  }, [filters.amountUsd, updateFilters]);
+
+      debounceTimerRef.current = setTimeout(() => {
+        const numValue = value === '' ? undefined : Number(value);
+        if (numValue !== filters.amountUsd) {
+          updateFilters({ amountUsd: numValue });
+        }
+      }, 300);
+    },
+    [filters.amountUsd, updateFilters]
+  );
 
   // すべてクリア
   const clearFilters = useCallback(() => {

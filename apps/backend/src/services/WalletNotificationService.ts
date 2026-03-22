@@ -523,7 +523,11 @@ export class WalletNotificationService {
    * @param tradeId 取引ID
    * @param isInitiator 紛争を提起した本人かどうか
    */
-  async notifyP2PDisputeCreated(userId: string, tradeId: string, isInitiator: boolean): Promise<void> {
+  async notifyP2PDisputeCreated(
+    userId: string,
+    tradeId: string,
+    isInitiator: boolean
+  ): Promise<void> {
     try {
       const notification = await prisma.notification.create({
         data: {

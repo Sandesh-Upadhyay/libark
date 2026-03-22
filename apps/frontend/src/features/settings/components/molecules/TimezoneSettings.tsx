@@ -5,7 +5,6 @@ import { Clock, Info, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUserSettings } from '@libark/graphql-client';
 
-
 import { SectionShell } from '@/components/molecules';
 import { Button, Alert, AlertDescription } from '@/components/atoms';
 import { getBrowserTimezone, getCurrentTimeInTimezone } from '@/lib/utils/timezoneUtils';

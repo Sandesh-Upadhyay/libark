@@ -319,12 +319,15 @@ export async function createSubscriptionContext(
   const startTime = Date.now();
 
   try {
-    fastify.log.info({
-      hasConnectionParams: !!connectionParams,
-      connectionParamsKeys: connectionParams ? Object.keys(connectionParams) : [],
-      hasUpgradeReq: !!websocket.upgradeReq,
-      hasCookieHeader: !!websocket.upgradeReq?.headers?.cookie,
-    } as unknown, '🔗 [GraphQL WebSocket] Cookie認証付きコンテキスト作成開始:');
+    fastify.log.info(
+      {
+        hasConnectionParams: !!connectionParams,
+        connectionParamsKeys: connectionParams ? Object.keys(connectionParams) : [],
+        hasUpgradeReq: !!websocket.upgradeReq,
+        hasCookieHeader: !!websocket.upgradeReq?.headers?.cookie,
+      } as unknown,
+      '🔗 [GraphQL WebSocket] Cookie認証付きコンテキスト作成開始:'
+    );
 
     // Cookie認証の実行
     let token: string | undefined;
@@ -335,13 +338,16 @@ export async function createSubscriptionContext(
       const cookieMatch = cookieHeader.match(/(?:^|;\s*)accessToken=([^;]+)/);
       token = cookieMatch ? decodeURIComponent(cookieMatch[1]) : undefined;
 
-      fastify.log.info({
-        hasCookieHeader: !!cookieHeader,
-        hasToken: !!token,
-        tokenLength: token ? token.length : 0,
-        cookieHeaderLength: cookieHeader.length,
-        cookiePreview: cookieHeader.substring(0, 100) + '...',
-      }, '🍪 [GraphQL WebSocket] Cookieヘッダーから認証トークン取得:');
+      fastify.log.info(
+        {
+          hasCookieHeader: !!cookieHeader,
+          hasToken: !!token,
+          tokenLength: token ? token.length : 0,
+          cookieHeaderLength: cookieHeader.length,
+          cookiePreview: cookieHeader.substring(0, 100) + '...',
+        },
+        '🍪 [GraphQL WebSocket] Cookieヘッダーから認証トークン取得:'
+      );
     }
 
     // 方法2: connectionParamsから取得（フォールバック）
@@ -360,12 +366,15 @@ export async function createSubscriptionContext(
     }
 
     if (!token) {
-      fastify.log.warn({
-        connectionParams: Object.keys(connectionParams || {}),
-        environment: process.env.NODE_ENV,
-        hasCookieHeader: !!websocket.upgradeReq?.headers?.cookie,
-        cookieHeaderPreview: websocket.upgradeReq?.headers?.cookie?.substring(0, 100) + '...',
-      }, '🔐 [GraphQL WebSocket] 認証トークンが見つかりません:');
+      fastify.log.warn(
+        {
+          connectionParams: Object.keys(connectionParams || {}),
+          environment: process.env.NODE_ENV,
+          hasCookieHeader: !!websocket.upgradeReq?.headers?.cookie,
+          cookieHeaderPreview: websocket.upgradeReq?.headers?.cookie?.substring(0, 100) + '...',
+        },
+        '🔐 [GraphQL WebSocket] 認証トークンが見つかりません:'
+      );
 
       // 認証トークンが必要
       throw new GraphQLError('WebSocket認証トークンが必要です', {
@@ -377,10 +386,13 @@ export async function createSubscriptionContext(
     const authResult = await authenticateWebSocketToken(token, fastify);
 
     if (!authResult.success || !authResult.data) {
-      fastify.log.warn({
-        error: authResult.error,
-        tokenLength: token.length,
-      }, '🔐 [GraphQL WebSocket] 認証失敗:');
+      fastify.log.warn(
+        {
+          error: authResult.error,
+          tokenLength: token.length,
+        },
+        '🔐 [GraphQL WebSocket] 認証失敗:'
+      );
 
       throw new GraphQLError('WebSocket認証に失敗しました', {
         extensions: { code: 'UNAUTHENTICATED' },
@@ -390,38 +402,50 @@ export async function createSubscriptionContext(
     user = authResult.data;
 
     const authDuration = Date.now() - startTime;
-    fastify.log.info({
-      userId: user.id,
-      username: user.username,
-      authDuration: `${authDuration}ms`,
-    }, '✅ [GraphQL WebSocket] 認証成功:');
+    fastify.log.info(
+      {
+        userId: user.id,
+        username: user.username,
+        authDuration: `${authDuration}ms`,
+      },
+      '✅ [GraphQL WebSocket] 認証成功:'
+    );
 
     // セキュリティ監査ログ
-    fastify.log.info({
-      userId: user.id,
-      username: user.username,
-      timestamp: new Date().toISOString(),
-      userAgent: connectionParams?.userAgent || 'unknown',
-      ip: connectionParams?.ip || 'unknown',
-    }, '🔒 [Security Audit] WebSocket認証成功:');
+    fastify.log.info(
+      {
+        userId: user.id,
+        username: user.username,
+        timestamp: new Date().toISOString(),
+        userAgent: connectionParams?.userAgent || 'unknown',
+        ip: connectionParams?.ip || 'unknown',
+      },
+      '🔒 [Security Audit] WebSocket認証成功:'
+    );
   } catch (error) {
     const authDuration = Date.now() - startTime;
 
     if (error instanceof GraphQLError) {
       // 認証エラーの場合は詳細をログに記録
-      fastify.log.warn({
-        error: error.message,
-        code: error.extensions?.code,
-        authDuration: `${authDuration}ms`,
-      }, '🔐 [GraphQL WebSocket] 認証エラー:');
+      fastify.log.warn(
+        {
+          error: error.message,
+          code: error.extensions?.code,
+          authDuration: `${authDuration}ms`,
+        },
+        '🔐 [GraphQL WebSocket] 認証エラー:'
+      );
 
       // セキュリティ監査ログ
-      fastify.log.warn({
-        error: error.message,
-        timestamp: new Date().toISOString(),
-        userAgent: connectionParams?.userAgent || 'unknown',
-        ip: connectionParams?.ip || 'unknown',
-      }, '🚨 [Security Audit] WebSocket認証失敗:');
+      fastify.log.warn(
+        {
+          error: error.message,
+          timestamp: new Date().toISOString(),
+          userAgent: connectionParams?.userAgent || 'unknown',
+          ip: connectionParams?.ip || 'unknown',
+        },
+        '🚨 [Security Audit] WebSocket認証失敗:'
+      );
 
       throw error;
     }

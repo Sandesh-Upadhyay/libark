@@ -23,7 +23,6 @@ import { cn } from '@/lib/utils';
 import { Card, CardContent } from './card';
 import { Badge } from './badge';
 
-
 // StatsCardのバリアント定義
 const statsCardVariants = cva('transition-all duration-200 hover:shadow-md', {
   variants: {
@@ -97,8 +96,7 @@ const labelVariants = cva('text-muted-foreground leading-none', {
 });
 
 export interface StatsCardProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof statsCardVariants> {
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof statsCardVariants> {
   /** 統計値 */
   value: string | number;
   /** ラベル */

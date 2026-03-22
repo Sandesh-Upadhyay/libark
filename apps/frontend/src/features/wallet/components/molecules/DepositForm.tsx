@@ -11,7 +11,6 @@ import React, { useState, useEffect } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { AlertCircle } from 'lucide-react';
 
-
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/atoms';
 // Textコンポーネントは削除済み - 直接Tailwindクラスを使用
@@ -46,7 +45,8 @@ const depositFormVariants = cva('w-full', {
 });
 
 export interface DepositFormProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSubmit'>,
+  extends
+    Omit<React.HTMLAttributes<HTMLDivElement>, 'onSubmit'>,
     VariantProps<typeof depositFormVariants> {
   /** 最小入金額（USD換算） */
   minAmount?: number;

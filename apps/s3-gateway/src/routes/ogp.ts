@@ -121,18 +121,21 @@ function logAuditSuccess(
 ): void {
   const ip = (request.headers['x-forwarded-for'] as string) || request.ip;
 
-  app.log.info({
-    mediaId,
-    variant,
-    status,
-    bytes,
-    cacheStatus,
-    latency,
-    ogpKey,
-    contentHash,
-    isPaid,
-    ip,
-  }, '✅ [OGP] 配信成功');
+  app.log.info(
+    {
+      mediaId,
+      variant,
+      status,
+      bytes,
+      cacheStatus,
+      latency,
+      ogpKey,
+      contentHash,
+      isPaid,
+      ip,
+    },
+    '✅ [OGP] 配信成功'
+  );
 }
 
 /**
@@ -152,17 +155,20 @@ function logAuditError(
   const ip = (request.headers['x-forwarded-for'] as string) || request.ip;
   const ua = (request.headers['user-agent'] as string) || '';
 
-  app.log.warn({
-    mediaId,
-    variant,
-    errorType,
-    details,
-    ogpKey,
-    contentHash,
-    isPaid,
-    ip,
-    ua,
-  }, '❌ [OGP] 配信失敗');
+  app.log.warn(
+    {
+      mediaId,
+      variant,
+      errorType,
+      details,
+      ogpKey,
+      contentHash,
+      isPaid,
+      ip,
+      ua,
+    },
+    '❌ [OGP] 配信失敗'
+  );
 }
 
 /**
@@ -191,12 +197,15 @@ async function checkRateLimit(
     });
 
     if (!result.allowed) {
-      app.log.warn({
-        mediaId,
-        variant,
-        ip,
-        retryAfter: result.retryAfter,
-      }, '🚫 [OGP] Rate limit超過');
+      app.log.warn(
+        {
+          mediaId,
+          variant,
+          ip,
+          retryAfter: result.retryAfter,
+        },
+        '🚫 [OGP] Rate limit超過'
+      );
 
       return { allowed: false, errorType: 'INVALID_PARAM' };
     }
@@ -958,15 +967,19 @@ export async function ogpRoutes(app: FastifyInstance) {
         // paramsは利用可能
         const key = `ogp/${mediaId}/${variant}`; // contentHash, ext はこのルートのparamsにはないため含めない
 
-        app.log.error({
-          error: error instanceof Error ? error.message : 'Unknown error',
-          code: (error as { Code?: string; name?: string }).Code || (error as { name?: string }).name,
-          statusCode: (error as { $metadata?: { httpStatusCode?: number } }).$metadata
-            ?.httpStatusCode,
-          bucket,
-          key, // 構築したキー（または推定キー）
-          stack: error instanceof Error ? error.stack : undefined,
-        }, 'File serve error:');
+        app.log.error(
+          {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            code:
+              (error as { Code?: string; name?: string }).Code || (error as { name?: string }).name,
+            statusCode: (error as { $metadata?: { httpStatusCode?: number } }).$metadata
+              ?.httpStatusCode,
+            bucket,
+            key, // 構築したキー（または推定キー）
+            stack: error instanceof Error ? error.stack : undefined,
+          },
+          'File serve error:'
+        );
         logAuditError(app, request, mediaId, variant, 'INTERNAL_API_ERROR', error.message);
         return reply.status(500).send({
           error: {

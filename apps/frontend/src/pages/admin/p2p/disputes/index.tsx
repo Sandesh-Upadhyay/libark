@@ -93,9 +93,7 @@ const AdminP2PDisputesPage: React.FC = () => {
             )}
 
             {!loading && !error && disputes.length === 0 && (
-              <div className='text-center py-12 text-muted-foreground'>
-                紛争は現在ありません
-              </div>
+              <div className='text-center py-12 text-muted-foreground'>紛争は現在ありません</div>
             )}
 
             {!loading && !error && disputes.length > 0 && (
@@ -115,42 +113,39 @@ const AdminP2PDisputesPage: React.FC = () => {
                     {disputes.map(dispute => {
                       const trade = dispute.trade;
                       const opponent =
-                        trade?.buyer?.id === dispute.initiatorId
-                          ? trade?.seller
-                          : trade?.buyer;
+                        trade?.buyer?.id === dispute.initiatorId ? trade?.seller : trade?.buyer;
 
                       return (
                         <tr key={dispute.id} className='hover:bg-muted/20'>
                           <td className='px-4 py-3 font-mono'>
                             <div className='font-medium'>{dispute.id.slice(0, 8)}...</div>
                             <div className='text-xs text-muted-foreground'>
-                              {format(new Date(dispute.createdAt), 'yyyy/MM/dd HH:mm', { locale: ja })}
+                              {format(new Date(dispute.createdAt), 'yyyy/MM/dd HH:mm', {
+                                locale: ja,
+                              })}
                             </div>
                           </td>
                           <td className='px-4 py-3'>
                             <div className='flex items-center gap-2'>
-                              <UserAvatar
-                                user={dispute.initiator}
-                                size='sm'
-                              />
-                              <span>{dispute.initiator.displayName || dispute.initiator.username}</span>
+                              <UserAvatar user={dispute.initiator} size='sm' />
+                              <span>
+                                {dispute.initiator.displayName || dispute.initiator.username}
+                              </span>
                             </div>
                           </td>
                           <td className='px-4 py-3'>
-                             <div className='flex items-center gap-2'>
-                                {opponent ? (
-                                    <>
-                                    <UserAvatar user={opponent} size='sm' />
-                                    <span>{opponent.displayName || opponent.username}</span>
-                                    </>
-                                ) : (
-                                    <span className="text-muted-foreground">不明</span>
-                                )}
+                            <div className='flex items-center gap-2'>
+                              {opponent ? (
+                                <>
+                                  <UserAvatar user={opponent} size='sm' />
+                                  <span>{opponent.displayName || opponent.username}</span>
+                                </>
+                              ) : (
+                                <span className='text-muted-foreground'>不明</span>
+                              )}
                             </div>
                           </td>
-                          <td className='px-4 py-3 max-w-[200px] truncate'>
-                            {dispute.reason}
-                          </td>
+                          <td className='px-4 py-3 max-w-[200px] truncate'>{dispute.reason}</td>
                           <td className='px-4 py-3'>
                             <Badge variant={getStatusColor(dispute.status) as any}>
                               {getStatusLabel(dispute.status)}

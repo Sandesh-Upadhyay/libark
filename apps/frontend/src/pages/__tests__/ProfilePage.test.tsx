@@ -9,13 +9,11 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { graphql, HttpResponse } from 'msw';
 
-
 import { Providers } from '@/providers';
 import { server } from '@/__tests__/msw/server';
 import { resetMSWState } from '@/__tests__/msw/handlers.graphql';
 
 import ProfilePage from '../ProfilePage';
-
 
 describe('ProfilePage', () => {
   beforeEach(() => {
@@ -619,19 +617,21 @@ describe('ProfilePage', () => {
 
       // エラーメッセージが表示されるのを待つ
       await waitFor(() => {
-        expect(screen.getByText(/User not found|ユーザーが見つかりませんでした/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/User not found|ユーザーが見つかりませんでした/)
+        ).toBeInTheDocument();
       });
     });
 
     it('無効なプロフィールURLの場合にエラーメッセージが表示される', async () => {
       render(
-          <MemoryRouter initialEntries={['/profile']}>
-            <Providers>
-              <Routes>
-                <Route path='/profile' element={<ProfilePage />} />
-              </Routes>
-            </Providers>
-          </MemoryRouter>
+        <MemoryRouter initialEntries={['/profile']}>
+          <Providers>
+            <Routes>
+              <Route path='/profile' element={<ProfilePage />} />
+            </Routes>
+          </Providers>
+        </MemoryRouter>
       );
 
       // エラーメッセージが表示されるのを待つ

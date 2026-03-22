@@ -34,7 +34,8 @@ interface BaseMotionProps {
 
 // Motion.div用のProps
 interface MotionDivProps
-  extends BaseMotionProps,
+  extends
+    BaseMotionProps,
     Omit<
       HTMLMotionProps<'div'>,
       'variants' | 'initial' | 'animate' | 'exit' | 'children' | 'whileHover' | 'whileTap'
@@ -42,7 +43,8 @@ interface MotionDivProps
 
 // Motion.span用のProps
 interface MotionSpanProps
-  extends BaseMotionProps,
+  extends
+    BaseMotionProps,
     Omit<
       HTMLMotionProps<'span'>,
       'variants' | 'initial' | 'animate' | 'exit' | 'children' | 'whileHover' | 'whileTap'
@@ -50,7 +52,8 @@ interface MotionSpanProps
 
 // Motion.section用のProps
 interface MotionSectionProps
-  extends BaseMotionProps,
+  extends
+    BaseMotionProps,
     Omit<
       HTMLMotionProps<'section'>,
       'variants' | 'initial' | 'animate' | 'exit' | 'children' | 'whileHover' | 'whileTap'
@@ -58,7 +61,8 @@ interface MotionSectionProps
 
 // Motion.article用のProps
 interface MotionArticleProps
-  extends BaseMotionProps,
+  extends
+    BaseMotionProps,
     Omit<
       HTMLMotionProps<'article'>,
       'variants' | 'initial' | 'animate' | 'exit' | 'children' | 'whileHover' | 'whileTap'

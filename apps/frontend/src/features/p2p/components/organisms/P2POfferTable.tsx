@@ -1,9 +1,5 @@
 import { useMemo, useCallback } from 'react';
-import {
-  useReactTable,
-  getCoreRowModel,
-  flexRender,
-} from '@tanstack/react-table';
+import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
 import type { P2POfferInfoFragment, P2PPaymentMethodType } from '@libark/graphql-client';
 import { useAvailableP2POffersQuery, P2POfferSortField, SortOrder } from '@libark/graphql-client'; // Added missing imports for GraphQL query and enums
 
@@ -18,9 +14,6 @@ import {
   PAYMENT_METHOD_LABELS,
   FALLBACK_EXCHANGE_RATES, // Added
 } from '../../../p2p/constants/p2pConstants';
-
-
-
 
 export interface P2POfferTableProps {
   onBuyClick?: (offer: P2POfferInfoFragment) => void;
@@ -39,15 +32,20 @@ export function P2POfferTable({ onBuyClick, className = '' }: P2POfferTableProps
     variables: {
       fiatCurrency: filters.fiatCurrency,
       paymentMethod:
-        filters.paymentMethod === 'all' ? undefined : (filters.paymentMethod as P2PPaymentMethodType),
+        filters.paymentMethod === 'all'
+          ? undefined
+          : (filters.paymentMethod as P2PPaymentMethodType),
       amountUsd: filters.amountUsd,
       first: pageSize,
       orderBy: {
-        field: filters.sortBy === 'rate' ? P2POfferSortField.Rate :
-               filters.sortBy === 'minAmount' ? P2POfferSortField.MinAmount :
-               P2POfferSortField.MaxAmount,
+        field:
+          filters.sortBy === 'rate'
+            ? P2POfferSortField.Rate
+            : filters.sortBy === 'minAmount'
+              ? P2POfferSortField.MinAmount
+              : P2POfferSortField.MaxAmount,
         order: filters.sortOrder === 'desc' ? SortOrder.Desc : SortOrder.Asc,
-      }
+      },
     },
     notifyOnNetworkStatusChange: true,
   });
@@ -70,10 +68,7 @@ export function P2POfferTable({ onBuyClick, className = '' }: P2POfferTableProps
         return {
           availableP2POffers: {
             ...fetchMoreResult.availableP2POffers,
-            edges: [
-              ...prev.availableP2POffers.edges,
-              ...fetchMoreResult.availableP2POffers.edges,
-            ],
+            edges: [...prev.availableP2POffers.edges, ...fetchMoreResult.availableP2POffers.edges],
           },
         };
       },
@@ -91,7 +86,7 @@ export function P2POfferTable({ onBuyClick, className = '' }: P2POfferTableProps
           return (
             <div className='flex items-center gap-3'>
               <UserAvatar
-                size="sm"
+                size='sm'
                 username={seller?.username}
                 displayName={seller?.displayName ?? undefined}
                 profileImageId={seller?.profileImageId ?? undefined}
@@ -109,7 +104,8 @@ export function P2POfferTable({ onBuyClick, className = '' }: P2POfferTableProps
         cell: ({ row }: { row: any }) => {
           const offer = row.original;
           const rate =
-            (FALLBACK_EXCHANGE_RATES[offer.fiatCurrency] || 1) * (1 + Number(offer.exchangeRateMargin) / 100);
+            (FALLBACK_EXCHANGE_RATES[offer.fiatCurrency] || 1) *
+            (1 + Number(offer.exchangeRateMargin) / 100);
 
           return (
             <div className='font-medium'>
@@ -126,10 +122,12 @@ export function P2POfferTable({ onBuyClick, className = '' }: P2POfferTableProps
           return (
             <div>
               <div className='font-medium'>
-                {formatCurrency(Number(offer.minAmountUsd), { currency: offer.fiatCurrency })} 〜 {formatCurrency(Number(offer.maxAmountUsd), { currency: offer.fiatCurrency })}
+                {formatCurrency(Number(offer.minAmountUsd), { currency: offer.fiatCurrency })} 〜{' '}
+                {formatCurrency(Number(offer.maxAmountUsd), { currency: offer.fiatCurrency })}
               </div>
               <div className='text-xs text-muted-foreground'>
-                {formatCurrency(Number(offer.minAmountUsd), { currency: 'USD' })} 〜 {formatCurrency(Number(offer.maxAmountUsd), { currency: 'USD' })}
+                {formatCurrency(Number(offer.minAmountUsd), { currency: 'USD' })} 〜{' '}
+                {formatCurrency(Number(offer.maxAmountUsd), { currency: 'USD' })}
               </div>
             </div>
           );
@@ -214,11 +212,15 @@ export function P2POfferTable({ onBuyClick, className = '' }: P2POfferTableProps
                   onClick={() => onBuyClick?.(offer)}
                 >
                   {/* 各セルは columns 定義に従う */}
-                  {table.getRowModel().rows.find(r => r.original.id === offer.id)?.getVisibleCells().map(cell => (
-                    <td key={cell.id} className='px-4 py-4'>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
+                  {table
+                    .getRowModel()
+                    .rows.find(r => r.original.id === offer.id)
+                    ?.getVisibleCells()
+                    .map(cell => (
+                      <td key={cell.id} className='px-4 py-4'>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
                 </tr>
               ))
             )}
@@ -270,7 +272,10 @@ export function P2POfferTable({ onBuyClick, className = '' }: P2POfferTableProps
       {/* 読み込み中表示（初回・追加） */}
       {loading && offers.length === 0 && (
         <div className='flex justify-center py-12'>
-          <div role="status" className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary'></div>
+          <div
+            role='status'
+            className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary'
+          ></div>
         </div>
       )}
     </div>

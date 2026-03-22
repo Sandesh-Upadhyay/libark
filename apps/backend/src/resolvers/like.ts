@@ -40,10 +40,13 @@ export const likeResolvers = {
       context: GraphQLContext
     ) => {
       // 🔍 デバッグログ
-      context.fastify.log.info({
-        postId,
-        user: context.user ? { id: context.user.id, username: context.user.username } : null,
-      }, '🔍 [Like] toggleLike 呼び出し:');
+      context.fastify.log.info(
+        {
+          postId,
+          user: context.user ? { id: context.user.id, username: context.user.username } : null,
+        },
+        '🔍 [Like] toggleLike 呼び出し:'
+      );
 
       if (!context.user) {
         context.fastify.log.warn('🔐 [Like] 未認証ユーザーのいいね試行');
@@ -54,9 +57,12 @@ export const likeResolvers = {
 
       // いいね機能が有効かチェック
       const isLikeFeatureEnabled = await checkSiteFeatureEnabled(context, 'POST_LIKE');
-      context.fastify.log.info({
-        POST_LIKE: isLikeFeatureEnabled,
-      }, '🔍 [Like] 機能フラグチェック:');
+      context.fastify.log.info(
+        {
+          POST_LIKE: isLikeFeatureEnabled,
+        },
+        '🔍 [Like] 機能フラグチェック:'
+      );
 
       if (!isLikeFeatureEnabled) {
         context.fastify.log.warn('⚠️ [Like] POST_LIKE機能が無効化されています');
@@ -173,13 +179,16 @@ export const likeResolvers = {
                 timestamp: new Date().toISOString(),
               });
             }
-            context.fastify.log.info({
-              userId: post.userId,
-              notificationId: notification.id,
-              type: notification.type,
-              actorName:
-                (notification as any).actor?.displayName || (notification as any).actor?.username,
-            }, '✅ [Like] いいね通知作成完了:');
+            context.fastify.log.info(
+              {
+                userId: post.userId,
+                notificationId: notification.id,
+                type: notification.type,
+                actorName:
+                  (notification as any).actor?.displayName || (notification as any).actor?.username,
+              },
+              '✅ [Like] いいね通知作成完了:'
+            );
           } catch (error) {
             context.fastify.log.error({ err: error }, '❌ [Like] Redis PubSub通知送信エラー:');
           }
@@ -202,12 +211,15 @@ export const likeResolvers = {
             timestamp: new Date().toISOString(),
           });
 
-          context.fastify.log.info({
-            postId,
-            userId: context.user!.id,
-            isLiked,
-            newLikeCount,
-          }, '📡 [GraphQL] いいねトグルサブスクリプション通知送信:');
+          context.fastify.log.info(
+            {
+              postId,
+              userId: context.user!.id,
+              isLiked,
+              newLikeCount,
+            },
+            '📡 [GraphQL] いいねトグルサブスクリプション通知送信:'
+          );
         } catch (error) {
           context.fastify.log.error(
             { err: error },
@@ -242,10 +254,13 @@ export const likeResolvers = {
         return context.redisPubSub.asyncIterator([channel]);
       },
       resolve: (payload: unknown, _args: unknown, context: GraphQLContext) => {
-        context.fastify.log.info({
-          hasPayload: !!payload,
-          payloadType: typeof payload,
-        }, '📨 [GraphQL] いいねトグルサブスクリプション受信:');
+        context.fastify.log.info(
+          {
+            hasPayload: !!payload,
+            payloadType: typeof payload,
+          },
+          '📨 [GraphQL] いいねトグルサブスクリプション受信:'
+        );
 
         // いいねトグルタイプのメッセージのみ処理
         const payloadObj = payload as {

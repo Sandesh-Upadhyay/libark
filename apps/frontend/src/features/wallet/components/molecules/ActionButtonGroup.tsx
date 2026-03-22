@@ -66,8 +66,7 @@ export interface ActionButtonItem {
 }
 
 export interface ActionButtonGroupProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof actionButtonGroupVariants> {
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof actionButtonGroupVariants> {
   /** アクションボタンのリスト */
   buttons: ActionButtonItem[];
   /** ボタンのデフォルトサイズ */

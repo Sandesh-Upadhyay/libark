@@ -58,8 +58,7 @@ const paymentInstructionsVariants = cva('w-full space-y-4 transition-all duratio
 });
 
 export interface PaymentInstructionsProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof paymentInstructionsVariants> {
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof paymentInstructionsVariants> {
   /** 送金先アドレス */
   depositAddress: string;
   /** 通貨 */

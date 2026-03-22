@@ -203,11 +203,7 @@ export class ExchangeRateService {
   /**
    * 金額を通貨間で換算
    */
-  async convert(
-    amount: number,
-    fromCurrency: string,
-    toCurrency: string
-  ): Promise<number> {
+  async convert(amount: number, fromCurrency: string, toCurrency: string): Promise<number> {
     if (fromCurrency.toUpperCase() === toCurrency.toUpperCase()) {
       return amount;
     }

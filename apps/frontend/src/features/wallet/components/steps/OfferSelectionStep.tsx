@@ -33,9 +33,7 @@ export function OfferSelectionStep({
   const filteredOffers =
     selectedFilter === 'すべて'
       ? offers
-      : offers.filter(offer =>
-          offer.paymentMethod === selectedFilter
-        );
+      : offers.filter(offer => offer.paymentMethod === selectedFilter);
 
   return (
     <div className='space-y-6'>

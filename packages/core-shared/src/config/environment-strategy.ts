@@ -58,7 +58,9 @@ class BrowserEnvironmentStrategy implements EnvironmentStrategy {
     if (typeof window !== 'undefined') {
       try {
         // @ts-ignore - import.metaはブラウザ環境でのみ利用可能
-        const importMeta = (globalThis as typeof globalThis & { import?: { meta?: { env?: Record<string, string> } } }).import?.meta;
+        const importMeta = (
+          globalThis as typeof globalThis & { import?: { meta?: { env?: Record<string, string> } } }
+        ).import?.meta;
         if (importMeta && importMeta.env) {
           const viteEnvValue = (importMeta.env as Record<string, string>)[key];
           if (viteEnvValue !== undefined) {
@@ -92,7 +94,9 @@ class BrowserEnvironmentStrategy implements EnvironmentStrategy {
     if (typeof window !== 'undefined') {
       try {
         // @ts-ignore - import.metaはブラウザ環境でのみ利用可能
-        const importMeta = (globalThis as typeof globalThis & { import?: { meta?: { env?: Record<string, string> } } }).import?.meta;
+        const importMeta = (
+          globalThis as typeof globalThis & { import?: { meta?: { env?: Record<string, string> } } }
+        ).import?.meta;
         if (importMeta && importMeta.env) {
           const viteNodeEnv = (importMeta.env as Record<string, string>).NODE_ENV;
           if (viteNodeEnv) {

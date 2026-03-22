@@ -18,7 +18,6 @@ import { CurrencyIcon, type CurrencyType } from '../atoms/CurrencyIcon';
 
 import { DepositForm } from './DepositForm';
 
-
 // DisplayCurrency型の定義
 interface DisplayCurrency {
   id?: string;

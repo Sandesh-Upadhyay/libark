@@ -26,7 +26,6 @@ import { toast } from '@/lib/toast';
 
 import { useToggleLike } from './useToggleLike';
 
-
 // 生成されたクエリを使用（GET_POSTSは削除）
 
 // 生成されたクエリを使用（GET_MEDIA_POSTSは削除）

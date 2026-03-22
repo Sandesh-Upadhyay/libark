@@ -132,7 +132,7 @@ export const Guard: React.FC<GuardProps> = ({
   // 🔧 Loading state rendering
   if (isLoadingState) {
     return (
-      <div key="guard-loading" className={className}>
+      <div key='guard-loading' className={className}>
         {fallback || (
           <div className='min-h-screen flex items-center justify-center'>
             <LoadingSpinner size='lg' />
@@ -149,7 +149,7 @@ export const Guard: React.FC<GuardProps> = ({
 
   // 🔧 Authenticated and authorized - show content
   return (
-    <div key="guard-content" className={className}>
+    <div key='guard-content' className={className}>
       {children}
     </div>
   );

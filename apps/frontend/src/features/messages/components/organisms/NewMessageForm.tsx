@@ -2,7 +2,6 @@ import React from 'react';
 import { X } from 'lucide-react';
 import type { User } from '@libark/core-shared';
 
-
 import { Button } from '@/components/atoms';
 import { Header } from '@/components/molecules/Header';
 

@@ -38,7 +38,6 @@ import {
   AlertCircle,
 } from 'lucide-react';
 
-
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/atoms';
 import { Button } from '@/components/atoms';
 import { UserAvatar } from '@/components/molecules/UserAvatar';

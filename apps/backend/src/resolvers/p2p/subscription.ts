@@ -7,7 +7,11 @@ export const p2pSubscriptions = {
    * P2P取引の更新を購読
    */
   p2pTradeUpdated: {
-    subscribe: async (_parent: unknown, { userId }: { userId: string }, context: GraphQLContext) => {
+    subscribe: async (
+      _parent: unknown,
+      { userId }: { userId: string },
+      context: GraphQLContext
+    ) => {
       if (!context.redisPubSub) {
         throw new GraphQLError('Redis PubSub not available');
       }
@@ -20,7 +24,11 @@ export const p2pSubscriptions = {
    * P2P紛争の更新を購読
    */
   p2pDisputeUpdated: {
-    subscribe: async (_parent: unknown, { tradeId }: { tradeId: string }, context: GraphQLContext) => {
+    subscribe: async (
+      _parent: unknown,
+      { tradeId }: { tradeId: string },
+      context: GraphQLContext
+    ) => {
       if (!context.redisPubSub) {
         throw new GraphQLError('Redis PubSub not available');
       }

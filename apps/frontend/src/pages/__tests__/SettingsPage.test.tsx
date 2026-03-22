@@ -8,7 +8,6 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 
-
 import { Providers } from '@/providers';
 import { server } from '@/__tests__/msw/server';
 import { resetMSWState } from '@/__tests__/msw/handlers.graphql';

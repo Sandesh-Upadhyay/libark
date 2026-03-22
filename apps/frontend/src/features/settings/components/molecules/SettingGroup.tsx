@@ -16,7 +16,6 @@ import { cn } from '@/lib/utils';
 
 import { SettingItem } from '../atoms/SettingItem';
 
-
 const settingGroupVariants = cva('space-y-6 sm:space-y-8', {
   variants: {
     variant: {
@@ -58,8 +57,7 @@ export interface SettingGroupItem {
 }
 
 export interface SettingGroupProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof settingGroupVariants> {
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof settingGroupVariants> {
   /** グループのタイトル */
   title?: string;
   /** グループの説明 */

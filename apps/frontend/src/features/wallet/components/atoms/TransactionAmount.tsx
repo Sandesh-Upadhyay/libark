@@ -15,7 +15,6 @@ import { cn } from '@/lib/utils';
 
 import { CurrencyIcon, type CurrencyType } from './CurrencyIcon';
 
-
 /**
  * 取引金額のバリアント定義
  */

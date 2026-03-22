@@ -39,7 +39,10 @@ export async function createTestApp(
     )
   );
   console.log('🔍 [TestApp] has ogpPublicMedia:', !!prisma.ogpPublicMedia);
-  console.log('🔍 [TestApp] Prisma Client version:', (prisma as { _clientVersion?: string })._clientVersion);
+  console.log(
+    '🔍 [TestApp] Prisma Client version:',
+    (prisma as { _clientVersion?: string })._clientVersion
+  );
   try {
     const prismaPath = await import.meta.resolve!('@prisma/client');
     console.log('🔍 [TestApp] @prisma/client resolved path:', prismaPath);

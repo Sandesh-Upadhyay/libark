@@ -186,10 +186,17 @@ export class WalletService {
       // 残高チェック
       let currentBalance: number;
       switch (fromBalanceType) {
-        case 'WALLET': currentBalance = Number(wallet.balanceUsd); break;
-        case 'SALES': currentBalance = Number(wallet.salesBalanceUsd); break;
-        case 'P2P': currentBalance = Number(wallet.p2pBalanceUsd); break;
-        default: throw new GraphQLError('無効な残高種別です');
+        case 'WALLET':
+          currentBalance = Number(wallet.balanceUsd);
+          break;
+        case 'SALES':
+          currentBalance = Number(wallet.salesBalanceUsd);
+          break;
+        case 'P2P':
+          currentBalance = Number(wallet.p2pBalanceUsd);
+          break;
+        default:
+          throw new GraphQLError('無効な残高種別です');
       }
 
       if (currentBalance < amountUsd) {
@@ -238,10 +245,14 @@ export class WalletService {
 
   private getWalletBalanceKey(type: BalanceType): string {
     switch (type) {
-      case 'WALLET': return 'balanceUsd';
-      case 'SALES': return 'salesBalanceUsd';
-      case 'P2P': return 'p2pBalanceUsd';
-      default: throw new Error(`Unknown balance type: ${type}`);
+      case 'WALLET':
+        return 'balanceUsd';
+      case 'SALES':
+        return 'salesBalanceUsd';
+      case 'P2P':
+        return 'p2pBalanceUsd';
+      default:
+        throw new Error(`Unknown balance type: ${type}`);
     }
   }
 }

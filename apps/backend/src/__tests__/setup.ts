@@ -418,9 +418,11 @@ vi.mock('@libark/redis-client', () => {
         }
         return true;
       }),
-      blacklistToken: vi.fn().mockImplementation(async (token: string, _data?: unknown, ttl = 3600) => {
-        blacklistedTokens.set(token, Date.now() + ttl * 1000);
-      }),
+      blacklistToken: vi
+        .fn()
+        .mockImplementation(async (token: string, _data?: unknown, ttl = 3600) => {
+          blacklistedTokens.set(token, Date.now() + ttl * 1000);
+        }),
     },
     counterManager: {
       recordActiveUser: vi.fn().mockResolvedValue(undefined),
@@ -446,7 +448,11 @@ vi.mock('@libark/redis-client', () => {
           return { allowed: false, remaining: 0, resetTime: Date.now() + 15 * 60 * 1000 };
         }
         loginAttempts.set(key, attempts + 1);
-        return { allowed: true, remaining: Math.max(0, maxAttempts - (attempts + 1)), resetTime: 0 };
+        return {
+          allowed: true,
+          remaining: Math.max(0, maxAttempts - (attempts + 1)),
+          resetTime: 0,
+        };
       }),
       resetLimit: vi.fn().mockImplementation(async (key: string) => {
         loginAttempts.delete(key);

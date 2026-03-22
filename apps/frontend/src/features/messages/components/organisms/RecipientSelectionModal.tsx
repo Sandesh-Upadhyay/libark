@@ -30,7 +30,6 @@ import {
 import { SEARCH_USERS, GET_CONVERSATIONS } from '../../messages';
 import type { User, Conversation } from '../../messages';
 
-
 interface RecipientSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;

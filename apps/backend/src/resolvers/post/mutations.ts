@@ -58,7 +58,9 @@ export const postMutations = {
     }
 
     if (!context.user) {
-      throw new GraphQLError('Authentication required', { extensions: { code: 'UNAUTHENTICATED' } });
+      throw new GraphQLError('Authentication required', {
+        extensions: { code: 'UNAUTHENTICATED' },
+      });
     }
 
     const { postId } = input;
@@ -99,7 +101,7 @@ export const postMutations = {
     }
 
     // 3. 決済トランザクション
-    const purchase = await prisma.$transaction(async (tx) => {
+    const purchase = await prisma.$transaction(async tx => {
       const buyerWallet = await tx.wallet.findUnique({
         where: { userId: context.user!.id },
       });

@@ -1,11 +1,15 @@
-
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import type { FastifyInstance } from 'fastify';
 import type { PrismaClient } from '@libark/db';
 import type { Redis } from 'ioredis';
 
 import { createTestApp, cleanupTestApp } from '../../__tests__/helpers/test-app';
-import { createTestUser, cleanupTestData, createTestPermission, grantPermissionToUser } from '../../__tests__/helpers/test-data';
+import {
+  createTestUser,
+  cleanupTestData,
+  createTestPermission,
+  grantPermissionToUser,
+} from '../../__tests__/helpers/test-data';
 
 describe('🎯 Site Features Resolver Integration Tests', () => {
   let app: FastifyInstance & { prisma: PrismaClient; redis: Redis };
@@ -120,7 +124,10 @@ describe('🎯 Site Features Resolver Integration Tests', () => {
     const email = `${username}@test.com`;
     const user = await createTestUser(app.prisma, { email, username, password: 'Test12345!' });
 
-    const adminPerm = await createTestPermission(app.prisma, { name: 'ADMIN_PANEL', description: 'Admin' });
+    const adminPerm = await createTestPermission(app.prisma, {
+      name: 'ADMIN_PANEL',
+      description: 'Admin',
+    });
     await grantPermissionToUser(app.prisma, user.id, adminPerm.id);
 
     return { user, email };
@@ -194,7 +201,11 @@ describe('🎯 Site Features Resolver Integration Tests', () => {
     expect(postCreateSetting.isEnabled).toBe(false);
 
     // 3. 一般ユーザーで機能フラグ確認（反映されているか）
-    const user2 = await createTestUser(app.prisma, { email: makeUnique('u2') + '@test.com', username: makeUnique('u2'), password: 'Test12345!' });
+    const user2 = await createTestUser(app.prisma, {
+      email: makeUnique('u2') + '@test.com',
+      username: makeUnique('u2'),
+      password: 'Test12345!',
+    });
     const cookie2 = await getAuthCookie(user2.email);
 
     const flagRes = await app.inject({
@@ -240,7 +251,7 @@ describe('🎯 Site Features Resolver Integration Tests', () => {
     const targetUser = await createTestUser(app.prisma, {
       email: makeUnique('target') + '@test.com',
       username: makeUnique('target'),
-      password: 'Test12345!'
+      password: 'Test12345!',
     });
 
     // 特定ユーザーに対してのみ MESSAGES_SEND を無効化
@@ -275,7 +286,9 @@ describe('🎯 Site Features Resolver Integration Tests', () => {
 
     const myPermBody = JSON.parse(myPermRes.body);
     expect(myPermBody.errors).toBeUndefined();
-    const perm = myPermBody.data.myFeaturePermissions.find((p: any) => p.featureName === 'MESSAGES_SEND');
+    const perm = myPermBody.data.myFeaturePermissions.find(
+      (p: any) => p.featureName === 'MESSAGES_SEND'
+    );
     expect(perm).toBeDefined();
     expect(perm.isEnabled).toBe(false);
   });

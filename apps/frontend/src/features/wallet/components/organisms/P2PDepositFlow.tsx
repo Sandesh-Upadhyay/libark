@@ -6,7 +6,6 @@ import { toast } from '@/lib/toast';
 import { useP2PDepositFlow } from '../../hooks/useP2PDepositFlow';
 import { AmountInputStep, OfferSelectionStep, PaymentStep, ConfirmationStep } from '../steps';
 
-
 export interface P2PDepositFlowProps {
   onComplete?: () => void;
   onError?: (error: Error) => void;

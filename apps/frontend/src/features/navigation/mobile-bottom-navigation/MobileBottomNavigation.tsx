@@ -21,7 +21,6 @@ import { useTranslation } from 'react-i18next';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { useNotificationCount } from '@libark/graphql-client';
 
-
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/atoms';
 import { useAuth, useFeatures } from '@/hooks';
@@ -86,8 +85,7 @@ interface MobileNavItem {
  * Props型定義
  */
 export interface MobileBottomNavigationProps
-  extends React.HTMLAttributes<HTMLElement>,
-    VariantProps<typeof mobileBottomNavVariants> {}
+  extends React.HTMLAttributes<HTMLElement>, VariantProps<typeof mobileBottomNavVariants> {}
 
 /**
  * モバイル下部ナビゲーションアイテムコンポーネント
