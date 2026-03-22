@@ -67,7 +67,7 @@ export const RegisterDialog: React.FC<RegisterDialogProps> = ({
   };
 
   const dialogContent = (
-    <AnimatePresence>
+    <AnimatePresence mode='wait'>
       {isOpen && (
         <div className='fixed inset-0 z-50 flex items-center justify-center'>
           {/* オーバーレイ */}

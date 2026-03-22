@@ -89,7 +89,7 @@ export const LoginDialog: React.FC<LoginDialogProps> = ({
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   const handleSocialLogin = (provider: string) => {
     console.log(`${provider} login clicked`);
@@ -128,7 +128,7 @@ export const LoginDialog: React.FC<LoginDialogProps> = ({
   };
 
   const dialogContent = (
-    <AnimatePresence>
+    <AnimatePresence mode='wait'>
       {isOpen && (
         <div className='fixed inset-0 z-50 flex items-center justify-center'>
           {/* オーバーレイ */}
