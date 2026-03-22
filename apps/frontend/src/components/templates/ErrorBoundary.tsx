@@ -11,6 +11,9 @@ export class ErrorBoundary extends React.Component<React.PropsWithChildren, Erro
   }
 
   componentDidCatch(error: unknown, errorInfo: unknown) {
+    // Reset body styles that might have been set by dialogs
+    document.body.style.overflow = 'unset';
+    
     if (process.env.NODE_ENV === 'development') {
       console.error('ErrorBoundary caught an error', error, errorInfo);
     }
